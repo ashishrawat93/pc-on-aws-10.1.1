@@ -1,0 +1,870 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "This template creates a VPC infrastructure for a single-AZ, multi-tier deployment of PowerCenter in a DMZ tier with an Oracle database on a private database tier within the VPC.  It uses nested templates.",
+  "Parameters" : {
+    "KeyName" : {
+      "Description" : "Name of an existing EC2 key pair to enable SSH or RDS access to the instance.",
+      "Type" : "AWS::EC2::KeyPair::KeyName"
+    },
+    "DatabaseUsername" : {
+      "Description" : "Username for the database account in Amazon RDS.",
+      "Type" : "String",
+      "MinLength" : "2",
+      "MaxLength" : "30"
+    },
+    "DatabasePassword" : {
+      "Description" : "Password for the database account in Amazon RDS.",
+      "Type" : "String",
+      "MinLength" : "8",
+      "MaxLength" : "30",
+      "NoEcho" : "true"
+    },
+    "InformaticaDomainPassword" : {
+      "Description" : "Password for the Informatica domain.",
+      "Type" : "String",
+      "MinLength" : "8",
+      "MaxLength" : "32",
+      "NoEcho" : "true"
+    },
+	"EncryptionKeyPhrase" : {
+	  "Description" : "The text string used as the base word from which to generate an encryption key for the Informatica domain.", 
+      "Type" : "String",
+      "MinLength" : "8",
+      "MaxLength" : "32",
+      "NoEcho" : "true",
+      "AllowedPattern" : "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$",
+      "ConstraintDescription" : "It should be 8 to 20 characters long, at least one uppercase letter at least one lowercase letter-at least one number Does not contain spaces"
+    },
+    "DatabaseType" : {
+      "Description" : "The type of database to use in Amazon RDS. Currently, you can only use Oracle.",
+      "Type" : "String",
+      "Default" : "Oracle",
+      "AllowedValues" : [ "Oracle" ],
+      "ConstraintDescription" : "Oracle"
+    },
+	
+	"InstanceType" : {
+		"Type" : "String",
+		"Default" : "c3.2xlarge",
+		"AllowedValues" : 
+		["c4.xlarge", "c4.2xlarge", "c4.4xlarge", "c4.8xlarge", "r3.large", "r3.xlarge", "r3.2xlarge", "r3.4xlarge", "r3.8xlarge"],
+		"Description" : "Instance Type for Informatica Domain. Default is c3.2xlarge"
+	},
+    "AvailabilityZone1" : {
+      "Description" : "Name of the availability zone that contains the public and private subnets. Enter a valid zone for the region.",
+      "Type" : "AWS::EC2::AvailabilityZone::Name"
+    },
+    "AvailabilityZone2" : {
+      "Description" : "Name of the backup availability zone. Enter an availability zone in the same region as AvailabilityZone1.",
+      "Type" : "AWS::EC2::AvailabilityZone::Name"
+    },
+	"SSHIPRange" : {
+      "Description" : "Range of IP Addresses that will be allowed to SSH to the Instances. Eg 103.245.75.5/30",
+      "Type" : "String"
+    },
+	"ApplicationSpecificIPRange" : {
+      "Description" : "Range of IP Addresses that will be allowed to access Domain Ports. Eg 103.245.75.5/30",
+      "Type" : "String"
+    },
+    "PlacementGroupName" : {
+      "Description" : "Name of an existing placement group to which you want to add the instance.If 'unassigned' then no placement group will be used. ",
+      "Type" : "String",
+      "MinLength" : "1",
+      "MaxLength" : "32",
+      "Default" : "unassigned"
+    }
+  },
+  "Metadata" : {
+    "AWS::CloudFormation::Interface" : {
+      "ParameterGroups" : [
+	    {
+			"Label" : { "default" : "Availability Zones" },
+			"Parameters" : [ "AvailabilityZone1", "AvailabilityZone2" ]
+		},
+		{	"Label" : { "default" : "Informatica Domain Configuration"},
+			"Parameters" : [ "InformaticaDomainPassword","EncryptionKeyPhrase" ]	  
+		},		
+		{	"Label" : {	"default" : "Database Configuration" },
+			"Parameters" : [ "DatabaseType", "DatabaseUsername", "DatabasePassword" ]
+	  	},
+
+		{	"Label" : { "default" : "Instance Configuration" },
+			"Parameters" : [ "InstanceType", "KeyName", "SSHIPRange", "ApplicationSpecificIPRange", "PlacementGroupName" ]
+	  	}
+	  ],
+		"ParameterLabels" : {
+			"AvailabilityZone1" : { "default" : "Availability Zone 1" },
+			"AvailabilityZone2" : {	"default" : "Availability Zone 2" },
+			"KeyName" : { "default" : "Key Name" },
+			"DatabaseUsername" : {	"default" : "Database Username" },
+			"DatabaseType" : {	"default" : "Database Type" },
+			"DatabasePassword" : {	"default" : "Database Password" },
+			"PlacementGroupName" : {  "default" : "Placement Group Name" },
+			"InformaticaDomainPassword" : {  "default" : "Informatica Domain Password" },
+			"EncryptionKeyPhrase" : {  "default" : "Encryption Key Phrase"},
+			"SSHIPRange" : {  "default" : "Allowed SSH IP Range"},
+			"ApplicationSpecificIPRange" : { "default" : "Allowed Application IP Range"}
+		}
+    }
+  },  
+  "Mappings" : {
+    "Config" : {
+      "Settings" : {
+        "RDPNetwork" : "0.0.0.0/0",
+        "InformaticaDomainName" : "InfaDefaultDomain",
+        "DatabaseName" : "pc",
+        "Node1Name" : "PowercenterNode1",
+        "Node2Name" : "PowercenterNode2",
+        "Node3Name" : "PowercenterNode3",
+        "Node4Name" : "PowercenterNode4",
+        "Node2ServesAsGateway" : 1,
+        "Node3ServesAsGateway" : 1,
+        "Node4ServesAsGateway" : 1,
+		
+        "DatabaseSize" : "db.t2.large",
+        "MultiAZ" : false,
+		"IntegrationServiceName" : "PowerCenterIntegrationService",
+        "RepositoryServiceName" : "PowerCenterRepository",
+		"InformaticaServices" : 2,
+		"GridName" : "InfaDefaultGrid"
+		
+      },
+      "Oracle" : {
+        "Engine" : "oracle-ee",
+        "LicenseModel" : "bring-your-own-license",
+        "AllocatedStorage" : "50",
+        "Port" : 1521
+      }
+    },
+	"SubnetConfig" : {
+      "VPC" : {
+        "CIDR" : "172.16.0.0/20"
+      },
+      "PublicDMZ" : {
+        "CIDR" : "172.16.0.0/22"
+      },
+      "DataTier1" : {
+        "CIDR" : "172.16.4.0/24"
+      },
+      "DataTier2" : {
+        "CIDR" : "172.16.5.0/24"
+      }
+    },
+	"RegionMap" : {
+      "us-east-1" : {
+        "AMI" : "ami-8dd0589a"
+      },
+	  "us-east-2" : {
+		"AMI" : "ami-8dd0589a"
+	  },
+      "us-west-1" : {
+        "AMI" : "ami-8dd0589a"
+      },	  
+	  "us-west-2" : {
+        "AMI" : "ami-8dd0589a"
+      },      
+	  "eu-west-1" : {
+        "AMI" : "ami-8dd0589a"
+      },      
+	  "eu-central-1" : {
+        "AMI" : "ami-8dd0589a"
+      },      
+	  "ap-northeast-1" : {
+        "AMI" : "ami-8dd0589a"
+      },      
+	  "ap-northeast-2" : {
+        "AMI" : "ami-8dd0589a"
+      },      
+	  "ap-southeast-1" : {
+        "AMI" : "ami-8dd0589a"
+      },      
+	  "ap-southeast-2" : {
+        "AMI" : "ami-8dd0589a"
+      },      
+	  "ap-south-1" : {
+		"AMI" : "ami-8dd0589a"
+	  },
+	  "sa-east-1" : {
+        "AMI" : "ami-8dd0589a"
+      }      
+    }
+  },
+  "Conditions" : {
+    "UsePlacementGroup" : {
+      "Fn::Not" : [ {
+        "Fn::Equals" : [ {
+          "Ref" : "PlacementGroupName"
+        }, "unassigned" ]
+      } ]
+    }
+  },  
+  
+   
+  "Resources" : {
+    "VPC" : {
+      "Type" : "AWS::EC2::VPC",
+	  "DeletionPolicy" : "Delete",
+      "Properties" : {
+        "CidrBlock" : {
+          "Fn::FindInMap" : [ "SubnetConfig", "VPC", "CIDR" ]
+        },
+        "EnableDnsSupport" : "true",
+        "EnableDnsHostnames" : "true",
+        "Tags" : [ {
+          "Key" : "Name",
+          "Value" : "PowerCenter"
+        }, {
+          "Key" : "Application",
+          "Value" : {
+            "Ref" : "AWS::StackName"
+          }
+        } ]
+      }
+    },
+	"PublicDMZSubnet" : {
+      "Type" : "AWS::EC2::Subnet",
+	  "Properties" : {
+        "VpcId" : {
+          "Ref" : "VPC"
+        },
+        "CidrBlock" : {
+          "Fn::FindInMap" : [ "SubnetConfig", "PublicDMZ", "CIDR" ]
+        },
+        "AvailabilityZone" : {
+          "Ref" : "AvailabilityZone1"
+        },
+        "Tags" : [ {
+          "Key" : "Name",
+          "Value" : "PowerCenter-PublicDMZSubnet"
+        }, {
+          "Key" : "Application",
+          "Value" : {
+            "Ref" : "AWS::StackName"
+          }
+        } ]
+      },
+	  "DependsOn" : "VPC"
+    },
+	"DataTierSubnet1" : {
+      "Type" : "AWS::EC2::Subnet",
+	  "Properties" : {
+        "VpcId" : {
+          "Ref" : "VPC"
+        },
+        "AvailabilityZone" : {
+          "Ref" : "AvailabilityZone1"
+        },
+        "CidrBlock" : {
+          "Fn::FindInMap" : [ "SubnetConfig", "DataTier1", "CIDR" ]
+        },
+        "Tags" : [ {
+          "Key" : "Name",
+          "Value" : "PowerCenter-DataTier1"
+        }, {
+          "Key" : "Application",
+          "Value" : {
+            "Ref" : "AWS::StackName"
+          }
+        } ]
+      },
+	  "DependsOn" : "VPC"
+    },
+    "DataTierSubnet2" : {
+      "Type" : "AWS::EC2::Subnet",
+	  "Properties" : {
+        "VpcId" : {
+          "Ref" : "VPC"
+        },
+        "AvailabilityZone" : {
+          "Ref" : "AvailabilityZone2"
+        },
+        "CidrBlock" : {
+          "Fn::FindInMap" : [ "SubnetConfig", "DataTier2", "CIDR" ]
+        },
+        "Tags" : [ {
+          "Key" : "Name",
+          "Value" : "PowerCenter-DataTier2"
+        }, {
+          "Key" : "Application",
+          "Value" : {
+            "Ref" : "AWS::StackName"
+          }
+        } ]
+      },
+	  "DependsOn" : "VPC"
+    },
+	"InternetGateway" : {
+      "Type" : "AWS::EC2::InternetGateway",
+	  "Properties" : {
+        "Tags" : [ {
+          "Key" : "Name",
+          "Value" : "PowerCenter-IGW"
+        }, {
+          "Key" : "Application",
+          "Value" : {
+            "Ref" : "AWS::StackName"
+          }
+        } ]
+      }
+    },
+    "GatewayToInternet" : {
+      "Type" : "AWS::EC2::VPCGatewayAttachment",
+      "Properties" : {
+        "VpcId" : {
+          "Ref" : "VPC"
+        },
+        "InternetGatewayId" : {
+          "Ref" : "InternetGateway"
+        }
+      }
+    },
+	"PublicRouteTable" : {
+      "Type" : "AWS::EC2::RouteTable",
+      "Properties" : {
+        "VpcId" : {
+          "Ref" : "VPC"
+        },
+        "Tags" : [ {
+          "Key" : "Name",
+          "Value" : "PowerCenter-RouteTable"
+        }, {
+          "Key" : "Application",
+          "Value" : {
+            "Ref" : "AWS::StackName"
+          }
+        } ]
+      }
+    },
+    "PublicRoute" : {
+      "Type" : "AWS::EC2::Route",
+      "Properties" : {
+        "RouteTableId" : {
+          "Ref" : "PublicRouteTable"
+        },
+        "DestinationCidrBlock" : "0.0.0.0/0",
+        "GatewayId" : {
+          "Ref" : "InternetGateway"
+        }
+      }
+    },
+	"PublicDMZRouteTableAssociation" : {
+      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties" : {
+        "SubnetId" : {
+          "Ref" : "PublicDMZSubnet"
+        },
+        "RouteTableId" : {
+          "Ref" : "PublicRouteTable"
+        }
+      }
+    },
+	
+    "DbSubnetGroup" : {
+      "Type" : "AWS::RDS::DBSubnetGroup",
+      "Properties" : {
+        "DBSubnetGroupDescription" : "Subnet Group for Demo",
+        "SubnetIds" : [ {
+          "Ref" : "DataTierSubnet1"
+        }, {
+          "Ref" : "DataTierSubnet2"
+        } ],
+        "Tags" : [ {
+          "Key" : "Env",
+          "Value" : "Infa-HOL-Demo"
+        } ]
+      }
+    },
+	
+	
+    "DBSecurityGroup" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "ICS DB SG",
+        "SecurityGroupIngress" : [ {
+          "IpProtocol" : "tcp",
+          "FromPort" : "1521",
+          "ToPort" : "1521",
+          "CidrIp" : "172.16.0.0/22"
+        } ],
+        "Tags" : [ {
+          "Key" : "Env",
+          "Value" : "Infa-HOL-Demo"
+        } ],
+        "VpcId" : {
+          "Ref" : "VPC"
+        }
+      }
+    },
+    "RDSInstance" : {
+      "Type" : "AWS::RDS::DBInstance",
+      "Properties" : {
+        "AllocatedStorage" : {
+          "Fn::FindInMap" : [ "Config", {
+            "Ref" : "DatabaseType"
+          }, "AllocatedStorage" ]
+        },
+        "DBInstanceClass" : {
+          "Fn::FindInMap" : [ "Config", "Settings", "DatabaseSize" ]
+        },
+        "AvailabilityZone" : {
+          "Ref" : "AvailabilityZone1"
+        },
+        "DBName" : {
+          "Fn::FindInMap" : [ "Config", "Settings", "DatabaseName" ]
+        },
+        "DBSubnetGroupName" : {
+          "Ref" : "DbSubnetGroup"
+        },
+        "Engine" : {
+          "Fn::FindInMap" : [ "Config", {
+            "Ref" : "DatabaseType"
+          }, "Engine" ]
+        },
+        "LicenseModel" : {
+          "Fn::FindInMap" : [ "Config", {
+            "Ref" : "DatabaseType"
+          }, "LicenseModel" ]
+        },
+        "MasterUsername" : {
+          "Ref" : "DatabaseUsername"
+        },
+        "MasterUserPassword" : {
+          "Ref" : "DatabasePassword"
+        },
+        "MultiAZ" : {
+          "Fn::FindInMap" : [ "Config", "Settings", "MultiAZ" ]
+        },
+        "Port" : {
+          "Fn::FindInMap" : [ "Config", {
+            "Ref" : "DatabaseType"
+          }, "Port" ]
+        },
+        "Tags" : [ {
+          "Key" : "Name",
+          "Value" : "Infa-PowerCenter"
+        } ],
+        "VPCSecurityGroups" : [ {
+          "Ref" : "DBSecurityGroup"
+        } ]
+      }
+    },
+	
+	"InstanceSecurityGroup" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Enable RDP and within VPC traffic",
+        "VpcId" : {
+          "Ref" : "VPC"
+        },
+        "SecurityGroupIngress" : [ {
+          "IpProtocol" : "tcp",
+          "FromPort" : "22",
+          "ToPort" : "22",
+          "CidrIp" : {	"Ref" : "SSHIPRange"	}
+        }, {
+          "IpProtocol" : "tcp",
+          "FromPort" : "5000",
+          "ToPort" : "7000",
+          "CidrIp" : {	"Ref" : "ApplicationSpecificIPRange"	}
+		}
+		]	
+      }
+    },
+    "InstanceSecurityGroupIngress" : {
+      "Type" : "AWS::EC2::SecurityGroupIngress",
+      "Properties" : {
+        "IpProtocol" : "-1",
+        "FromPort" : "-1",
+        "ToPort" : "-1",
+        "SourceSecurityGroupId" : {
+          "Fn::GetAtt" : [ "InstanceSecurityGroup", "GroupId" ]
+        },
+        "GroupId" : {
+          "Fn::GetAtt" : [ "InstanceSecurityGroup", "GroupId" ]
+        }
+      },
+	  "DependsOn" : "InstanceSecurityGroup"
+    },
+    "MasterIPAddress" : {
+      "Type" : "AWS::EC2::EIP",
+      "Properties" : {
+        "Domain" : "vpc",
+        "InstanceId" : {
+          "Ref" : "InformaticaMasterEC2Instance"
+        }
+      }
+    },
+    "InformaticaMasterEC2Instance" : {
+      "Type" : "AWS::EC2::Instance",
+      "Metadata" : {
+        "AWS::CloudFormation::Init" : {
+			"config" : {
+            "commands" : {
+              "1-setup" : {
+				"command" : { "Fn::Join" : [ "", [ "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ", { "Ref" : "InformaticaDomainPassword" } ," ", { "Ref" : "DatabasePassword" }  ," ", { "Ref" : "DatabasePassword" }  ," ", { "Ref" : "EncryptionKeyPhrase" } 
+              ]]}
+            }
+				}
+          }
+		  }
+        },
+      "Properties" : {
+        "Tags" : [ {
+          "Key" : "Name",
+          "Value" : {
+            "Fn::FindInMap" : [ "Config", "Settings", "Node1Name" ]
+          }
+        } ],
+        "ImageId" : {
+          "Fn::FindInMap" : [ "RegionMap", {
+            "Ref" : "AWS::Region"
+          }, "AMI" ]
+        },
+        "SubnetId" : {
+          "Ref" : "PublicDMZSubnet"
+        },
+        "SecurityGroupIds" : [ {
+          "Ref" : "InstanceSecurityGroup"
+        } ],
+        "InstanceType" : {
+          "Ref" : "InstanceType"
+        },
+        "KeyName" : {
+          "Ref" : "KeyName"
+        },
+        "PlacementGroupName" : {
+          "Fn::If" : [ "UsePlacementGroup", {
+            "Ref" : "PlacementGroupName"
+          }, {
+            "Ref" : "AWS::NoValue"
+          } ]
+        },
+        "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+         "#!/bin/bash \n", "echo \"Initializing variables\" \n", "export CREATE_DOMAIN=1 \n", "export JOIN_DOMAIN=0 \n", "export SERVES_AS_GATEWAY=0 \n", "export DB_TYPE=\"", {
+              "Ref" : "DatabaseType"
+            }, "\"\n", "export REPOSITORY_SERVICE_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "RepositoryServiceName" ]
+            }, "\"\n", "export INTEGRATION_SERVICE_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "IntegrationServiceName" ]
+            }, "\"\n", "export DB_ADDRESS=\"", {
+              "Fn::GetAtt" : [ "RDSInstance", "Endpoint.Address" ]
+            }, "\"\n", "export DB_PORT=\"", {
+               "Fn::GetAtt" : [ "RDSInstance", "Endpoint.Port" ]
+            }, "\"\n", "export DB_UNAME=\"", {
+              "Ref" : "DatabaseUsername"
+            }, "\"\n", "export DB_SERVICENAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "DatabaseName" ]
+            }, "\"\n", "export DOMAIN_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "InformaticaDomainName" ]
+            }, "\"\n", "export NODE_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "Node1Name" ]
+            }, "\"\n", "export GRID_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "GridName" ]
+            }, "\"\n", "export REPO_USER=\"", {
+              "Ref" : "DatabaseUsername"
+            }, "\"\n", "export INFORMATICA_SERVICES=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "InformaticaServices" ]
+            }, "\"\n", "export JOIN_NODE_NAME=\"InformaticaNodeName\" \n", "export DOMAIN_HOST_NAME=\"$HOSTNAME\" \n", "echo \"running cfn init\" \n", "cfn-init -s ", { "Ref" : "AWS::StackId" }, " -r InformaticaMasterEC2Instance ",
+          "    --region ", { "Ref" : "AWS::Region" }, "\n",
+		 "/opt/aws/bin/cfn-signal -e $? '", { "Ref" : "WaitHandle" }, "'\n"
+          ]]}}
+        },
+		"DependsOn" : "RDSInstance"
+    },
+    "WaitHandle" : {
+      "Type" : "AWS::CloudFormation::WaitConditionHandle"
+    },
+    "InformaticaMasterWaitCondition" : {
+      "Type" : "AWS::CloudFormation::WaitCondition",
+      "DependsOn" : "InformaticaMasterEC2Instance",
+      "Properties" : {
+        "Handle" : {
+          "Ref" : "WaitHandle"
+        },
+        "Timeout" : "8000"
+      }
+    },
+    "InformaticaNode2IPAddress" : {
+      "Type" : "AWS::EC2::EIP",
+      "Properties" : {
+        "Domain" : "vpc",
+        "InstanceId" : {
+          "Ref" : "InformaticaNode2"
+        }
+      }
+    },	
+	"InformaticaNode2" : {
+      "Type" : "AWS::EC2::Instance",
+	   "DependsOn" : "InformaticaMasterWaitCondition",
+      "Properties" : {
+        "Tags" : [ {
+          "Key" : "Name",
+          "Value" : {
+            "Fn::FindInMap" : [ "Config", "Settings", "Node2Name" ]
+          }
+        } ],
+        "ImageId" : {
+          "Fn::FindInMap" : [ "RegionMap", {
+            "Ref" : "AWS::Region"
+          }, "AMI" ]
+        },
+        "SubnetId" : {
+          "Ref" : "PublicDMZSubnet"
+        },
+        "SecurityGroupIds" : [ {
+          "Ref" : "InstanceSecurityGroup"
+        } ],
+        "InstanceType" : {
+          "Ref" : "InstanceType"
+        },
+        "KeyName" : {
+          "Ref" : "KeyName"
+        },
+        "PlacementGroupName" : {
+          "Fn::If" : [ "UsePlacementGroup", {
+            "Ref" : "PlacementGroupName"
+          }, {
+            "Ref" : "AWS::NoValue"
+          } ]
+        },
+        "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+         "#!/bin/bash \n", "echo \"Initializing variables\" \n", "export SINGLE_NODE=0 \n", "export CREATE_DOMAIN=0 \n", "export JOIN_DOMAIN=1 \n", "export SERVES_AS_GATEWAY=", {
+              "Fn::FindInMap" : [ "Config", "Settings", "Node2ServesAsGateway" ]
+            }, "\n", "export DB_TYPE=\"", {
+              "Ref" : "DatabaseType"
+            }, "\"\n", "export DB_ADDRESS=\"", {
+              "Fn::GetAtt" : [ "RDSInstance", "Endpoint.Address" ]
+            }, "\"\n", "export DB_PORT=\"", {
+              "Fn::GetAtt" : [ "RDSInstance", "Endpoint.Port" ]
+            }, "\"\n", "export DB_UNAME=\"", {
+              "Ref" : "DatabaseUsername"
+            }, "\"\n", "export DB_SERVICENAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "DatabaseName" ]
+            }, "\"\n", "export DOMAIN_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "InformaticaDomainName" ]
+            }, "\"\n", "export NODE_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "Node1Name" ]
+            }, "\"\n", "export GRID_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "GridName" ]
+            }, "\"\n","export JOIN_NODE_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "Node2Name" ]
+            }, "\"\n", "export INTEGRATION_SERVICE_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "IntegrationServiceName" ]
+            }, "\"\n","export DOMAIN_HOST_NAME=\"", {
+               "Fn::GetAtt" : [ "InformaticaMasterEC2Instance", "PrivateIp" ]
+            }, "\"\n", "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ", { "Ref" : "InformaticaDomainPassword" } ," ", { "Ref" : "DatabasePassword" }  ," null "  , { "Ref" : "EncryptionKeyPhrase" }
+		
+          ]]}}
+        }
+    },
+    "InformaticaNode3IPAddress" : {
+      "Type" : "AWS::EC2::EIP",
+      "Properties" : {
+        "Domain" : "vpc",
+        "InstanceId" : {
+          "Ref" : "InformaticaNode3"
+        }
+      }
+    },		
+	"InformaticaNode3" : {
+      "Type" : "AWS::EC2::Instance",
+	   "DependsOn" : "InformaticaMasterWaitCondition",
+      "Properties" : {
+        "Tags" : [ {
+          "Key" : "Name",
+          "Value" : {
+            "Fn::FindInMap" : [ "Config", "Settings", "Node3Name" ]
+          }
+        } ],
+        "ImageId" : {
+          "Fn::FindInMap" : [ "RegionMap", {
+            "Ref" : "AWS::Region"
+          }, "AMI" ]
+        },
+        "SubnetId" : {
+          "Ref" : "PublicDMZSubnet"
+        },
+        "SecurityGroupIds" : [ {
+          "Ref" : "InstanceSecurityGroup"
+        } ],
+        "InstanceType" : {
+          "Ref" : "InstanceType"
+        },
+        "KeyName" : {
+          "Ref" : "KeyName"
+        },
+        "PlacementGroupName" : {
+          "Fn::If" : [ "UsePlacementGroup", {
+            "Ref" : "PlacementGroupName"
+          }, {
+            "Ref" : "AWS::NoValue"
+          } ]
+        },
+        "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+         "#!/bin/bash \n", "echo \"Initializing variables\" \n", "export SINGLE_NODE=0 \n", "export CREATE_DOMAIN=0 \n", "export JOIN_DOMAIN=1 \n", "export SERVES_AS_GATEWAY=", {
+              "Fn::FindInMap" : [ "Config", "Settings", "Node3ServesAsGateway" ]
+            }, "\n", "export DB_TYPE=\"", {
+              "Ref" : "DatabaseType"
+            }, "\"\n", "export DB_ADDRESS=\"", {
+              "Fn::GetAtt" : [ "RDSInstance", "Endpoint.Address" ]
+            }, "\"\n", "export DB_PORT=\"", {
+              "Fn::GetAtt" : [ "RDSInstance", "Endpoint.Port" ]
+            }, "\"\n", "export DB_UNAME=\"", {
+              "Ref" : "DatabaseUsername"
+            }, "\"\n", "export DB_SERVICENAME=\"", {
+               "Fn::FindInMap" : [ "Config", "Settings", "DatabaseName" ]
+            }, "\"\n", "export DOMAIN_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "InformaticaDomainName" ]
+            }, "\"\n", "export NODE_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "Node1Name" ]
+            }, "\"\n", "export GRID_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "GridName" ]
+            }, "\"\n","export JOIN_NODE_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "Node3Name" ]
+            }, "\"\n", "export INTEGRATION_SERVICE_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "IntegrationServiceName" ]
+            }, "\"\n","export DOMAIN_HOST_NAME=\"", {
+               "Fn::GetAtt" : [ "InformaticaMasterEC2Instance", "PrivateIp" ]
+            }, "\"\n", "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ", { "Ref" : "InformaticaDomainPassword" } ," ", { "Ref" : "DatabasePassword" }  ," null "  , { "Ref" : "EncryptionKeyPhrase" }
+		
+          ]]}}
+        }
+    },
+    "InformaticaNode4IPAddress" : {
+      "Type" : "AWS::EC2::EIP",
+      "Properties" : {
+        "Domain" : "vpc",
+        "InstanceId" : {
+          "Ref" : "InformaticaNode4"
+        }
+      }
+    },			
+	"InformaticaNode4" : {
+      "Type" : "AWS::EC2::Instance",
+	   "DependsOn" : "InformaticaMasterWaitCondition",
+      "Properties" : {
+        "Tags" : [ {
+          "Key" : "Name",
+          "Value" : {
+            "Fn::FindInMap" : [ "Config", "Settings", "Node4Name" ]
+          }
+        } ],
+        "ImageId" : {
+          "Fn::FindInMap" : [ "RegionMap", {
+            "Ref" : "AWS::Region"
+          }, "AMI" ]
+        },
+        "SubnetId" : {
+          "Ref" : "PublicDMZSubnet"
+        },
+        "SecurityGroupIds" : [ {
+          "Ref" : "InstanceSecurityGroup"
+        } ],
+        "InstanceType" : {
+          "Ref" : "InstanceType"
+        },
+        "KeyName" : {
+          "Ref" : "KeyName"
+        },
+        "PlacementGroupName" : {
+          "Fn::If" : [ "UsePlacementGroup", {
+            "Ref" : "PlacementGroupName"
+          }, {
+            "Ref" : "AWS::NoValue"
+          } ]
+        },
+        "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+         "#!/bin/bash \n", "echo \"Initializing variables\" \n", "export SINGLE_NODE=0 \n", "export CREATE_DOMAIN=0 \n", "export JOIN_DOMAIN=1 \n", "export SERVES_AS_GATEWAY=", {
+              "Fn::FindInMap" : [ "Config", "Settings", "Node4ServesAsGateway" ]
+            }, "\n", "export DB_TYPE=\"", {
+              "Ref" : "DatabaseType"
+            }, "\"\n", "export DB_ADDRESS=\"", {
+              "Fn::GetAtt" : [ "RDSInstance", "Endpoint.Address" ]
+            }, "\"\n", "export DB_PORT=\"", {
+              "Fn::GetAtt" : [ "RDSInstance", "Endpoint.Port" ]
+            }, "\"\n", "export DB_UNAME=\"", {
+              "Ref" : "DatabaseUsername"
+            }, "\"\n", "export DB_SERVICENAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "DatabaseName" ]
+            }, "\"\n", "export DOMAIN_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "InformaticaDomainName" ]
+            }, "\"\n", "export NODE_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "Node1Name" ]
+            }, "\"\n", "export GRID_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "GridName" ]
+            }, "\"\n","export JOIN_NODE_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "Node4Name" ]
+            }, "\"\n", "export INTEGRATION_SERVICE_NAME=\"", {
+              "Fn::FindInMap" : [ "Config", "Settings", "IntegrationServiceName" ]
+            }, "\"\n","export DOMAIN_HOST_NAME=\"", {
+               "Fn::GetAtt" : [ "InformaticaMasterEC2Instance", "PrivateIp" ]
+            }, "\"\n", "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ", { "Ref" : "InformaticaDomainPassword" } ," ", { "Ref" : "DatabasePassword" }  ," null "  , { "Ref" : "EncryptionKeyPhrase" }
+		
+          ]]}}
+        }
+	}
+  },
+  "Outputs" : {
+    "PowerCenterAgentIP" : {
+      "Value" : {
+        "Fn::GetAtt" : [ "InformaticaMasterEC2Instance", "PublicIp" ]
+      },
+      "Description" : "Elastic IP address of the PowerCenter instance"
+    },
+	"InstanceId" : {
+      "Description" : "InstanceId of the newly created EC2 instance",
+      "Value" : {
+        "Ref" : "InformaticaMasterEC2Instance"
+      }
+    },
+    "AZ" : {
+      "Description" : "Availability Zone of the newly created EC2 instance",
+      "Value" : {
+        "Fn::GetAtt" : [ "InformaticaMasterEC2Instance", "AvailabilityZone" ]
+      }
+    },
+    "PublicDNS" : {
+      "Description" : "Public DNSName of the newly created EC2 instance",
+      "Value" : {
+        "Fn::GetAtt" : [ "InformaticaMasterEC2Instance", "PublicDnsName" ]
+      }
+    },
+
+    "RDSInstance" : {
+      "Value" : {
+        "Ref" : "RDSInstance"
+      },
+      "Description" : "RDS Instance ID"
+    },
+	"VPC" : {
+      "Description" : "VPCId of the newly created VPC",
+      "Value" : {
+        "Ref" : "VPC"
+      }
+    },
+	"PublicIP" : {
+      "Description" : "Public IP address of the newly created EC2 instance",
+      "Value" : {
+        "Fn::GetAtt" : [ "InformaticaMasterEC2Instance", "PublicIp" ]
+      }
+    },
+    "PublicSubnet" : {
+      "Description" : "SubnetId of the public subnet",
+      "Value" : {
+        "Ref" : "PublicDMZSubnet"
+      }
+    },
+    "DataTierSubnet1" : {
+      "Description" : "SubnetId of the public subnet",
+      "Value" : {
+        "Ref" : "DataTierSubnet1"
+      }
+    },
+    "DataTierSubnet2" : {
+      "Description" : "SubnetId of the public subnet",
+      "Value" : {
+        "Ref" : "DataTierSubnet2"
+      }
+    }
+  }
+}
