@@ -1,0 +1,831 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "AWS Cloud Formation Template for deployment of Informatica Powercenter Version 10.1.0 on a VPC infrastructure. Informatica PowerCenter is deployed on RHEL 7.0. Amazon RDS instance in a private subnet is used as the repository for Informatica Domain Metadata. **WARNING** This template creates Amazon EC2 instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": "Network Configuration"
+                    },
+                    "Parameters": [
+                        "AvailabilityZones",
+                        "VPCCIDR",
+                        "PrivateSubnet1CIDR",
+                        "PrivateSubnet2CIDR",
+                        "PublicSubnet1CIDR",
+                        "PublicSubnet2CIDR",
+                        "RemoteAccessCIDR"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Amazon EC2 Configuration"
+                    },
+                    "Parameters": [
+                        "KeyPairName",
+                        "PowerCenterInstanceType",
+                        "NumberOfPowerCenterInstances"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Amazon RDS Configuration"
+                    },
+                    "Parameters": [
+                        "DatabaseType",
+                        "DatabaseUsername",
+                        "DatabasePassword"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Informatica PowerCenter Configuration"
+                    },
+                    "Parameters": [
+                        "InformaticaDomainName",
+                        "InformaticaNodeName",
+                        "InformaticaDomainUsername",
+                        "InformaticaDomainPassword",
+                        "EncryptionKeyPhrase"
+                    ]
+                }
+            ],
+            "ParameterLabels": {
+                "AvailabilityZones": {
+                    "default": "Availability Zones"
+                },
+                "DatabasePassword": {
+                    "default": "Database Password"
+                },
+                "DatabaseType": {
+                    "default": "Database Type"
+                },
+                "DatabaseUsername": {
+                    "default": "Database Username"
+                },
+                "EncryptionKeyPhrase": {
+                    "default": "Encryption Key Phrase"
+                },
+                "InformaticaDomainName": {
+                    "default": "Informatica Domain Name"
+                },
+                "InformaticaNodeName": {
+                    "default": "Informatica Node Prefix"
+                },
+                "InformaticaDomainUsername": {
+                    "default": "Informatica Administrator Username"
+                },
+                "InformaticaDomainPassword": {
+                    "default": "Informatica Administrator Password"
+                },
+                "KeyPairName": {
+                    "default": "Key Pair Name"
+                },
+                "PowerCenterInstanceType": {
+                    "default": "Informatica Domain Instance Type"
+                },
+                "NumberOfPowerCenterInstances": {
+                    "default": "Number of Instances"
+                },
+                "PrivateSubnet1CIDR": {
+                    "default": "Private Subnet 1 CIDR"
+                },
+                "PrivateSubnet2CIDR": {
+                    "default": "Private Subnet 2 CIDR"
+                },
+                "PublicSubnet1CIDR": {
+                    "default": "Public Subnet 1 CIDR"
+                },
+                "PublicSubnet2CIDR": {
+                    "default": "Public Subnet 2 CIDR"
+                },
+                "RemoteAccessCIDR": {
+                    "default": "Allowed Remote Access CIDR"
+                },
+                "VPCCIDR": {
+                    "default": "VPC CIDR"
+                }
+            }
+        }
+    },
+    "Parameters": {
+        "AvailabilityZones": {
+            "Description": "List of Availability Zones to use for the subnets in the VPC. Note: The logical order is preserved and only 2 AZs are used for this deployment",
+            "Type": "List<AWS::EC2::AvailabilityZone::Name>"
+        },
+        "DatabasePassword": {
+            "Description": "Password for the Amazon RDS database account",
+            "MaxLength": "30",
+            "MinLength": "8",
+            "NoEcho": "true",
+            "Type": "String"
+        },
+        "DatabaseType": {
+            "AllowedValues": [
+                "Oracle-License-Included",
+                "Oracle-Bring-Your-Own-License"
+            ],
+            "Default": "Oracle-License-Included",
+            "Description": "The type of database to use in Amazon RDS. Currently, you can only use Oracle",
+            "Type": "String"
+        },
+        "DatabaseUsername": {
+            "Description": "Username for the Amazon RDS database account",
+            "MaxLength": "30",
+            "MinLength": "2",
+            "Type": "String"
+        },
+        "EncryptionKeyPhrase": {
+            "AllowedPattern": "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$",
+            "ConstraintDescription": "It should be 8 to 20 characters long, at least one uppercase letter at least one lowercase letter-at least one number Does not contain spaces",
+            "Description": "The text string used as the base word from which to generate an encryption key for the Informatica domain",
+            "MaxLength": "32",
+            "MinLength": "8",
+            "NoEcho": "true",
+            "Type": "String"
+        },
+        "InformaticaDomainName": {
+            "Description": "Name for the Informatica Domain",
+            "Type": "String",
+            "Default": "InfaDomain",
+            "MinLength": "4",
+            "MaxLength": "20"
+        },
+        "InformaticaNodeName": {
+            "Description": "Prefix for the Nodes in Informatica Domain. Node number will be the suffix for the nodes. Eg PowerCenterNode1, PowerCenterNode2",
+            "Type": "String",
+            "Default": "PowerCenter",
+            "MinLength": "2",
+            "MaxLength": "20"
+        },
+        "InformaticaDomainUsername": {
+            "Description": "Username for the Informatica Domain",
+            "AllowedValues": [
+                "Administrator"
+            ],
+            "Default": "Administrator",
+            "MaxLength": "32",
+            "MinLength": "8",
+            "Type": "String"
+        },
+        "InformaticaDomainPassword": {
+            "Description": "Password for the Informatica Domain",
+            "MaxLength": "32",
+            "MinLength": "8",
+            "NoEcho": "true",
+            "Type": "String"
+        },
+        "PowerCenterInstanceType": {
+            "AllowedValues": [
+                "c4.xlarge",
+                "c4.2xlarge",
+                "c4.4xlarge",
+                "c4.8xlarge",
+                "r3.large",
+                "r3.xlarge",
+                "r3.2xlarge",
+                "r3.4xlarge",
+                "r3.8xlarge"
+            ],
+            "Default": "c4.2xlarge",
+            "Description": "Instance Type for Informatica Domain. Default is c4.2xlarge",
+            "Type": "String"
+        },
+        "KeyPairName": {
+            "Description": "Name of an existing EC2 KeyPair to enable external access to the Informatica Domain",
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        },
+        "NumberOfPowerCenterInstances": {
+            "Description": "Number of PowerCenter Nodes. Each node runs on one EC2 Instance",
+            "Type": "String",
+            "AllowedValues": [
+                "1",
+                "2",
+                "4",
+                "6",
+                "8"
+            ],
+            "Default": "4"
+        },
+        "PrivateSubnet1CIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+            "Default": "10.0.0.0/19",
+            "Description": "CIDR block for private subnet 1 located in Availability Zone 1",
+            "Type": "String"
+        },
+        "PrivateSubnet2CIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+            "Default": "10.0.32.0/19",
+            "Description": "CIDR block for private subnet 2 located in Availability Zone 2",
+            "Type": "String"
+        },
+        "PublicSubnet1CIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+            "Default": "10.0.128.0/20",
+            "Description": "CIDR Block for the public subnet 1 located in Availability Zone 1",
+            "Type": "String"
+        },
+        "PublicSubnet2CIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+            "Default": "10.0.144.0/20",
+            "Description": "CIDR Block for the public subnet 2 located in Availability Zone 2",
+            "Type": "String"
+        },
+        "RemoteAccessCIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/x",
+            "Description": "Allowed CIDR block for external access to the Informatica Domain",
+            "Type": "String"
+        },
+        "VPCCIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+            "Default": "10.0.0.0/16",
+            "Description": "CIDR Block for the VPC",
+            "Type": "String"
+        }
+    },
+    "Mappings": {
+        "AWSAMIRegionMap": {
+            "AMI": {
+                "INFORMATICAPCRHELHVM": "10.1_Linux_Server_2-b1c14762-8f3f-41df-ae2c-91adee508cf9-ami-8dd0589a.3"
+            },
+            "ap-northeast-1": {
+                "INFORMATICAPCRHELHVM": "ami-46985027"
+            },
+            "ap-northeast-2": {
+                "INFORMATICAPCRHELHVM": "TBD"
+            },
+            "ap-south-1": {
+                "INFORMATICAPCRHELHVM": "TBD"
+            },
+            "ap-southeast-1": {
+                "INFORMATICAPCRHELHVM": "ami-6a7ea609"
+            },
+            "ap-southeast-2": {
+                "INFORMATICAPCRHELHVM": "ami-a22016c1"
+            },
+            "eu-central-1": {
+                "INFORMATICAPCRHELHVM": "ami-f819e997"
+            },
+            "eu-west-1": {
+                "INFORMATICAPCRHELHVM": "ami-9a9dede9"
+            },
+            "sa-east-1": {
+                "INFORMATICAPCRHELHVM": "ami-1064f57c"
+            },
+            "us-east-1": {
+                "INFORMATICAPCRHELHVM": "ami-42cda155"
+            },
+            "us-east-2": {
+                "INFORMATICAPCRHELHVM": "TBD"
+            },
+            "us-west-1": {
+                "INFORMATICAPCRHELHVM": "ami-8e83ceee"
+            },
+            "us-west-2": {
+                "INFORMATICAPCRHELHVM": "ami-71f72111"
+            }
+        },
+        "Config": {
+            "Settings": {
+                "DatabaseName": "pc",
+                "DatabaseSize": "db.t2.large",
+                "IntegrationServiceName": "PowerCenterIntegrationService",
+                "RepositoryServiceName": "PowerCenterRepository",
+                "GridName": "InfaDefaultGrid"
+            },
+            "Oracle-License-Included": {
+                "Engine": "oracle-se1",
+                "LicenseModel": "license-included",
+                "AllocatedStorage": "50",
+                "Port": 1521
+            },
+            "Oracle-Bring-Your-Own-License": {
+                "Engine": "oracle-se1",
+                "LicenseModel": "bring-your-own-license",
+                "AllocatedStorage": "50",
+                "Port": 1521
+            }
+        }
+    },
+    "Conditions": {
+        "2NodeCondition": {
+            "Fn::Or": [
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "NumberOfPowerCenterInstances"
+                        },
+                        "2"
+                    ]
+                },
+                {
+                    "Condition": "4NodeCondition"
+                },
+                {
+                    "Condition": "6NodeCondition"
+                },
+                {
+                    "Condition": "8NodeCondition"
+                }
+            ]
+        },
+        "4NodeCondition": {
+            "Fn::Or": [
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "NumberOfPowerCenterInstances"
+                        },
+                        "4"
+                    ]
+                },
+                {
+                    "Condition": "6NodeCondition"
+                },
+                {
+                    "Condition": "8NodeCondition"
+                }
+            ]
+        },
+        "6NodeCondition": {
+            "Fn::Or": [
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "NumberOfPowerCenterInstances"
+                        },
+                        "6"
+                    ]
+                },
+                {
+                    "Condition": "8NodeCondition"
+                }
+            ]
+        },
+        "8NodeCondition": {
+            "Fn::Equals": [
+                {
+                    "Ref": "NumberOfPowerCenterInstances"
+                },
+                "8"
+            ]
+        }
+    },
+    "Resources": {
+        "VPC": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "VPCCIDR"
+                },
+                "EnableDnsSupport": "true",
+                "EnableDnsHostnames": "true",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "PowerCenter-VPC"
+                    },
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackName"
+                        }
+                    }
+                ]
+            }
+        },
+        "InternetGateway": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "PowerCenter-IGW"
+                    },
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackName"
+                        }
+                    }
+                ]
+            }
+        },
+        "VPCGatewayAttachment": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "InternetGatewayId": {
+                    "Ref": "InternetGateway"
+                }
+            }
+        },
+        "DataTierSubnet1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "CidrBlock": {
+                    "Ref": "PrivateSubnet1CIDR"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        "0",
+                        {
+                            "Ref": "AvailabilityZones"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "PowerCenter DataTier1 Private subnet 1"
+                    },
+                    {
+                        "Key": "Network",
+                        "Value": "Private"
+                    }
+                ]
+            }
+        },
+        "DataTierSubnet2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "CidrBlock": {
+                    "Ref": "PrivateSubnet2CIDR"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        "1",
+                        {
+                            "Ref": "AvailabilityZones"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "PowerCenter DataTier2 Private subnet 2"
+                    },
+                    {
+                        "Key": "Network",
+                        "Value": "Private"
+                    }
+                ]
+            }
+        },
+        "PublicSubnet1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "CidrBlock": {
+                    "Ref": "PublicSubnet1CIDR"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        "0",
+                        {
+                            "Ref": "AvailabilityZones"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "PowerCenter Public subnet 1"
+                    },
+                    {
+                        "Key": "Network",
+                        "Value": "Public"
+                    }
+                ],
+                "MapPublicIpOnLaunch": true
+            }
+        },
+        "PublicSubnet2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "CidrBlock": {
+                    "Ref": "PublicSubnet2CIDR"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        "1",
+                        {
+                            "Ref": "AvailabilityZones"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "PowerCenter Public subnet 2"
+                    },
+                    {
+                        "Key": "Network",
+                        "Value": "Public"
+                    }
+                ],
+                "MapPublicIpOnLaunch": true
+            }
+        },
+        "PublicSubnetRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "Public Subnets"
+                    },
+                    {
+                        "Key": "Network",
+                        "Value": "Public"
+                    }
+                ]
+            }
+        },
+        "PublicSubnetRoute": {
+            "DependsOn": "VPCGatewayAttachment",
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "PublicSubnetRouteTable"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Ref": "InternetGateway"
+                }
+            }
+        },
+        "PublicSubnet1RouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "PublicSubnet1"
+                },
+                "RouteTableId": {
+                    "Ref": "PublicSubnetRouteTable"
+                }
+            }
+        },
+        "PublicSubnet2RouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "PublicSubnet2"
+                },
+                "RouteTableId": {
+                    "Ref": "PublicSubnetRouteTable"
+                }
+            }
+        },
+        "DBSubnetGroup": {
+            "Type": "AWS::RDS::DBSubnetGroup",
+            "Properties": {
+                "DBSubnetGroupDescription": "Subnet Group for Informatica PowerCenter RDS Database",
+                "SubnetIds": [
+                    {
+                        "Ref": "DataTierSubnet1"
+                    },
+                    {
+                        "Ref": "DataTierSubnet2"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "RDSDbSubnetGroup"
+                    }
+                ]
+            }
+        },
+        "DBSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Informatica PowerCenter RDS Database Security Group",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": {
+                            "Fn::FindInMap": [
+                                "Config",
+                                {
+                                    "Ref": "DatabaseType"
+                                },
+                                "Port"
+                            ]
+                        },
+                        "ToPort": {
+                            "Fn::FindInMap": [
+                                "Config",
+                                {
+                                    "Ref": "DatabaseType"
+                                },
+                                "Port"
+                            ]
+                        },
+                        "SourceSecurityGroupId": {
+                            "Ref": "InstanceSecurityGroup"
+                        }
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            }
+        },
+        "RDSInstance": {
+            "Type": "AWS::RDS::DBInstance",
+            "Properties": {
+                "AllocatedStorage": {
+                    "Fn::FindInMap": [
+                        "Config",
+                        {
+                            "Ref": "DatabaseType"
+                        },
+                        "AllocatedStorage"
+                    ]
+                },
+                "DBInstanceClass": {
+                    "Fn::FindInMap": [
+                        "Config",
+                        "Settings",
+                        "DatabaseSize"
+                    ]
+                },
+                "DBName": {
+                    "Fn::FindInMap": [
+                        "Config",
+                        "Settings",
+                        "DatabaseName"
+                    ]
+                },
+                "DBSubnetGroupName": {
+                    "Ref": "DBSubnetGroup"
+                },
+                "Engine": {
+                    "Fn::FindInMap": [
+                        "Config",
+                        {
+                            "Ref": "DatabaseType"
+                        },
+                        "Engine"
+                    ]
+                },
+                "LicenseModel": {
+                    "Fn::FindInMap": [
+                        "Config",
+                        {
+                            "Ref": "DatabaseType"
+                        },
+                        "LicenseModel"
+                    ]
+                },
+                "MasterUsername": {
+                    "Ref": "DatabaseUsername"
+                },
+                "MasterUserPassword": {
+                    "Ref": "DatabasePassword"
+                },
+                "MultiAZ": true,
+                "Port": {
+                    "Fn::FindInMap": [
+                        "Config",
+                        {
+                            "Ref": "DatabaseType"
+                        },
+                        "Port"
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "Infa-PowerCenter-RDS-Instance"
+                    }
+                ],
+                "VPCSecurityGroups": [
+                    {
+                        "Ref": "DBSecurityGroup"
+                    }
+                ]
+            }
+        },
+        "InstanceSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Enable RDP and within VPC traffic",
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "22",
+                        "ToPort": "22",
+                        "CidrIp": {
+                            "Ref": "RemoteAccessCIDR"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "5000",
+                        "ToPort": "7000",
+                        "CidrIp": {
+                            "Ref": "RemoteAccessCIDR"
+                        }
+                    }
+                ]
+            }
+        },
+        "InstanceSecurityGroupIngress": {
+            "DependsOn": "InstanceSecurityGroup",
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "Properties": {
+                "IpProtocol": "-1",
+                "FromPort": "-1",
+                "ToPort": "-1",
+                "SourceSecurityGroupId": {
+                    "Fn::GetAtt": [
+                        "InstanceSecurityGroup",
+                        "GroupId"
+                    ]
+                },
+                "GroupId": {
+                    "Fn::GetAtt": [
+                        "InstanceSecurityGroup",
+                        "GroupId"
+                    ]
+                }
+            }
+        },
+
+
+
+
+
+
+        
+    },
+    "Outputs": {
+        "PowerCenterAgentIP": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "InfaMaster",
+                    "PublicIp"
+                ]
+            },
+            "Description": "Elastic IP address of the PowerCenter instance"
+        },
+        "InstanceID": {
+            "Description": "Instance ID of the newly created EC2 Master instance",
+            "Value": {
+                "Ref": "InfaMaster"
+            }
+        },
+        "AvailabilityZone": {
+            "Description": "Availability Zone of the newly created EC2 instances",
+            "Value": {
+                "Fn::GetAtt": [
+                    "InfaMaster",
+                    "AvailabilityZone"
+                ]
+            }
+        },
+        "PublicDNS": {
+            "Description": "Public DNS name of the newly created EC2 Master instance",
+            "Value": {
+                "Fn::GetAtt": [
+                    "InfaMaster",
+                    "PublicDnsName"
+                ]
+            }
+        },
+        "RDSInstance": {
+            "Value": {
+                "Ref": "RDSInstance"
+            },
+            "Description": "RDS Instance ID"
+        }
+    }
+}
