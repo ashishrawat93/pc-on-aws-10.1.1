@@ -242,10 +242,10 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "AMI": {
-                "INFORMATICAPCWINHVM": "10.1_Windows_Server_3-73eb10f0-ef93-494a-bff4-de78cbe56fcb-ami-82c04d95.3"
+                "INFORMATICAPCWINHVM": "Informatica-PowerCenter-10.1.0-WindowsServer2012R2-73eb10f0-ef93-494a-bff4-de78cbe56fcb-ami-611e3276.3"
             },
             "ap-northeast-1": {
-                "INFORMATICAPCWINHVM": "ami-26ce0647"
+                "INFORMATICAPCWINHVM": "ami-6b862d0a"
             },
             "ap-northeast-2": {
                 "INFORMATICAPCWINHVM": "TBD"
@@ -254,31 +254,31 @@
                 "INFORMATICAPCWINHVM": "TBD"
             },
             "ap-southeast-1": {
-                "INFORMATICAPCWINHVM": "ami-7d449c1e"
+                "INFORMATICAPCWINHVM": "ami-1444e777"
             },
             "ap-southeast-2": {
-                "INFORMATICAPCWINHVM": "ami-0a380e69"
+                "INFORMATICAPCWINHVM": "ami-ebb48b88"
             },
             "eu-central-1": {
-                "INFORMATICAPCWINHVM": "ami-dc08f8b3"
+                "INFORMATICAPCWINHVM": "ami-11a4617e"
             },
             "eu-west-1": {
-                "INFORMATICAPCWINHVM": "ami-2efa8a5d"
+                "INFORMATICAPCWINHVM": "ami-3db3e34e"
             },
             "sa-east-1": {
-                "INFORMATICAPCWINHVM": "ami-e877e684"
+                "INFORMATICAPCWINHVM": "ami-c872eda4"
             },
             "us-east-1": {
-                "INFORMATICAPCWINHVM": "ami-97325d80"
+                "INFORMATICAPCWINHVM": "ami-fc674feb"
             },
             "us-east-2": {
                 "INFORMATICAPCWINHVM": "TBD"
             },
             "us-west-1": {
-                "INFORMATICAPCWINHVM": "ami-92723ff2"
+                "INFORMATICAPCWINHVM": "ami-329fca52"
             },
             "us-west-2": {
-                "INFORMATICAPCWINHVM": "ami-cea87eae"
+                "INFORMATICAPCWINHVM": "ami-d42d8fb4"
             }
         },
         "Config": {

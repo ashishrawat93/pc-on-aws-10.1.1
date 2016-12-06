@@ -256,7 +256,7 @@
                 "INFORMATICAPCRHELHVM": "10.1_Linux_Server_2-b1c14762-8f3f-41df-ae2c-91adee508cf9-ami-8dd0589a.3"
             },
             "ap-northeast-1": {
-                "INFORMATICAPCRHELHVM": "ami-46985027"
+                "INFORMATICAPCRHELHVM": "ami-0677dc67"
             },
             "ap-northeast-2": {
                 "INFORMATICAPCRHELHVM": "TBD"
@@ -265,31 +265,31 @@
                 "INFORMATICAPCRHELHVM": "TBD"
             },
             "ap-southeast-1": {
-                "INFORMATICAPCRHELHVM": "ami-6a7ea609"
+                "INFORMATICAPCRHELHVM": "ami-9f55f6fc"
             },
             "ap-southeast-2": {
-                "INFORMATICAPCRHELHVM": "ami-a22016c1"
+                "INFORMATICAPCRHELHVM": "ami-03a59a60"
             },
             "eu-central-1": {
-                "INFORMATICAPCRHELHVM": "ami-f819e997"
+                "INFORMATICAPCRHELHVM": "ami-37a86d58"
             },
             "eu-west-1": {
-                "INFORMATICAPCRHELHVM": "ami-9a9dede9"
+                "INFORMATICAPCRHELHVM": "ami-83c999f0"
             },
             "sa-east-1": {
-                "INFORMATICAPCRHELHVM": "ami-1064f57c"
+                "INFORMATICAPCRHELHVM": "ami-281f8044"
             },
             "us-east-1": {
-                "INFORMATICAPCRHELHVM": "ami-42cda155"
+                "INFORMATICAPCRHELHVM": "ami-85e2ca92"
             },
             "us-east-2": {
                 "INFORMATICAPCRHELHVM": "TBD"
             },
             "us-west-1": {
-                "INFORMATICAPCRHELHVM": "ami-8e83ceee"
+                "INFORMATICAPCRHELHVM": "ami-5482d734"
             },
             "us-west-2": {
-                "INFORMATICAPCRHELHVM": "ami-71f72111"
+                "INFORMATICAPCRHELHVM": "ami-f713b197"
             }
         },
         "Config": {
@@ -315,6 +315,34 @@
         }
     },
     "Conditions": {
+        "EFSCreateCondition": {
+            "Fn::Or": [
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "us-east-1"
+                    ]
+                },
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "us-west-2"
+                    ]
+                },
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "eu-west-1"
+                    ]
+                }
+            ]
+        },
         "2NodeCondition": {
             "Fn::Or": [
                 {
@@ -777,6 +805,53 @@
                         "GroupId"
                     ]
                 }
+            }
+        },
+        "FileSystem": {
+            "Type": "AWS::EFS::FileSystem",
+            "Condition": "EFSCreateCondition",
+            "Properties": {
+                "PerformanceMode": "generalPurpose",
+                "FileSystemTags": [
+                    {
+                        "Key": "Name",
+                        "Value": "EFS"
+                    }
+                ]
+            }
+        },
+        "MountTarget1": {
+            "Type": "AWS::EFS::MountTarget",
+            "Condition": "EFSCreateCondition",
+            "Properties": {
+                "FileSystemId": {
+                    "Ref": "FileSystem"
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet1"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ]
+            }
+        },
+        "MountTarget2": {
+            "Type": "AWS::EFS::MountTarget",
+            "Condition": "EFSCreateCondition",
+            "Properties": {
+                "FileSystemId": {
+                    "Ref": "FileSystem"
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet2"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ]
             }
         },
         "InfaMasterEIPAddress": {
@@ -2585,5 +2660,5 @@
             },
             "Description": "RDS Instance ID"
         }
-    }    
+    }
 }
