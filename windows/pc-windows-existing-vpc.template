@@ -291,12 +291,14 @@
             },
             "Oracle-License-Included": {
                 "Engine": "oracle-se1",
+                "DB": "Oracle",
                 "LicenseModel": "license-included",
                 "AllocatedStorage": "50",
                 "Port": 1521
             },
             "Oracle-Bring-Your-Own-License": {
                 "Engine": "oracle-se1",
+                "DB": "Oracle",
                 "LicenseModel": "bring-your-own-license",
                 "AllocatedStorage": "50",
                 "Port": 1521
@@ -639,7 +641,13 @@
                                 "$env:SERVES_AS_GATEWAY=0 \n",
                                 "$env:DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                     "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:REPOSITORY_SERVICE_NAME=\"",
@@ -857,7 +865,13 @@
                                 "\n",
                                 "$env:DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                     "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:DB_ADDRESS=\"",
@@ -1078,7 +1092,13 @@
                                 "\n",
                                 "$env:DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:DB_ADDRESS=\"",
@@ -1299,7 +1319,13 @@
                                 "\n",
                                 "$env:DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:DB_ADDRESS=\"",
@@ -1520,7 +1546,13 @@
                                 "\n",
                                 "$env:DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:DB_ADDRESS=\"",
@@ -1741,7 +1773,13 @@
                                 "\n",
                                 "$env:DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:DB_ADDRESS=\"",
@@ -1962,7 +2000,13 @@
                                 "\n",
                                 "$env:DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:DB_ADDRESS=\"",
@@ -2183,7 +2227,13 @@
                                 "\n",
                                 "$env:DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:DB_ADDRESS=\"",

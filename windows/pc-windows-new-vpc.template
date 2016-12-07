@@ -1,4 +1,4 @@
-{
+F{
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "AWS Cloud Formation Template for deployment of Informatica Powercenter Version 10.1.0 on a VPC infrastructure. Informatica PowerCenter is deployed on RHEL 7.0. Amazon RDS instance in a private subnet is used as the repository for Informatica Domain Metadata. **WARNING** This template creates Amazon EC2 instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
     "Metadata": {
@@ -302,12 +302,14 @@
             },
             "Oracle-License-Included": {
                 "Engine": "oracle-se1",
+                "DB": "Oracle",
                 "LicenseModel": "license-included",
                 "AllocatedStorage": "50",
                 "Port": 1521
             },
             "Oracle-Bring-Your-Own-License": {
                 "Engine": "oracle-se1",
+                "DB": "Oracle",
                 "LicenseModel": "bring-your-own-license",
                 "AllocatedStorage": "50",
                 "Port": 1521
@@ -315,7 +317,6 @@
         }
     },
     "Conditions": {
-        
         "2NodeCondition": {
             "Fn::Or": [
                 {
@@ -780,7 +781,7 @@
                 }
             }
         },
-       "InfaMasterEIPAddress": {
+        "InfaMasterEIPAddress": {
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",
@@ -877,7 +878,13 @@
                                 "$env:SERVES_AS_GATEWAY=0 \n",
                                 "$env:DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:REPOSITORY_SERVICE_NAME=\"",
@@ -1095,7 +1102,13 @@
                                 "\n",
                                 "$env:DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:DB_ADDRESS=\"",
@@ -1316,7 +1329,13 @@
                                 "\n",
                                 "$env:DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:DB_ADDRESS=\"",
@@ -1537,7 +1556,13 @@
                                 "\n",
                                 "$env:DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:DB_ADDRESS=\"",
@@ -1758,7 +1783,13 @@
                                 "\n",
                                 "$env:DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:DB_ADDRESS=\"",
@@ -1979,7 +2010,13 @@
                                 "\n",
                                 "$env:DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:DB_ADDRESS=\"",
@@ -2200,7 +2237,13 @@
                                 "\n",
                                 "$env:DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:DB_ADDRESS=\"",
@@ -2421,7 +2464,13 @@
                                 "\n",
                                 "$env:DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:DB_ADDRESS=\"",
@@ -2545,7 +2594,7 @@
                     "Timeout": "PT2H30M"
                 }
             }
-        }        
+        }
     },
     "Outputs": {
         "PowerCenterAgentIP": {

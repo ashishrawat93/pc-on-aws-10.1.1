@@ -242,7 +242,7 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "AMI": {
-                "INFORMATICAPCRHELHVM": "10.1_Linux_Server_2-b1c14762-8f3f-41df-ae2c-91adee508cf9-ami-8dd0589a.3"
+                "INFORMATICAPCRHELHVM": "Informatica-PowerCenter-10.1.0-RHEL7.0-b1c14762-8f3f-41df-ae2c-91adee508cf9-ami-1bbc950c.3"
             },
             "ap-northeast-1": {
                 "INFORMATICAPCRHELHVM": "ami-0677dc67"
@@ -269,7 +269,7 @@
                 "INFORMATICAPCRHELHVM": "ami-281f8044"
             },
             "us-east-1": {
-                "INFORMATICAPCRHELHVM": "ami-85e2ca92"
+                "INFORMATICAPCRHELHVM": "ami-1bbc950c"
             },
             "us-east-2": {
                 "INFORMATICAPCRHELHVM": "TBD"
@@ -291,12 +291,14 @@
             },
             "Oracle-License-Included": {
                 "Engine": "oracle-se1",
+                "DB": "Oracle",
                 "LicenseModel": "license-included",
                 "AllocatedStorage": "50",
                 "Port": 1521
             },
             "Oracle-Bring-Your-Own-License": {
                 "Engine": "oracle-se1",
+                "DB": "Oracle",
                 "LicenseModel": "bring-your-own-license",
                 "AllocatedStorage": "50",
                 "Port": 1521
@@ -714,7 +716,13 @@
                                 "export SERVES_AS_GATEWAY=0 \n",
                                 "export DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "export REPOSITORY_SERVICE_NAME=\"",
@@ -932,7 +940,13 @@
                                 "\n",
                                 "export DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "export DB_ADDRESS=\"",
@@ -1153,7 +1167,13 @@
                                 "\n",
                                 "export DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "export DB_ADDRESS=\"",
@@ -1374,7 +1394,13 @@
                                 "\n",
                                 "export DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "export DB_ADDRESS=\"",
@@ -1595,7 +1621,13 @@
                                 "\n",
                                 "export DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "export DB_ADDRESS=\"",
@@ -1816,7 +1848,13 @@
                                 "\n",
                                 "export DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "export DB_ADDRESS=\"",
@@ -2037,7 +2075,13 @@
                                 "\n",
                                 "export DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "export DB_ADDRESS=\"",
@@ -2258,7 +2302,13 @@
                                 "\n",
                                 "export DB_TYPE=\"",
                                 {
-                                    "Ref": "DatabaseType"
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
                                 },
                                 "\"\n",
                                 "export DB_ADDRESS=\"",
