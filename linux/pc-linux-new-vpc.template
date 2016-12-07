@@ -951,6 +951,14 @@
                                 "export CREATE_DOMAIN=1 \n",
                                 "export JOIN_DOMAIN=0 \n",
                                 "export SERVES_AS_GATEWAY=0 \n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Ref": "EFSCreateCondition"
+                                },
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
                                 "export DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -1175,9 +1183,18 @@
                                 "export JOIN_DOMAIN=1 \n",
                                 "export SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Fn::If": ["EFSCreateCondition","true","false"]
+                                },
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"",
                                 "export DB_TYPE=\"",
                                 {
-                                                                        "Fn::FindInMap": [
+                                    "Fn::FindInMap": [
                                         "Config",
                                         {
                                             "Ref": "DatabaseType"
@@ -1402,6 +1419,11 @@
                                 "export JOIN_DOMAIN=1 \n",
                                 "export SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"",
                                 "export DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -1629,6 +1651,11 @@
                                 "export JOIN_DOMAIN=1 \n",
                                 "export SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"",
                                 "export DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -1856,6 +1883,11 @@
                                 "export JOIN_DOMAIN=1 \n",
                                 "export SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"",
                                 "export DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -2083,6 +2115,11 @@
                                 "export JOIN_DOMAIN=1 \n",
                                 "export SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"",
                                 "export DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -2310,6 +2347,11 @@
                                 "export JOIN_DOMAIN=1 \n",
                                 "export SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"",
                                 "export DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -2537,6 +2579,11 @@
                                 "export JOIN_DOMAIN=1 \n",
                                 "export SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"",
                                 "export DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [

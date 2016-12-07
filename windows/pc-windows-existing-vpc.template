@@ -639,6 +639,11 @@
                                 "$env:CREATE_DOMAIN=1 \n",
                                 "$env:JOIN_DOMAIN=0 \n",
                                 "$env:SERVES_AS_GATEWAY=0 \n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"",
                                 "$env:DB_TYPE=\"",
                                 {
                                      "Fn::FindInMap": [
@@ -863,6 +868,11 @@
                                 "$env:JOIN_DOMAIN=1 \n",
                                 "$env:SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"",
                                 "$env:DB_TYPE=\"",
                                 {
                                      "Fn::FindInMap": [
@@ -1090,6 +1100,11 @@
                                 "$env:JOIN_DOMAIN=1 \n",
                                 "$env:SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"",
                                 "$env:DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -1317,6 +1332,11 @@
                                 "$env:JOIN_DOMAIN=1 \n",
                                 "$env:SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"",
                                 "$env:DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -1544,6 +1564,11 @@
                                 "$env:JOIN_DOMAIN=1 \n",
                                 "$env:SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"",
                                 "$env:DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -1771,6 +1796,11 @@
                                 "$env:JOIN_DOMAIN=1 \n",
                                 "$env:SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"",
                                 "$env:DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -1998,6 +2028,11 @@
                                 "$env:JOIN_DOMAIN=1 \n",
                                 "$env:SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"",
                                 "$env:DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -2225,6 +2260,11 @@
                                 "$env:JOIN_DOMAIN=1 \n",
                                 "$env:SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"",
                                 "$env:DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
