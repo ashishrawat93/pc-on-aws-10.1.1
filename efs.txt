@@ -1,0 +1,44 @@
+"FileSystem": {
+            "Type": "AWS::EFS::FileSystem",
+            "Properties": {
+                "PerformanceMode": "generalPurpose",
+                "FileSystemTags": [
+                    {
+                        "Key": "Name",
+                        "Value":"EFS"
+                    }
+                ]
+            }
+        },
+        "MountTarget1": {
+            "Type": "AWS::EFS::MountTarget",
+            "Properties": {
+                "FileSystemId": {
+                    "Ref": "FileSystem"
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet1ID"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ]
+            }
+        },
+        "MountTarget2": {
+            "Type": "AWS::EFS::MountTarget",
+            "Properties": {
+                "FileSystemId": {
+                    "Ref": "FileSystem"
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet2ID"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ]
+            }
+        },

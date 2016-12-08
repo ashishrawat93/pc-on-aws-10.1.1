@@ -254,7 +254,7 @@
                 "INFORMATICAPCRHELHVM": "TBD"
             },
             "ap-southeast-1": {
-                "INFORMATICAPCRHELHVM": "ami-9f55f6fc"
+                "INFORMATICAPCRHELHVM": "ami-c6963aa5"
             },
             "ap-southeast-2": {
                 "INFORMATICAPCRHELHVM": "ami-03a59a60"
@@ -269,7 +269,7 @@
                 "INFORMATICAPCRHELHVM": "ami-281f8044"
             },
             "us-east-1": {
-                "INFORMATICAPCRHELHVM": "ami-1bbc950c"
+                "INFORMATICAPCRHELHVM": "ami-0ecbcd19"
             },
             "us-east-2": {
                 "INFORMATICAPCRHELHVM": "TBD"
@@ -716,7 +716,11 @@
                                 "export SERVES_AS_GATEWAY=0 \n",
                                 "export EFS_CREATE_CONDITION=\"",
                                 {
-                                    "Fn::If": ["EFSCreateCondition","true","false"]
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        "1",
+                                        "0"
+                                    ]
                                 },
                                 "\"\n",
                                 "export AWS_REGION=\"",
@@ -948,6 +952,15 @@
                                 "export JOIN_DOMAIN=1 \n",
                                 "export SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
                                 "export AWS_REGION=\"",
                                 {
                                     "Ref": "AWS::Region"
@@ -1180,6 +1193,15 @@
                                 "export JOIN_DOMAIN=1 \n",
                                 "export SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
                                 "export AWS_REGION=\"",
                                 {
                                     "Ref": "AWS::Region"
@@ -1412,6 +1434,15 @@
                                 "export JOIN_DOMAIN=1 \n",
                                 "export SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
                                 "export AWS_REGION=\"",
                                 {
                                     "Ref": "AWS::Region"
@@ -1644,6 +1675,15 @@
                                 "export JOIN_DOMAIN=1 \n",
                                 "export SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
                                 "export AWS_REGION=\"",
                                 {
                                     "Ref": "AWS::Region"
@@ -1876,6 +1916,15 @@
                                 "export JOIN_DOMAIN=1 \n",
                                 "export SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
                                 "export AWS_REGION=\"",
                                 {
                                     "Ref": "AWS::Region"
@@ -2108,6 +2157,15 @@
                                 "export JOIN_DOMAIN=1 \n",
                                 "export SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
                                 "export AWS_REGION=\"",
                                 {
                                     "Ref": "AWS::Region"
@@ -2340,6 +2398,15 @@
                                 "export JOIN_DOMAIN=1 \n",
                                 "export SERVES_AS_GATEWAY=1",
                                 "\n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
                                 "export AWS_REGION=\"",
                                 {
                                     "Ref": "AWS::Region"
