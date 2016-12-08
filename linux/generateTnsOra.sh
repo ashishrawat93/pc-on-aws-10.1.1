@@ -1,0 +1,14 @@
+SERVICENAME=$1
+HOSTNAME=$2
+PORT=$3
+TNSPATH=$TNS_ADMIN"/tnsnames.ora"
+
+sed -i s/\<SERVICENAME\>/$SERVICENAME/g $TNSPATH
+
+
+sed -i s/\<HOSTNAME\>/$HOSTNAME/g $TNSPATH
+
+
+sed -i s/\<PORT\>/$PORT/g $TNSPATH
+
+

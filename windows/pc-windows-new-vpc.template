@@ -1,4 +1,4 @@
-F{
+{
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "AWS Cloud Formation Template for deployment of Informatica Powercenter Version 10.1.0 on a VPC infrastructure. Informatica PowerCenter is deployed on RHEL 7.0. Amazon RDS instance in a private subnet is used as the repository for Informatica Domain Metadata. **WARNING** This template creates Amazon EC2 instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
     "Metadata": {
@@ -876,11 +876,16 @@ F{
                                 "$env:CREATE_DOMAIN=1 \n",
                                 "$env:JOIN_DOMAIN=0 \n",
                                 "$env:SERVES_AS_GATEWAY=0 \n",
-                                "export AWS_REGION=\"",
+                                "$env:DOMAIN_USER_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainUsername"
+                                },
+                                "\"\n",
+                                "$env:AWS_REGION=\"",
                                 {
                                     "Ref": "AWS::Region"
                                 },
-                                "\"",
+                                "\"\n",
                                 "$env:DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -1105,11 +1110,16 @@ F{
                                 "$env:JOIN_DOMAIN=1 \n",
                                 "$env:SERVES_AS_GATEWAY=1",
                                 "\n",
-                                "export AWS_REGION=\"",
+                                "$env:DOMAIN_USER_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainUsername"
+                                },
+                                "\"\n",
+                                "$env:AWS_REGION=\"",
                                 {
                                     "Ref": "AWS::Region"
                                 },
-                                "\"",
+                                "\"\n",
                                 "$env:DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -1337,11 +1347,16 @@ F{
                                 "$env:JOIN_DOMAIN=1 \n",
                                 "$env:SERVES_AS_GATEWAY=1",
                                 "\n",
-                                "export AWS_REGION=\"",
+                                "$env:DOMAIN_USER_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainUsername"
+                                },
+                                "\"\n",
+                                "$env:AWS_REGION=\"",
                                 {
                                     "Ref": "AWS::Region"
                                 },
-                                "\"",
+                                "\"\n",
                                 "$env:DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -1569,11 +1584,16 @@ F{
                                 "$env:JOIN_DOMAIN=1 \n",
                                 "$env:SERVES_AS_GATEWAY=1",
                                 "\n",
-                                "export AWS_REGION=\"",
+                                "$env:DOMAIN_USER_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainUsername"
+                                },
+                                "\"\n",
+                                "$env:AWS_REGION=\"",
                                 {
                                     "Ref": "AWS::Region"
                                 },
-                                "\"",
+                                "\"\n",
                                 "$env:DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -1801,11 +1821,16 @@ F{
                                 "$env:JOIN_DOMAIN=1 \n",
                                 "$env:SERVES_AS_GATEWAY=1",
                                 "\n",
-                                "export AWS_REGION=\"",
+                                "$env:DOMAIN_USER_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainUsername"
+                                },
+                                "\"\n",
+                                "$env:AWS_REGION=\"",
                                 {
                                     "Ref": "AWS::Region"
                                 },
-                                "\"",
+                                "\"\n",
                                 "$env:DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -2033,11 +2058,16 @@ F{
                                 "$env:JOIN_DOMAIN=1 \n",
                                 "$env:SERVES_AS_GATEWAY=1",
                                 "\n",
-                                "export AWS_REGION=\"",
+                                "$env:DOMAIN_USER_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainUsername"
+                                },
+                                "\"\n",
+                                "$env:AWS_REGION=\"",
                                 {
                                     "Ref": "AWS::Region"
                                 },
-                                "\"",
+                                "\"\n",
                                 "$env:DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -2265,11 +2295,16 @@ F{
                                 "$env:JOIN_DOMAIN=1 \n",
                                 "$env:SERVES_AS_GATEWAY=1",
                                 "\n",
-                                "export AWS_REGION=\"",
+                                "$env:DOMAIN_USER_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainUsername"
+                                },
+                                "\"\n",
+                                "$env:AWS_REGION=\"",
                                 {
                                     "Ref": "AWS::Region"
                                 },
-                                "\"",
+                                "\"\n",
                                 "$env:DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
@@ -2497,11 +2532,16 @@ F{
                                 "$env:JOIN_DOMAIN=1 \n",
                                 "$env:SERVES_AS_GATEWAY=1",
                                 "\n",
-                                "export AWS_REGION=\"",
+                                "$env:DOMAIN_USER_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainUsername"
+                                },
+                                "\"\n",
+                                "$env:AWS_REGION=\"",
                                 {
                                     "Ref": "AWS::Region"
                                 },
-                                "\"",
+                                "\"\n",
                                 "$env:DB_TYPE=\"",
                                 {
                                     "Fn::FindInMap": [
