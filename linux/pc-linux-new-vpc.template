@@ -161,9 +161,6 @@
         },
         "InformaticaDomainUsername": {
             "Description": "Username for the Informatica Domain",
-            "AllowedValues": [
-                "Administrator"
-            ],
             "Default": "Administrator",
             "MaxLength": "32",
             "MinLength": "8",
@@ -871,6 +868,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1065,6 +1067,10 @@
                                 "\"\n",
                                 "export JOIN_NODE_NAME=\"Informatica_NotApplicable_NodeName\" \n",
                                 "export DOMAIN_HOST_NAME=\"$HOSTNAME\" \n",
+                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
                                 {
@@ -1116,6 +1122,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1134,6 +1145,24 @@
                                             {
                                                 "Ref": "EncryptionKeyPhrase"
                                             }
+                                        ]
+                                    ]
+                                }
+                            },
+                            "mount_it": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                            {
+                                                "Ref": "FileSystem"
+                                            },
+                                            ".efs.",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
                                         ]
                                     ]
                                 }
@@ -1311,6 +1340,10 @@
                                     ]
                                 },
                                 "\"\n",
+                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
                                 {
@@ -1362,6 +1395,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1380,6 +1418,24 @@
                                             {
                                                 "Ref": "EncryptionKeyPhrase"
                                             }
+                                        ]
+                                    ]
+                                }
+                            },
+                            "mount_it": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                            {
+                                                "Ref": "FileSystem"
+                                            },
+                                            ".efs.",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
                                         ]
                                     ]
                                 }
@@ -1557,6 +1613,10 @@
                                     ]
                                 },
                                 "\"\n",
+                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
                                 {
@@ -1608,6 +1668,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1628,6 +1693,24 @@
                                             }
                                         ]
                                     ]
+                                },
+                                "mount_it": {
+                                    "command": {
+                                        "Fn::Join": [
+                                            "",
+                                            [
+                                                "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                                {
+                                                    "Ref": "FileSystem"
+                                                },
+                                                ".efs.",
+                                                {
+                                                    "Ref": "AWS::Region"
+                                                },
+                                                ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                            ]
+                                        ]
+                                    }
                                 }
                             }
                         }
@@ -1803,6 +1886,10 @@
                                     ]
                                 },
                                 "\"\n",
+                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
                                 {
@@ -1854,6 +1941,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1872,6 +1964,24 @@
                                             {
                                                 "Ref": "EncryptionKeyPhrase"
                                             }
+                                        ]
+                                    ]
+                                }
+                            },
+                            "mount_it": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                            {
+                                                "Ref": "FileSystem"
+                                            },
+                                            ".efs.",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
                                         ]
                                     ]
                                 }
@@ -2049,6 +2159,10 @@
                                     ]
                                 },
                                 "\"\n",
+                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
                                 {
@@ -2100,6 +2214,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -2118,6 +2237,24 @@
                                             {
                                                 "Ref": "EncryptionKeyPhrase"
                                             }
+                                        ]
+                                    ]
+                                }
+                            },
+                            "mount_it": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                            {
+                                                "Ref": "FileSystem"
+                                            },
+                                            ".efs.",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
                                         ]
                                     ]
                                 }
@@ -2295,6 +2432,10 @@
                                     ]
                                 },
                                 "\"\n",
+                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
                                 {
@@ -2346,6 +2487,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -2364,6 +2510,24 @@
                                             {
                                                 "Ref": "EncryptionKeyPhrase"
                                             }
+                                        ]
+                                    ]
+                                }
+                            },
+                            "mount_it": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                            {
+                                                "Ref": "FileSystem"
+                                            },
+                                            ".efs.",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
                                         ]
                                     ]
                                 }
@@ -2541,6 +2705,10 @@
                                     ]
                                 },
                                 "\"\n",
+                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
                                 {
@@ -2592,6 +2760,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -2610,6 +2783,24 @@
                                             {
                                                 "Ref": "EncryptionKeyPhrase"
                                             }
+                                        ]
+                                    ]
+                                }
+                            },
+                            "mount_it": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                            {
+                                                "Ref": "FileSystem"
+                                            },
+                                            ".efs.",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
                                         ]
                                     ]
                                 }
@@ -2787,6 +2978,10 @@
                                     ]
                                 },
                                 "\"\n",
+                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
                                 {

@@ -153,9 +153,6 @@
         },
         "InformaticaDomainUsername": {
             "Description": "Username for the Informatica Domain.",
-            "AllowedValues": [
-                "Administrator"
-            ],
             "Default": "Administrator",
             "MaxLength": "32",
             "MinLength": "8",
@@ -634,6 +631,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -659,1994 +661,2189 @@
                                         ]
                                     ]
                                 }
-                            }
-                        }
-                    },
-                    "efsmount": {
-                        "mount_it": {
-                            "command": {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                            },
+                            "mount_it": {
+                                "command": {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
                                         {
-                                            "Ref": "FileSystem"
+                                            "Fn::Join": [
+                                                "",
+                                                [
+                                                    "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                                    {
+                                                        "Ref": "FileSystem"
+                                                    },
+                                                    ".efs.",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                ]
+                                            ]
                                         },
-                                        ".efs.",
-                                        {
-                                            "Ref": "AWS::Region"
-                                        },
-                                        ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                        "echo \"EFS Not Supported\""
+                                    
                                     ]
-                                ]
+                                }
                             }
                         }
                     }
                 }
-            }
-        },
-        "Properties": {
-            "Tags": [
-                {
-                    "Key": "Name",
-                    "Value": {
+            },
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "InformaticaNodeName"
+                                    },
+                                    "Node1"
+                                ]
+                            ]
+                        }
+                    }
+                ],
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSAMIRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "INFORMATICAPCRHELHVM"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet1ID"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "InstanceType": {
+                    "Ref": "PowerCenterInstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyPairName"
+                },
+                "UserData": {
+                    "Fn::Base64": {
                         "Fn::Join": [
                             "",
                             [
+                                "#!/bin/bash \n",
+                                "echo \"Initializing variables\" \n",
+                                "export CREATE_DOMAIN=1 \n",
+                                "export JOIN_DOMAIN=0 \n",
+                                "export SERVES_AS_GATEWAY=0 \n",
+                                "export DOMAIN_USER_NAME=\"",
                                 {
-                                    "Ref": "InformaticaNodeName"
+                                    "Ref": "InformaticaDomainUsername"
                                 },
-                                "Node1"
+                                "\"\n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"\n",
+                                "export DB_TYPE=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
+                                },
+                                "\"\n",
+                                "export REPOSITORY_SERVICE_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "RepositoryServiceName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export INTEGRATION_SERVICE_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "IntegrationServiceName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_ADDRESS=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Address"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_PORT=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Port"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_UNAME=\"",
+                                {
+                                    "Ref": "DatabaseUsername"
+                                },
+                                "\"\n",
+                                "export DB_SERVICENAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "DatabaseName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DOMAIN_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainName"
+                                },
+                                "\"\n",
+                                "export NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node1"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "export GRID_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "GridName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export REPO_USER=\"",
+                                {
+                                    "Ref": "DatabaseUsername"
+                                },
+                                "\"\n",
+                                "export INFORMATICA_SERVICES=\"2",
+                                "\"\n",
+                                "export JOIN_NODE_NAME=\"Informatica_NotApplicable_NodeName\" \n",
+                                "export DOMAIN_HOST_NAME=\"$HOSTNAME\" \n",
+                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "sudo chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "echo \"running cfn init\" \n",
+                                "/opt/aws/bin/cfn-init --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaMaster ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "echo \"running cfn signal\" \n",
+                                "/opt/aws/bin/cfn-signal -e $? ",
+                                " --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaMaster ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n"
                             ]
                         ]
                     }
                 }
-            ],
-            "ImageId": {
-                "Fn::FindInMap": [
-                    "AWSAMIRegionMap",
-                    {
-                        "Ref": "AWS::Region"
-                    },
-                    "INFORMATICAPCRHELHVM"
-                ]
             },
-            "SubnetId": {
-                "Ref": "PublicSubnet1ID"
-            },
-            "SecurityGroupIds": [
-                {
-                    "Ref": "InstanceSecurityGroup"
-                }
-            ],
-            "InstanceType": {
-                "Ref": "PowerCenterInstanceType"
-            },
-            "KeyName": {
-                "Ref": "KeyPairName"
-            },
-            "UserData": {
-                "Fn::Base64": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "#!/bin/bash \n",
-                            "echo \"Initializing variables\" \n",
-                            "export CREATE_DOMAIN=1 \n",
-                            "export JOIN_DOMAIN=0 \n",
-                            "export SERVES_AS_GATEWAY=0 \n",
-                            "export DOMAIN_USER_NAME=\"",
-                            {
-                                "Ref": "InformaticaDomainUsername"
-                            },
-                            "\"\n",
-                            "export EFS_CREATE_CONDITION=\"",
-                            {
-                                "Fn::If": [
-                                    "EFSCreateCondition",
-                                    "1",
-                                    "0"
-                                ]
-                            },
-                            "\"\n",
-                            "export AWS_REGION=\"",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\"\n",
-                            "export DB_TYPE=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    {
-                                        "Ref": "DatabaseType"
-                                    },
-                                    "DB"
-                                ]
-                            },
-                            "\"\n",
-                            "export REPOSITORY_SERVICE_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "RepositoryServiceName"
-                                ]
-                            },
-                            "\"\n",
-                            "export INTEGRATION_SERVICE_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "IntegrationServiceName"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_ADDRESS=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "RDSInstance",
-                                    "Endpoint.Address"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_PORT=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "RDSInstance",
-                                    "Endpoint.Port"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_UNAME=\"",
-                            {
-                                "Ref": "DatabaseUsername"
-                            },
-                            "\"\n",
-                            "export DB_SERVICENAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "DatabaseName"
-                                ]
-                            },
-                            "\"\n",
-                            "export DOMAIN_NAME=\"",
-                            {
-                                "Ref": "InformaticaDomainName"
-                            },
-                            "\"\n",
-                            "export NODE_NAME=\"",
-                            {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        {
-                                            "Ref": "InformaticaNodeName"
-                                        },
-                                        "Node1"
-                                    ]
-                                ]
-                            },
-                            "\"\n",
-                            "export GRID_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "GridName"
-                                ]
-                            },
-                            "\"\n",
-                            "export REPO_USER=\"",
-                            {
-                                "Ref": "DatabaseUsername"
-                            },
-                            "\"\n",
-                            "export INFORMATICA_SERVICES=\"2",
-                            "\"\n",
-                            "export JOIN_NODE_NAME=\"Informatica_NotApplicable_NodeName\" \n",
-                            "export DOMAIN_HOST_NAME=\"$HOSTNAME\" \n",
-                            "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
-                            "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
-                            "echo \"running cfn init\" \n",
-                            "/opt/aws/bin/cfn-init --stack ",
-                            {
-                                "Ref": "AWS::StackId"
-                            },
-                            " --resource InfaMaster ",
-                            " --region ",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\n",
-                            "echo \"running cfn signal\" \n",
-                            "/opt/aws/bin/cfn-signal -e $? ",
-                            " --stack ",
-                            {
-                                "Ref": "AWS::StackId"
-                            },
-                            " --resource InfaMaster ",
-                            " --region ",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\n"
-                        ]
-                    ]
+            "CreationPolicy": {
+                "ResourceSignal": {
+                    "Timeout": "PT3H"
                 }
             }
         },
-        "CreationPolicy": {
-            "ResourceSignal": {
-                "Timeout": "PT3H"
+        "InfaNode2EIPAddress": {
+            "Condition": "2NodeCondition",
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc",
+                "InstanceId": {
+                    "Ref": "InfaNode2"
+                }
             }
-        }
-    },
-    "InfaNode2EIPAddress": {
-        "Condition": "2NodeCondition",
-        "Type": "AWS::EC2::EIP",
-        "Properties": {
-            "Domain": "vpc",
-            "InstanceId": {
-                "Ref": "InfaNode2"
-            }
-        }
-    },
-    "InfaNode2": {
-        "Condition": "2NodeCondition",
-        "DependsOn": "InfaMaster",
-        "Type": "AWS::EC2::Instance",
-        "Metadata": {
-            "AWS::CloudFormation::Init": {
-                "config": {
-                    "commands": {
-                        "1-setup": {
-                            "command": {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ",
-                                        {
-                                            "Ref": "InformaticaDomainPassword"
-                                        },
-                                        " ",
-                                        {
-                                            "Ref": "DatabasePassword"
-                                        },
-                                        " null ",
-                                        {
-                                            "Ref": "EncryptionKeyPhrase"
-                                        }
+        },
+        "InfaNode2": {
+            "Condition": "2NodeCondition",
+            "DependsOn": "InfaMaster",
+            "Type": "AWS::EC2::Instance",
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
+                            }
+                        },
+                        "commands": {
+                            "1-setup": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ",
+                                            {
+                                                "Ref": "InformaticaDomainPassword"
+                                            },
+                                            " ",
+                                            {
+                                                "Ref": "DatabasePassword"
+                                            },
+                                            " null ",
+                                            {
+                                                "Ref": "EncryptionKeyPhrase"
+                                            }
+                                        ]
                                     ]
-                                ]
+                                }
+                            },
+                            "mount_it": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                            {
+                                                "Ref": "FileSystem"
+                                            },
+                                            ".efs.",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                        ]
+                                    ]
+                                }
                             }
                         }
                     }
                 }
-            }
-        },
-        "Properties": {
-            "Tags": [
-                {
-                    "Key": "Name",
-                    "Value": {
+            },
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "InformaticaNodeName"
+                                    },
+                                    "Node2"
+                                ]
+                            ]
+                        }
+                    }
+                ],
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSAMIRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "INFORMATICAPCRHELHVM"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet2ID"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "InstanceType": {
+                    "Ref": "PowerCenterInstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyPairName"
+                },
+                "UserData": {
+                    "Fn::Base64": {
                         "Fn::Join": [
                             "",
                             [
+                                "#!/bin/bash \n",
+                                "echo \"Initializing variables\" \n",
+                                "export SINGLE_NODE=0 \n",
+                                "export CREATE_DOMAIN=0 \n",
+                                "export JOIN_DOMAIN=1 \n",
+                                "export SERVES_AS_GATEWAY=1",
+                                "\n",
+                                "export DOMAIN_USER_NAME=\"",
                                 {
-                                    "Ref": "InformaticaNodeName"
+                                    "Ref": "InformaticaDomainUsername"
                                 },
-                                "Node2"
+                                "\"\n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"\n",
+                                "export DB_TYPE=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_ADDRESS=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Address"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_PORT=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Port"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_UNAME=\"",
+                                {
+                                    "Ref": "DatabaseUsername"
+                                },
+                                "\"\n",
+                                "export DB_SERVICENAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "DatabaseName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DOMAIN_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainName"
+                                },
+                                "\"\n",
+                                "export NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node1"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "export GRID_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "GridName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export JOIN_NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node2"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "export INTEGRATION_SERVICE_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "IntegrationServiceName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DOMAIN_HOST_NAME=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "InfaMaster",
+                                        "PrivateIp"
+                                    ]
+                                },
+                                "\"\n",
+                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "echo \"running cfn init\" \n",
+                                "/opt/aws/bin/cfn-init --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode2 ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "echo \"running cfn signal\" \n",
+                                "/opt/aws/bin/cfn-signal -e $? ",
+                                " --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode2 ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n"
                             ]
                         ]
                     }
                 }
-            ],
-            "ImageId": {
-                "Fn::FindInMap": [
-                    "AWSAMIRegionMap",
-                    {
-                        "Ref": "AWS::Region"
-                    },
-                    "INFORMATICAPCRHELHVM"
-                ]
             },
-            "SubnetId": {
-                "Ref": "PublicSubnet2ID"
-            },
-            "SecurityGroupIds": [
-                {
-                    "Ref": "InstanceSecurityGroup"
-                }
-            ],
-            "InstanceType": {
-                "Ref": "PowerCenterInstanceType"
-            },
-            "KeyName": {
-                "Ref": "KeyPairName"
-            },
-            "UserData": {
-                "Fn::Base64": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "#!/bin/bash \n",
-                            "echo \"Initializing variables\" \n",
-                            "export SINGLE_NODE=0 \n",
-                            "export CREATE_DOMAIN=0 \n",
-                            "export JOIN_DOMAIN=1 \n",
-                            "export SERVES_AS_GATEWAY=1",
-                            "\n",
-                            "export DOMAIN_USER_NAME=\"",
-                            {
-                                "Ref": "InformaticaDomainUsername"
-                            },
-                            "\"\n",
-                            "export EFS_CREATE_CONDITION=\"",
-                            {
-                                "Fn::If": [
-                                    "EFSCreateCondition",
-                                    "1",
-                                    "0"
-                                ]
-                            },
-                            "\"\n",
-                            "export AWS_REGION=\"",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\"\n",
-                            "export DB_TYPE=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    {
-                                        "Ref": "DatabaseType"
-                                    },
-                                    "DB"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_ADDRESS=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "RDSInstance",
-                                    "Endpoint.Address"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_PORT=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "RDSInstance",
-                                    "Endpoint.Port"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_UNAME=\"",
-                            {
-                                "Ref": "DatabaseUsername"
-                            },
-                            "\"\n",
-                            "export DB_SERVICENAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "DatabaseName"
-                                ]
-                            },
-                            "\"\n",
-                            "export DOMAIN_NAME=\"",
-                            {
-                                "Ref": "InformaticaDomainName"
-                            },
-                            "\"\n",
-                            "export NODE_NAME=\"",
-                            {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        {
-                                            "Ref": "InformaticaNodeName"
-                                        },
-                                        "Node1"
-                                    ]
-                                ]
-                            },
-                            "\"\n",
-                            "export GRID_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "GridName"
-                                ]
-                            },
-                            "\"\n",
-                            "export JOIN_NODE_NAME=\"",
-                            {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        {
-                                            "Ref": "InformaticaNodeName"
-                                        },
-                                        "Node2"
-                                    ]
-                                ]
-                            },
-                            "\"\n",
-                            "export INTEGRATION_SERVICE_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "IntegrationServiceName"
-                                ]
-                            },
-                            "\"\n",
-                            "export DOMAIN_HOST_NAME=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "InfaMaster",
-                                    "PrivateIp"
-                                ]
-                            },
-                            "\"\n",
-                            "echo \"running cfn init\" \n",
-                            "/opt/aws/bin/cfn-init --stack ",
-                            {
-                                "Ref": "AWS::StackId"
-                            },
-                            " --resource InfaNode2 ",
-                            " --region ",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\n",
-                            "echo \"running cfn signal\" \n",
-                            "/opt/aws/bin/cfn-signal -e $? ",
-                            " --stack ",
-                            {
-                                "Ref": "AWS::StackId"
-                            },
-                            " --resource InfaNode2 ",
-                            " --region ",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\n"
-                        ]
-                    ]
+            "CreationPolicy": {
+                "ResourceSignal": {
+                    "Timeout": "PT2H30M"
                 }
             }
         },
-        "CreationPolicy": {
-            "ResourceSignal": {
-                "Timeout": "PT2H30M"
+        "InfaNode3EIPAddress": {
+            "Condition": "4NodeCondition",
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc",
+                "InstanceId": {
+                    "Ref": "InfaNode3"
+                }
             }
-        }
-    },
-    "InfaNode3EIPAddress": {
-        "Condition": "4NodeCondition",
-        "Type": "AWS::EC2::EIP",
-        "Properties": {
-            "Domain": "vpc",
-            "InstanceId": {
-                "Ref": "InfaNode3"
-            }
-        }
-    },
-    "InfaNode3": {
-        "Condition": "4NodeCondition",
-        "DependsOn": "InfaMaster",
-        "Type": "AWS::EC2::Instance",
-        "Metadata": {
-            "AWS::CloudFormation::Init": {
-                "config": {
-                    "commands": {
-                        "1-setup": {
-                            "command": {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ",
-                                        {
-                                            "Ref": "InformaticaDomainPassword"
-                                        },
-                                        " ",
-                                        {
-                                            "Ref": "DatabasePassword"
-                                        },
-                                        " null ",
-                                        {
-                                            "Ref": "EncryptionKeyPhrase"
-                                        }
+        },
+        "InfaNode3": {
+            "Condition": "4NodeCondition",
+            "DependsOn": "InfaMaster",
+            "Type": "AWS::EC2::Instance",
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
+                            }
+                        },
+                        "commands": {
+                            "1-setup": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ",
+                                            {
+                                                "Ref": "InformaticaDomainPassword"
+                                            },
+                                            " ",
+                                            {
+                                                "Ref": "DatabasePassword"
+                                            },
+                                            " null ",
+                                            {
+                                                "Ref": "EncryptionKeyPhrase"
+                                            }
+                                        ]
                                     ]
-                                ]
+                                }
+                            },
+                            "mount_it": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                            {
+                                                "Ref": "FileSystem"
+                                            },
+                                            ".efs.",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                        ]
+                                    ]
+                                }
                             }
                         }
                     }
                 }
-            }
-        },
-        "Properties": {
-            "Tags": [
-                {
-                    "Key": "Name",
-                    "Value": {
+            },
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "InformaticaNodeName"
+                                    },
+                                    "Node3"
+                                ]
+                            ]
+                        }
+                    }
+                ],
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSAMIRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "INFORMATICAPCRHELHVM"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet1ID"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "InstanceType": {
+                    "Ref": "PowerCenterInstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyPairName"
+                },
+                "UserData": {
+                    "Fn::Base64": {
                         "Fn::Join": [
                             "",
                             [
+                                "#!/bin/bash \n",
+                                "echo \"Initializing variables\" \n",
+                                "export SINGLE_NODE=0 \n",
+                                "export CREATE_DOMAIN=0 \n",
+                                "export JOIN_DOMAIN=1 \n",
+                                "export SERVES_AS_GATEWAY=1",
+                                "\n",
+                                "export DOMAIN_USER_NAME=\"",
                                 {
-                                    "Ref": "InformaticaNodeName"
+                                    "Ref": "InformaticaDomainUsername"
                                 },
-                                "Node3"
+                                "\"\n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"\n",
+                                "export DB_TYPE=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_ADDRESS=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Address"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_PORT=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Port"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_UNAME=\"",
+                                {
+                                    "Ref": "DatabaseUsername"
+                                },
+                                "\"\n",
+                                "export DB_SERVICENAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "DatabaseName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DOMAIN_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainName"
+                                },
+                                "\"\n",
+                                "export NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node1"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "export GRID_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "GridName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export JOIN_NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node3"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "export INTEGRATION_SERVICE_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "IntegrationServiceName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DOMAIN_HOST_NAME=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "InfaMaster",
+                                        "PrivateIp"
+                                    ]
+                                },
+                                "\"\n",
+                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "echo \"running cfn init\" \n",
+                                "/opt/aws/bin/cfn-init --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode3 ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "echo \"running cfn signal\" \n",
+                                "/opt/aws/bin/cfn-signal -e $? ",
+                                " --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode3 ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n"
                             ]
                         ]
                     }
                 }
-            ],
-            "ImageId": {
-                "Fn::FindInMap": [
-                    "AWSAMIRegionMap",
-                    {
-                        "Ref": "AWS::Region"
-                    },
-                    "INFORMATICAPCRHELHVM"
-                ]
             },
-            "SubnetId": {
-                "Ref": "PublicSubnet1ID"
-            },
-            "SecurityGroupIds": [
-                {
-                    "Ref": "InstanceSecurityGroup"
-                }
-            ],
-            "InstanceType": {
-                "Ref": "PowerCenterInstanceType"
-            },
-            "KeyName": {
-                "Ref": "KeyPairName"
-            },
-            "UserData": {
-                "Fn::Base64": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "#!/bin/bash \n",
-                            "echo \"Initializing variables\" \n",
-                            "export SINGLE_NODE=0 \n",
-                            "export CREATE_DOMAIN=0 \n",
-                            "export JOIN_DOMAIN=1 \n",
-                            "export SERVES_AS_GATEWAY=1",
-                            "\n",
-                            "export DOMAIN_USER_NAME=\"",
-                            {
-                                "Ref": "InformaticaDomainUsername"
-                            },
-                            "\"\n",
-                            "export EFS_CREATE_CONDITION=\"",
-                            {
-                                "Fn::If": [
-                                    "EFSCreateCondition",
-                                    "1",
-                                    "0"
-                                ]
-                            },
-                            "\"\n",
-                            "export AWS_REGION=\"",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\"\n",
-                            "export DB_TYPE=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    {
-                                        "Ref": "DatabaseType"
-                                    },
-                                    "DB"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_ADDRESS=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "RDSInstance",
-                                    "Endpoint.Address"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_PORT=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "RDSInstance",
-                                    "Endpoint.Port"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_UNAME=\"",
-                            {
-                                "Ref": "DatabaseUsername"
-                            },
-                            "\"\n",
-                            "export DB_SERVICENAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "DatabaseName"
-                                ]
-                            },
-                            "\"\n",
-                            "export DOMAIN_NAME=\"",
-                            {
-                                "Ref": "InformaticaDomainName"
-                            },
-                            "\"\n",
-                            "export NODE_NAME=\"",
-                            {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        {
-                                            "Ref": "InformaticaNodeName"
-                                        },
-                                        "Node1"
-                                    ]
-                                ]
-                            },
-                            "\"\n",
-                            "export GRID_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "GridName"
-                                ]
-                            },
-                            "\"\n",
-                            "export JOIN_NODE_NAME=\"",
-                            {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        {
-                                            "Ref": "InformaticaNodeName"
-                                        },
-                                        "Node3"
-                                    ]
-                                ]
-                            },
-                            "\"\n",
-                            "export INTEGRATION_SERVICE_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "IntegrationServiceName"
-                                ]
-                            },
-                            "\"\n",
-                            "export DOMAIN_HOST_NAME=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "InfaMaster",
-                                    "PrivateIp"
-                                ]
-                            },
-                            "\"\n",
-                            "echo \"running cfn init\" \n",
-                            "/opt/aws/bin/cfn-init --stack ",
-                            {
-                                "Ref": "AWS::StackId"
-                            },
-                            " --resource InfaNode3 ",
-                            " --region ",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\n",
-                            "echo \"running cfn signal\" \n",
-                            "/opt/aws/bin/cfn-signal -e $? ",
-                            " --stack ",
-                            {
-                                "Ref": "AWS::StackId"
-                            },
-                            " --resource InfaNode3 ",
-                            " --region ",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\n"
-                        ]
-                    ]
+            "CreationPolicy": {
+                "ResourceSignal": {
+                    "Timeout": "PT2H30M"
                 }
             }
         },
-        "CreationPolicy": {
-            "ResourceSignal": {
-                "Timeout": "PT2H30M"
+        "InfaNode4EIPAddress": {
+            "Condition": "4NodeCondition",
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc",
+                "InstanceId": {
+                    "Ref": "InfaNode4"
+                }
             }
-        }
-    },
-    "InfaNode4EIPAddress": {
-        "Condition": "4NodeCondition",
-        "Type": "AWS::EC2::EIP",
-        "Properties": {
-            "Domain": "vpc",
-            "InstanceId": {
-                "Ref": "InfaNode4"
-            }
-        }
-    },
-    "InfaNode4": {
-        "Condition": "4NodeCondition",
-        "DependsOn": "InfaMaster",
-        "Type": "AWS::EC2::Instance",
-        "Metadata": {
-            "AWS::CloudFormation::Init": {
-                "config": {
-                    "commands": {
-                        "1-setup": {
-                            "command": {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ",
-                                        {
-                                            "Ref": "InformaticaDomainPassword"
-                                        },
-                                        " ",
-                                        {
-                                            "Ref": "DatabasePassword"
-                                        },
-                                        " null ",
-                                        {
-                                            "Ref": "EncryptionKeyPhrase"
-                                        }
+        },
+        "InfaNode4": {
+            "Condition": "4NodeCondition",
+            "DependsOn": "InfaMaster",
+            "Type": "AWS::EC2::Instance",
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
+                            }
+                        },
+                        "commands": {
+                            "1-setup": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ",
+                                            {
+                                                "Ref": "InformaticaDomainPassword"
+                                            },
+                                            " ",
+                                            {
+                                                "Ref": "DatabasePassword"
+                                            },
+                                            " null ",
+                                            {
+                                                "Ref": "EncryptionKeyPhrase"
+                                            }
+                                        ]
                                     ]
-                                ]
+                                }
+                            },
+                            "mount_it": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                            {
+                                                "Ref": "FileSystem"
+                                            },
+                                            ".efs.",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                        ]
+                                    ]
+                                }
                             }
                         }
                     }
                 }
-            }
-        },
-        "Properties": {
-            "Tags": [
-                {
-                    "Key": "Name",
-                    "Value": {
+            },
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "InformaticaNodeName"
+                                    },
+                                    "Node4"
+                                ]
+                            ]
+                        }
+                    }
+                ],
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSAMIRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "INFORMATICAPCRHELHVM"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet2ID"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "InstanceType": {
+                    "Ref": "PowerCenterInstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyPairName"
+                },
+                "UserData": {
+                    "Fn::Base64": {
                         "Fn::Join": [
                             "",
                             [
+                                "#!/bin/bash \n",
+                                "echo \"Initializing variables\" \n",
+                                "export SINGLE_NODE=0 \n",
+                                "export CREATE_DOMAIN=0 \n",
+                                "export JOIN_DOMAIN=1 \n",
+                                "export SERVES_AS_GATEWAY=1",
+                                "\n",
+                                "export DOMAIN_USER_NAME=\"",
                                 {
-                                    "Ref": "InformaticaNodeName"
+                                    "Ref": "InformaticaDomainUsername"
                                 },
-                                "Node4"
+                                "\"\n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"\n",
+                                "export DB_TYPE=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_ADDRESS=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Address"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_PORT=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Port"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_UNAME=\"",
+                                {
+                                    "Ref": "DatabaseUsername"
+                                },
+                                "\"\n",
+                                "export DB_SERVICENAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "DatabaseName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DOMAIN_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainName"
+                                },
+                                "\"\n",
+                                "export NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node1"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "export GRID_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "GridName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export JOIN_NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node4"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "export INTEGRATION_SERVICE_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "IntegrationServiceName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DOMAIN_HOST_NAME=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "InfaMaster",
+                                        "PrivateIp"
+                                    ]
+                                },
+                                "\"\n",
+                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "echo \"running cfn init\" \n",
+                                "/opt/aws/bin/cfn-init --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode4 ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "echo \"running cfn signal\" \n",
+                                "/opt/aws/bin/cfn-signal -e $? ",
+                                " --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode4 ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n"
                             ]
                         ]
                     }
                 }
-            ],
-            "ImageId": {
-                "Fn::FindInMap": [
-                    "AWSAMIRegionMap",
-                    {
-                        "Ref": "AWS::Region"
-                    },
-                    "INFORMATICAPCRHELHVM"
-                ]
             },
-            "SubnetId": {
-                "Ref": "PublicSubnet2ID"
-            },
-            "SecurityGroupIds": [
-                {
-                    "Ref": "InstanceSecurityGroup"
-                }
-            ],
-            "InstanceType": {
-                "Ref": "PowerCenterInstanceType"
-            },
-            "KeyName": {
-                "Ref": "KeyPairName"
-            },
-            "UserData": {
-                "Fn::Base64": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "#!/bin/bash \n",
-                            "echo \"Initializing variables\" \n",
-                            "export SINGLE_NODE=0 \n",
-                            "export CREATE_DOMAIN=0 \n",
-                            "export JOIN_DOMAIN=1 \n",
-                            "export SERVES_AS_GATEWAY=1",
-                            "\n",
-                            "export DOMAIN_USER_NAME=\"",
-                            {
-                                "Ref": "InformaticaDomainUsername"
-                            },
-                            "\"\n",
-                            "export EFS_CREATE_CONDITION=\"",
-                            {
-                                "Fn::If": [
-                                    "EFSCreateCondition",
-                                    "1",
-                                    "0"
-                                ]
-                            },
-                            "\"\n",
-                            "export AWS_REGION=\"",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\"\n",
-                            "export DB_TYPE=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    {
-                                        "Ref": "DatabaseType"
-                                    },
-                                    "DB"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_ADDRESS=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "RDSInstance",
-                                    "Endpoint.Address"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_PORT=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "RDSInstance",
-                                    "Endpoint.Port"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_UNAME=\"",
-                            {
-                                "Ref": "DatabaseUsername"
-                            },
-                            "\"\n",
-                            "export DB_SERVICENAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "DatabaseName"
-                                ]
-                            },
-                            "\"\n",
-                            "export DOMAIN_NAME=\"",
-                            {
-                                "Ref": "InformaticaDomainName"
-                            },
-                            "\"\n",
-                            "export NODE_NAME=\"",
-                            {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        {
-                                            "Ref": "InformaticaNodeName"
-                                        },
-                                        "Node1"
-                                    ]
-                                ]
-                            },
-                            "\"\n",
-                            "export GRID_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "GridName"
-                                ]
-                            },
-                            "\"\n",
-                            "export JOIN_NODE_NAME=\"",
-                            {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        {
-                                            "Ref": "InformaticaNodeName"
-                                        },
-                                        "Node4"
-                                    ]
-                                ]
-                            },
-                            "\"\n",
-                            "export INTEGRATION_SERVICE_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "IntegrationServiceName"
-                                ]
-                            },
-                            "\"\n",
-                            "export DOMAIN_HOST_NAME=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "InfaMaster",
-                                    "PrivateIp"
-                                ]
-                            },
-                            "\"\n",
-                            "echo \"running cfn init\" \n",
-                            "/opt/aws/bin/cfn-init --stack ",
-                            {
-                                "Ref": "AWS::StackId"
-                            },
-                            " --resource InfaNode4 ",
-                            " --region ",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\n",
-                            "echo \"running cfn signal\" \n",
-                            "/opt/aws/bin/cfn-signal -e $? ",
-                            " --stack ",
-                            {
-                                "Ref": "AWS::StackId"
-                            },
-                            " --resource InfaNode4 ",
-                            " --region ",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\n"
-                        ]
-                    ]
+            "CreationPolicy": {
+                "ResourceSignal": {
+                    "Timeout": "PT2H30M"
                 }
             }
         },
-        "CreationPolicy": {
-            "ResourceSignal": {
-                "Timeout": "PT2H30M"
+        "InfaNode5EIPAddress": {
+            "Condition": "6NodeCondition",
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc",
+                "InstanceId": {
+                    "Ref": "InfaNode5"
+                }
             }
-        }
-    },
-    "InfaNode5EIPAddress": {
-        "Condition": "6NodeCondition",
-        "Type": "AWS::EC2::EIP",
-        "Properties": {
-            "Domain": "vpc",
-            "InstanceId": {
-                "Ref": "InfaNode5"
-            }
-        }
-    },
-    "InfaNode5": {
-        "Condition": "6NodeCondition",
-        "DependsOn": "InfaMaster",
-        "Type": "AWS::EC2::Instance",
-        "Metadata": {
-            "AWS::CloudFormation::Init": {
-                "config": {
-                    "commands": {
-                        "1-setup": {
-                            "command": {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ",
-                                        {
-                                            "Ref": "InformaticaDomainPassword"
-                                        },
-                                        " ",
-                                        {
-                                            "Ref": "DatabasePassword"
-                                        },
-                                        " null ",
-                                        {
-                                            "Ref": "EncryptionKeyPhrase"
-                                        }
+        },
+        "InfaNode5": {
+            "Condition": "6NodeCondition",
+            "DependsOn": "InfaMaster",
+            "Type": "AWS::EC2::Instance",
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
+                            }
+                        },
+                        "commands": {
+                            "1-setup": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ",
+                                            {
+                                                "Ref": "InformaticaDomainPassword"
+                                            },
+                                            " ",
+                                            {
+                                                "Ref": "DatabasePassword"
+                                            },
+                                            " null ",
+                                            {
+                                                "Ref": "EncryptionKeyPhrase"
+                                            }
+                                        ]
                                     ]
-                                ]
+                                }
+                            },
+                            "mount_it": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                            {
+                                                "Ref": "FileSystem"
+                                            },
+                                            ".efs.",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                        ]
+                                    ]
+                                }
                             }
                         }
                     }
                 }
-            }
-        },
-        "Properties": {
-            "Tags": [
-                {
-                    "Key": "Name",
-                    "Value": {
+            },
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "InformaticaNodeName"
+                                    },
+                                    "Node5"
+                                ]
+                            ]
+                        }
+                    }
+                ],
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSAMIRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "INFORMATICAPCRHELHVM"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet1ID"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "InstanceType": {
+                    "Ref": "PowerCenterInstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyPairName"
+                },
+                "UserData": {
+                    "Fn::Base64": {
                         "Fn::Join": [
                             "",
                             [
+                                "#!/bin/bash \n",
+                                "echo \"Initializing variables\" \n",
+                                "export SINGLE_NODE=0 \n",
+                                "export CREATE_DOMAIN=0 \n",
+                                "export JOIN_DOMAIN=1 \n",
+                                "export SERVES_AS_GATEWAY=1",
+                                "\n",
+                                "export DOMAIN_USER_NAME=\"",
                                 {
-                                    "Ref": "InformaticaNodeName"
+                                    "Ref": "InformaticaDomainUsername"
                                 },
-                                "Node5"
+                                "\"\n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"\n",
+                                "export DB_TYPE=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_ADDRESS=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Address"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_PORT=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Port"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_UNAME=\"",
+                                {
+                                    "Ref": "DatabaseUsername"
+                                },
+                                "\"\n",
+                                "export DB_SERVICENAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "DatabaseName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DOMAIN_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainName"
+                                },
+                                "\"\n",
+                                "export NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node1"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "export GRID_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "GridName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export JOIN_NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node5"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "export INTEGRATION_SERVICE_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "IntegrationServiceName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DOMAIN_HOST_NAME=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "InfaMaster",
+                                        "PrivateIp"
+                                    ]
+                                },
+                                "\"\n",
+                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "echo \"running cfn init\" \n",
+                                "/opt/aws/bin/cfn-init --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode5 ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "echo \"running cfn signal\" \n",
+                                "/opt/aws/bin/cfn-signal -e $? ",
+                                " --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode5 ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n"
                             ]
                         ]
                     }
                 }
-            ],
-            "ImageId": {
-                "Fn::FindInMap": [
-                    "AWSAMIRegionMap",
-                    {
-                        "Ref": "AWS::Region"
-                    },
-                    "INFORMATICAPCRHELHVM"
-                ]
             },
-            "SubnetId": {
-                "Ref": "PublicSubnet1ID"
-            },
-            "SecurityGroupIds": [
-                {
-                    "Ref": "InstanceSecurityGroup"
-                }
-            ],
-            "InstanceType": {
-                "Ref": "PowerCenterInstanceType"
-            },
-            "KeyName": {
-                "Ref": "KeyPairName"
-            },
-            "UserData": {
-                "Fn::Base64": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "#!/bin/bash \n",
-                            "echo \"Initializing variables\" \n",
-                            "export SINGLE_NODE=0 \n",
-                            "export CREATE_DOMAIN=0 \n",
-                            "export JOIN_DOMAIN=1 \n",
-                            "export SERVES_AS_GATEWAY=1",
-                            "\n",
-                            "export DOMAIN_USER_NAME=\"",
-                            {
-                                "Ref": "InformaticaDomainUsername"
-                            },
-                            "\"\n",
-                            "export EFS_CREATE_CONDITION=\"",
-                            {
-                                "Fn::If": [
-                                    "EFSCreateCondition",
-                                    "1",
-                                    "0"
-                                ]
-                            },
-                            "\"\n",
-                            "export AWS_REGION=\"",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\"\n",
-                            "export DB_TYPE=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    {
-                                        "Ref": "DatabaseType"
-                                    },
-                                    "DB"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_ADDRESS=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "RDSInstance",
-                                    "Endpoint.Address"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_PORT=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "RDSInstance",
-                                    "Endpoint.Port"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_UNAME=\"",
-                            {
-                                "Ref": "DatabaseUsername"
-                            },
-                            "\"\n",
-                            "export DB_SERVICENAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "DatabaseName"
-                                ]
-                            },
-                            "\"\n",
-                            "export DOMAIN_NAME=\"",
-                            {
-                                "Ref": "InformaticaDomainName"
-                            },
-                            "\"\n",
-                            "export NODE_NAME=\"",
-                            {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        {
-                                            "Ref": "InformaticaNodeName"
-                                        },
-                                        "Node1"
-                                    ]
-                                ]
-                            },
-                            "\"\n",
-                            "export GRID_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "GridName"
-                                ]
-                            },
-                            "\"\n",
-                            "export JOIN_NODE_NAME=\"",
-                            {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        {
-                                            "Ref": "InformaticaNodeName"
-                                        },
-                                        "Node5"
-                                    ]
-                                ]
-                            },
-                            "\"\n",
-                            "export INTEGRATION_SERVICE_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "IntegrationServiceName"
-                                ]
-                            },
-                            "\"\n",
-                            "export DOMAIN_HOST_NAME=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "InfaMaster",
-                                    "PrivateIp"
-                                ]
-                            },
-                            "\"\n",
-                            "echo \"running cfn init\" \n",
-                            "/opt/aws/bin/cfn-init --stack ",
-                            {
-                                "Ref": "AWS::StackId"
-                            },
-                            " --resource InfaNode5 ",
-                            " --region ",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\n",
-                            "echo \"running cfn signal\" \n",
-                            "/opt/aws/bin/cfn-signal -e $? ",
-                            " --stack ",
-                            {
-                                "Ref": "AWS::StackId"
-                            },
-                            " --resource InfaNode5 ",
-                            " --region ",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\n"
-                        ]
-                    ]
+            "CreationPolicy": {
+                "ResourceSignal": {
+                    "Timeout": "PT2H30M"
                 }
             }
         },
-        "CreationPolicy": {
-            "ResourceSignal": {
-                "Timeout": "PT2H30M"
+        "InfaNode6EIPAddress": {
+            "Condition": "6NodeCondition",
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc",
+                "InstanceId": {
+                    "Ref": "InfaNode6"
+                }
             }
-        }
-    },
-    "InfaNode6EIPAddress": {
-        "Condition": "6NodeCondition",
-        "Type": "AWS::EC2::EIP",
-        "Properties": {
-            "Domain": "vpc",
-            "InstanceId": {
-                "Ref": "InfaNode6"
-            }
-        }
-    },
-    "InfaNode6": {
-        "Condition": "6NodeCondition",
-        "DependsOn": "InfaMaster",
-        "Type": "AWS::EC2::Instance",
-        "Metadata": {
-            "AWS::CloudFormation::Init": {
-                "config": {
-                    "commands": {
-                        "1-setup": {
-                            "command": {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ",
-                                        {
-                                            "Ref": "InformaticaDomainPassword"
-                                        },
-                                        " ",
-                                        {
-                                            "Ref": "DatabasePassword"
-                                        },
-                                        " null ",
-                                        {
-                                            "Ref": "EncryptionKeyPhrase"
-                                        }
+        },
+        "InfaNode6": {
+            "Condition": "6NodeCondition",
+            "DependsOn": "InfaMaster",
+            "Type": "AWS::EC2::Instance",
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
+                            }
+                        },
+                        "commands": {
+                            "1-setup": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ",
+                                            {
+                                                "Ref": "InformaticaDomainPassword"
+                                            },
+                                            " ",
+                                            {
+                                                "Ref": "DatabasePassword"
+                                            },
+                                            " null ",
+                                            {
+                                                "Ref": "EncryptionKeyPhrase"
+                                            }
+                                        ]
                                     ]
-                                ]
+                                }
+                            },
+                            "mount_it": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                            {
+                                                "Ref": "FileSystem"
+                                            },
+                                            ".efs.",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                        ]
+                                    ]
+                                }
                             }
                         }
                     }
                 }
-            }
-        },
-        "Properties": {
-            "Tags": [
-                {
-                    "Key": "Name",
-                    "Value": {
+            },
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "InformaticaNodeName"
+                                    },
+                                    "Node6"
+                                ]
+                            ]
+                        }
+                    }
+                ],
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSAMIRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "INFORMATICAPCRHELHVM"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet2ID"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "InstanceType": {
+                    "Ref": "PowerCenterInstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyPairName"
+                },
+                "UserData": {
+                    "Fn::Base64": {
                         "Fn::Join": [
                             "",
                             [
+                                "#!/bin/bash \n",
+                                "echo \"Initializing variables\" \n",
+                                "export SINGLE_NODE=0 \n",
+                                "export CREATE_DOMAIN=0 \n",
+                                "export JOIN_DOMAIN=1 \n",
+                                "export SERVES_AS_GATEWAY=1",
+                                "\n",
+                                "export DOMAIN_USER_NAME=\"",
                                 {
-                                    "Ref": "InformaticaNodeName"
+                                    "Ref": "InformaticaDomainUsername"
                                 },
-                                "Node6"
+                                "\"\n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"\n",
+                                "export DB_TYPE=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_ADDRESS=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Address"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_PORT=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Port"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_UNAME=\"",
+                                {
+                                    "Ref": "DatabaseUsername"
+                                },
+                                "\"\n",
+                                "export DB_SERVICENAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "DatabaseName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DOMAIN_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainName"
+                                },
+                                "\"\n",
+                                "export NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node1"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "export GRID_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "GridName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export JOIN_NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node6"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "export INTEGRATION_SERVICE_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "IntegrationServiceName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DOMAIN_HOST_NAME=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "InfaMaster",
+                                        "PrivateIp"
+                                    ]
+                                },
+                                "\"\n",
+                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "echo \"running cfn init\" \n",
+                                "/opt/aws/bin/cfn-init --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode6 ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "echo \"running cfn signal\" \n",
+                                "/opt/aws/bin/cfn-signal -e $? ",
+                                " --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode6 ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n"
                             ]
                         ]
                     }
                 }
-            ],
-            "ImageId": {
-                "Fn::FindInMap": [
-                    "AWSAMIRegionMap",
-                    {
-                        "Ref": "AWS::Region"
-                    },
-                    "INFORMATICAPCRHELHVM"
-                ]
             },
-            "SubnetId": {
-                "Ref": "PublicSubnet2ID"
-            },
-            "SecurityGroupIds": [
-                {
-                    "Ref": "InstanceSecurityGroup"
-                }
-            ],
-            "InstanceType": {
-                "Ref": "PowerCenterInstanceType"
-            },
-            "KeyName": {
-                "Ref": "KeyPairName"
-            },
-            "UserData": {
-                "Fn::Base64": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "#!/bin/bash \n",
-                            "echo \"Initializing variables\" \n",
-                            "export SINGLE_NODE=0 \n",
-                            "export CREATE_DOMAIN=0 \n",
-                            "export JOIN_DOMAIN=1 \n",
-                            "export SERVES_AS_GATEWAY=1",
-                            "\n",
-                            "export DOMAIN_USER_NAME=\"",
-                            {
-                                "Ref": "InformaticaDomainUsername"
-                            },
-                            "\"\n",
-                            "export EFS_CREATE_CONDITION=\"",
-                            {
-                                "Fn::If": [
-                                    "EFSCreateCondition",
-                                    "1",
-                                    "0"
-                                ]
-                            },
-                            "\"\n",
-                            "export AWS_REGION=\"",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\"\n",
-                            "export DB_TYPE=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    {
-                                        "Ref": "DatabaseType"
-                                    },
-                                    "DB"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_ADDRESS=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "RDSInstance",
-                                    "Endpoint.Address"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_PORT=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "RDSInstance",
-                                    "Endpoint.Port"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_UNAME=\"",
-                            {
-                                "Ref": "DatabaseUsername"
-                            },
-                            "\"\n",
-                            "export DB_SERVICENAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "DatabaseName"
-                                ]
-                            },
-                            "\"\n",
-                            "export DOMAIN_NAME=\"",
-                            {
-                                "Ref": "InformaticaDomainName"
-                            },
-                            "\"\n",
-                            "export NODE_NAME=\"",
-                            {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        {
-                                            "Ref": "InformaticaNodeName"
-                                        },
-                                        "Node1"
-                                    ]
-                                ]
-                            },
-                            "\"\n",
-                            "export GRID_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "GridName"
-                                ]
-                            },
-                            "\"\n",
-                            "export JOIN_NODE_NAME=\"",
-                            {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        {
-                                            "Ref": "InformaticaNodeName"
-                                        },
-                                        "Node6"
-                                    ]
-                                ]
-                            },
-                            "\"\n",
-                            "export INTEGRATION_SERVICE_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "IntegrationServiceName"
-                                ]
-                            },
-                            "\"\n",
-                            "export DOMAIN_HOST_NAME=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "InfaMaster",
-                                    "PrivateIp"
-                                ]
-                            },
-                            "\"\n",
-                            "echo \"running cfn init\" \n",
-                            "/opt/aws/bin/cfn-init --stack ",
-                            {
-                                "Ref": "AWS::StackId"
-                            },
-                            " --resource InfaNode6 ",
-                            " --region ",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\n",
-                            "echo \"running cfn signal\" \n",
-                            "/opt/aws/bin/cfn-signal -e $? ",
-                            " --stack ",
-                            {
-                                "Ref": "AWS::StackId"
-                            },
-                            " --resource InfaNode6 ",
-                            " --region ",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\n"
-                        ]
-                    ]
+            "CreationPolicy": {
+                "ResourceSignal": {
+                    "Timeout": "PT2H30M"
                 }
             }
         },
-        "CreationPolicy": {
-            "ResourceSignal": {
-                "Timeout": "PT2H30M"
+        "InfaNode7EIPAddress": {
+            "Condition": "8NodeCondition",
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc",
+                "InstanceId": {
+                    "Ref": "InfaNode7"
+                }
             }
-        }
-    },
-    "InfaNode7EIPAddress": {
-        "Condition": "8NodeCondition",
-        "Type": "AWS::EC2::EIP",
-        "Properties": {
-            "Domain": "vpc",
-            "InstanceId": {
-                "Ref": "InfaNode7"
-            }
-        }
-    },
-    "InfaNode7": {
-        "Condition": "8NodeCondition",
-        "DependsOn": "InfaMaster",
-        "Type": "AWS::EC2::Instance",
-        "Metadata": {
-            "AWS::CloudFormation::Init": {
-                "config": {
-                    "commands": {
-                        "1-setup": {
-                            "command": {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ",
-                                        {
-                                            "Ref": "InformaticaDomainPassword"
-                                        },
-                                        " ",
-                                        {
-                                            "Ref": "DatabasePassword"
-                                        },
-                                        " null ",
-                                        {
-                                            "Ref": "EncryptionKeyPhrase"
-                                        }
+        },
+        "InfaNode7": {
+            "Condition": "8NodeCondition",
+            "DependsOn": "InfaMaster",
+            "Type": "AWS::EC2::Instance",
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
+                            }
+                        },
+                        "commands": {
+                            "1-setup": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ",
+                                            {
+                                                "Ref": "InformaticaDomainPassword"
+                                            },
+                                            " ",
+                                            {
+                                                "Ref": "DatabasePassword"
+                                            },
+                                            " null ",
+                                            {
+                                                "Ref": "EncryptionKeyPhrase"
+                                            }
+                                        ]
                                     ]
-                                ]
+                                }
+                            },
+                            "mount_it": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                            {
+                                                "Ref": "FileSystem"
+                                            },
+                                            ".efs.",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                        ]
+                                    ]
+                                }
                             }
                         }
                     }
                 }
-            }
-        },
-        "Properties": {
-            "Tags": [
-                {
-                    "Key": "Name",
-                    "Value": {
+            },
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "InformaticaNodeName"
+                                    },
+                                    "Node7"
+                                ]
+                            ]
+                        }
+                    }
+                ],
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSAMIRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "INFORMATICAPCRHELHVM"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet1ID"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "InstanceType": {
+                    "Ref": "PowerCenterInstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyPairName"
+                },
+                "UserData": {
+                    "Fn::Base64": {
                         "Fn::Join": [
                             "",
                             [
+                                "#!/bin/bash \n",
+                                "echo \"Initializing variables\" \n",
+                                "export SINGLE_NODE=0 \n",
+                                "export CREATE_DOMAIN=0 \n",
+                                "export JOIN_DOMAIN=1 \n",
+                                "export SERVES_AS_GATEWAY=1",
+                                "\n",
+                                "export DOMAIN_USER_NAME=\"",
                                 {
-                                    "Ref": "InformaticaNodeName"
+                                    "Ref": "InformaticaDomainUsername"
                                 },
-                                "Node7"
+                                "\"\n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"\n",
+                                "export DB_TYPE=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_ADDRESS=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Address"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_PORT=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Port"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_UNAME=\"",
+                                {
+                                    "Ref": "DatabaseUsername"
+                                },
+                                "\"\n",
+                                "export DB_SERVICENAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "DatabaseName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DOMAIN_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainName"
+                                },
+                                "\"\n",
+                                "export NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node1"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "export GRID_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "GridName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export JOIN_NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node7"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "export INTEGRATION_SERVICE_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "IntegrationServiceName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DOMAIN_HOST_NAME=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "InfaMaster",
+                                        "PrivateIp"
+                                    ]
+                                },
+                                "\"\n",
+                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "echo \"running cfn init\" \n",
+                                "/opt/aws/bin/cfn-init --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode7 ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "echo \"running cfn signal\" \n",
+                                "/opt/aws/bin/cfn-signal -e $? ",
+                                " --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode7 ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n"
                             ]
                         ]
                     }
                 }
-            ],
-            "ImageId": {
-                "Fn::FindInMap": [
-                    "AWSAMIRegionMap",
-                    {
-                        "Ref": "AWS::Region"
-                    },
-                    "INFORMATICAPCRHELHVM"
-                ]
             },
-            "SubnetId": {
-                "Ref": "PublicSubnet1ID"
-            },
-            "SecurityGroupIds": [
-                {
-                    "Ref": "InstanceSecurityGroup"
-                }
-            ],
-            "InstanceType": {
-                "Ref": "PowerCenterInstanceType"
-            },
-            "KeyName": {
-                "Ref": "KeyPairName"
-            },
-            "UserData": {
-                "Fn::Base64": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "#!/bin/bash \n",
-                            "echo \"Initializing variables\" \n",
-                            "export SINGLE_NODE=0 \n",
-                            "export CREATE_DOMAIN=0 \n",
-                            "export JOIN_DOMAIN=1 \n",
-                            "export SERVES_AS_GATEWAY=1",
-                            "\n",
-                            "export DOMAIN_USER_NAME=\"",
-                            {
-                                "Ref": "InformaticaDomainUsername"
-                            },
-                            "\"\n",
-                            "export EFS_CREATE_CONDITION=\"",
-                            {
-                                "Fn::If": [
-                                    "EFSCreateCondition",
-                                    "1",
-                                    "0"
-                                ]
-                            },
-                            "\"\n",
-                            "export AWS_REGION=\"",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\"\n",
-                            "export DB_TYPE=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    {
-                                        "Ref": "DatabaseType"
-                                    },
-                                    "DB"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_ADDRESS=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "RDSInstance",
-                                    "Endpoint.Address"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_PORT=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "RDSInstance",
-                                    "Endpoint.Port"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_UNAME=\"",
-                            {
-                                "Ref": "DatabaseUsername"
-                            },
-                            "\"\n",
-                            "export DB_SERVICENAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "DatabaseName"
-                                ]
-                            },
-                            "\"\n",
-                            "export DOMAIN_NAME=\"",
-                            {
-                                "Ref": "InformaticaDomainName"
-                            },
-                            "\"\n",
-                            "export NODE_NAME=\"",
-                            {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        {
-                                            "Ref": "InformaticaNodeName"
-                                        },
-                                        "Node1"
-                                    ]
-                                ]
-                            },
-                            "\"\n",
-                            "export GRID_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "GridName"
-                                ]
-                            },
-                            "\"\n",
-                            "export JOIN_NODE_NAME=\"",
-                            {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        {
-                                            "Ref": "InformaticaNodeName"
-                                        },
-                                        "Node7"
-                                    ]
-                                ]
-                            },
-                            "\"\n",
-                            "export INTEGRATION_SERVICE_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "IntegrationServiceName"
-                                ]
-                            },
-                            "\"\n",
-                            "export DOMAIN_HOST_NAME=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "InfaMaster",
-                                    "PrivateIp"
-                                ]
-                            },
-                            "\"\n",
-                            "echo \"running cfn init\" \n",
-                            "/opt/aws/bin/cfn-init --stack ",
-                            {
-                                "Ref": "AWS::StackId"
-                            },
-                            " --resource InfaNode7 ",
-                            " --region ",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\n",
-                            "echo \"running cfn signal\" \n",
-                            "/opt/aws/bin/cfn-signal -e $? ",
-                            " --stack ",
-                            {
-                                "Ref": "AWS::StackId"
-                            },
-                            " --resource InfaNode7 ",
-                            " --region ",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\n"
-                        ]
-                    ]
+            "CreationPolicy": {
+                "ResourceSignal": {
+                    "Timeout": "PT2H30M"
                 }
             }
         },
-        "CreationPolicy": {
-            "ResourceSignal": {
-                "Timeout": "PT2H30M"
+        "InfaNode8EIPAddress": {
+            "Condition": "8NodeCondition",
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc",
+                "InstanceId": {
+                    "Ref": "InfaNode8"
+                }
             }
-        }
-    },
-    "InfaNode8EIPAddress": {
-        "Condition": "8NodeCondition",
-        "Type": "AWS::EC2::EIP",
-        "Properties": {
-            "Domain": "vpc",
-            "InstanceId": {
-                "Ref": "InfaNode8"
-            }
-        }
-    },
-    "InfaNode8": {
-        "Condition": "8NodeCondition",
-        "DependsOn": "InfaMaster",
-        "Type": "AWS::EC2::Instance",
-        "Metadata": {
-            "AWS::CloudFormation::Init": {
-                "config": {
-                    "commands": {
-                        "1-setup": {
-                            "command": {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ",
-                                        {
-                                            "Ref": "InformaticaDomainPassword"
-                                        },
-                                        " ",
-                                        {
-                                            "Ref": "DatabasePassword"
-                                        },
-                                        " null ",
-                                        {
-                                            "Ref": "EncryptionKeyPhrase"
-                                        }
+        },
+        "InfaNode8": {
+            "Condition": "8NodeCondition",
+            "DependsOn": "InfaMaster",
+            "Type": "AWS::EC2::Instance",
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "packages": {
+                            "yum": {
+                                "nfs-utils": []
+                            }
+                        },
+                        "commands": {
+                            "1-setup": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "sh /home/ec2-user/InfaEc2Scripts/linInfaInstallerEc2.sh ",
+                                            {
+                                                "Ref": "InformaticaDomainPassword"
+                                            },
+                                            " ",
+                                            {
+                                                "Ref": "DatabasePassword"
+                                            },
+                                            " null ",
+                                            {
+                                                "Ref": "EncryptionKeyPhrase"
+                                            }
+                                        ]
                                     ]
-                                ]
+                                }
+                            },
+                            "mount_it": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                            {
+                                                "Ref": "FileSystem"
+                                            },
+                                            ".efs.",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                        ]
+                                    ]
+                                }
                             }
                         }
                     }
                 }
-            }
-        },
-        "Properties": {
-            "Tags": [
-                {
-                    "Key": "Name",
-                    "Value": {
+            },
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "InformaticaNodeName"
+                                    },
+                                    "Node8"
+                                ]
+                            ]
+                        }
+                    }
+                ],
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSAMIRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "INFORMATICAPCRHELHVM"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet2ID"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "InstanceType": {
+                    "Ref": "PowerCenterInstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyPairName"
+                },
+                "UserData": {
+                    "Fn::Base64": {
                         "Fn::Join": [
                             "",
                             [
+                                "#!/bin/bash \n",
+                                "echo \"Initializing variables\" \n",
+                                "export SINGLE_NODE=0 \n",
+                                "export CREATE_DOMAIN=0 \n",
+                                "export JOIN_DOMAIN=1 \n",
+                                "export SERVES_AS_GATEWAY=1",
+                                "\n",
+                                "export DOMAIN_USER_NAME=\"",
                                 {
-                                    "Ref": "InformaticaNodeName"
+                                    "Ref": "InformaticaDomainUsername"
                                 },
-                                "Node8"
+                                "\"\n",
+                                "export EFS_CREATE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
+                                "export AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"\n",
+                                "export DB_TYPE=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_ADDRESS=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Address"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_PORT=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Port"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DB_UNAME=\"",
+                                {
+                                    "Ref": "DatabaseUsername"
+                                },
+                                "\"\n",
+                                "export DB_SERVICENAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "DatabaseName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DOMAIN_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainName"
+                                },
+                                "\"\n",
+                                "export NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node1"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "export GRID_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "GridName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export JOIN_NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node8"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "export INTEGRATION_SERVICE_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "IntegrationServiceName"
+                                    ]
+                                },
+                                "\"\n",
+                                "export DOMAIN_HOST_NAME=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "InfaMaster",
+                                        "PrivateIp"
+                                    ]
+                                },
+                                "\"\n",
+                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "\n",
+                                "echo \"running cfn init\" \n",
+                                "/opt/aws/bin/cfn-init --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode8 ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "echo \"running cfn signal\" \n",
+                                "/opt/aws/bin/cfn-signal -e $? ",
+                                " --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode8 ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n"
                             ]
                         ]
                     }
                 }
-            ],
-            "ImageId": {
-                "Fn::FindInMap": [
-                    "AWSAMIRegionMap",
-                    {
-                        "Ref": "AWS::Region"
-                    },
-                    "INFORMATICAPCRHELHVM"
+            },
+            "CreationPolicy": {
+                "ResourceSignal": {
+                    "Timeout": "PT2H30M"
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "PowerCenterAgentIP": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "InfaMaster",
+                    "PublicIp"
                 ]
             },
-            "SubnetId": {
-                "Ref": "PublicSubnet2ID"
-            },
-            "SecurityGroupIds": [
-                {
-                    "Ref": "InstanceSecurityGroup"
-                }
-            ],
-            "InstanceType": {
-                "Ref": "PowerCenterInstanceType"
-            },
-            "KeyName": {
-                "Ref": "KeyPairName"
-            },
-            "UserData": {
-                "Fn::Base64": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "#!/bin/bash \n",
-                            "echo \"Initializing variables\" \n",
-                            "export SINGLE_NODE=0 \n",
-                            "export CREATE_DOMAIN=0 \n",
-                            "export JOIN_DOMAIN=1 \n",
-                            "export SERVES_AS_GATEWAY=1",
-                            "\n",
-                            "export DOMAIN_USER_NAME=\"",
-                            {
-                                "Ref": "InformaticaDomainUsername"
-                            },
-                            "\"\n",
-                            "export EFS_CREATE_CONDITION=\"",
-                            {
-                                "Fn::If": [
-                                    "EFSCreateCondition",
-                                    "1",
-                                    "0"
-                                ]
-                            },
-                            "\"\n",
-                            "export AWS_REGION=\"",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\"\n",
-                            "export DB_TYPE=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    {
-                                        "Ref": "DatabaseType"
-                                    },
-                                    "DB"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_ADDRESS=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "RDSInstance",
-                                    "Endpoint.Address"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_PORT=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "RDSInstance",
-                                    "Endpoint.Port"
-                                ]
-                            },
-                            "\"\n",
-                            "export DB_UNAME=\"",
-                            {
-                                "Ref": "DatabaseUsername"
-                            },
-                            "\"\n",
-                            "export DB_SERVICENAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "DatabaseName"
-                                ]
-                            },
-                            "\"\n",
-                            "export DOMAIN_NAME=\"",
-                            {
-                                "Ref": "InformaticaDomainName"
-                            },
-                            "\"\n",
-                            "export NODE_NAME=\"",
-                            {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        {
-                                            "Ref": "InformaticaNodeName"
-                                        },
-                                        "Node1"
-                                    ]
-                                ]
-                            },
-                            "\"\n",
-                            "export GRID_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "GridName"
-                                ]
-                            },
-                            "\"\n",
-                            "export JOIN_NODE_NAME=\"",
-                            {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        {
-                                            "Ref": "InformaticaNodeName"
-                                        },
-                                        "Node8"
-                                    ]
-                                ]
-                            },
-                            "\"\n",
-                            "export INTEGRATION_SERVICE_NAME=\"",
-                            {
-                                "Fn::FindInMap": [
-                                    "Config",
-                                    "Settings",
-                                    "IntegrationServiceName"
-                                ]
-                            },
-                            "\"\n",
-                            "export DOMAIN_HOST_NAME=\"",
-                            {
-                                "Fn::GetAtt": [
-                                    "InfaMaster",
-                                    "PrivateIp"
-                                ]
-                            },
-                            "\"\n",
-                            "echo \"running cfn init\" \n",
-                            "/opt/aws/bin/cfn-init --stack ",
-                            {
-                                "Ref": "AWS::StackId"
-                            },
-                            " --resource InfaNode8 ",
-                            " --region ",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\n",
-                            "echo \"running cfn signal\" \n",
-                            "/opt/aws/bin/cfn-signal -e $? ",
-                            " --stack ",
-                            {
-                                "Ref": "AWS::StackId"
-                            },
-                            " --resource InfaNode8 ",
-                            " --region ",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "\n"
-                        ]
-                    ]
-                }
+            "Description": "Elastic IP address of the PowerCenter instance"
+        },
+        "InstanceID": {
+            "Description": "Instance ID of the newly created EC2 Master instance",
+            "Value": {
+                "Ref": "InfaMaster"
             }
         },
-        "CreationPolicy": {
-            "ResourceSignal": {
-                "Timeout": "PT2H30M"
+        "AvailabilityZone": {
+            "Description": "Availability Zone of the newly created EC2 instances",
+            "Value": {
+                "Fn::GetAtt": [
+                    "InfaMaster",
+                    "AvailabilityZone"
+                ]
             }
+        },
+        "PublicDNS": {
+            "Description": "Public DNS name of the newly created EC2 Master instance",
+            "Value": {
+                "Fn::GetAtt": [
+                    "InfaMaster",
+                    "PublicDnsName"
+                ]
+            }
+        },
+        "RDSInstance": {
+            "Value": {
+                "Ref": "RDSInstance"
+            },
+            "Description": "RDS Instance ID"
         }
     }
-},
-"Outputs": {
-    "PowerCenterAgentIP": {
-        "Value": {
-            "Fn::GetAtt": [
-                "InfaMaster",
-                "PublicIp"
-            ]
-        },
-        "Description": "Elastic IP address of the PowerCenter instance"
-    },
-    "InstanceID": {
-        "Description": "Instance ID of the newly created EC2 Master instance",
-        "Value": {
-            "Ref": "InfaMaster"
-        }
-    },
-    "AvailabilityZone": {
-        "Description": "Availability Zone of the newly created EC2 instances",
-        "Value": {
-            "Fn::GetAtt": [
-                "InfaMaster",
-                "AvailabilityZone"
-            ]
-        }
-    },
-    "PublicDNS": {
-        "Description": "Public DNS name of the newly created EC2 Master instance",
-        "Value": {
-            "Fn::GetAtt": [
-                "InfaMaster",
-                "PublicDnsName"
-            ]
-        }
-    },
-    "RDSInstance": {
-        "Value": {
-            "Ref": "RDSInstance"
-        },
-        "Description": "RDS Instance ID"
-    }
-}
 }

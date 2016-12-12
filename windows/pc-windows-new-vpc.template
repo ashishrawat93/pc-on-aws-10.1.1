@@ -161,9 +161,6 @@
         },
         "InformaticaDomainUsername": {
             "Description": "Username for the Informatica Domain",
-            "AllowedValues": [
-                "Administrator"
-            ],
             "Default": "Administrator",
             "MaxLength": "32",
             "MinLength": "8",
@@ -265,10 +262,10 @@
                 "INFORMATICAPCWINHVM": "TBD"
             },
             "ap-southeast-1": {
-                "INFORMATICAPCWINHVM": "ami-1444e777"
+                "INFORMATICAPCWINHVM": "ami-c6963aa5"
             },
             "ap-southeast-2": {
-                "INFORMATICAPCWINHVM": "ami-ebb48b88"
+                "INFORMATICAPCWINHVM": "ami-c6963aa5"
             },
             "eu-central-1": {
                 "INFORMATICAPCWINHVM": "ami-11a4617e"
@@ -280,7 +277,7 @@
                 "INFORMATICAPCWINHVM": "ami-c872eda4"
             },
             "us-east-1": {
-                "INFORMATICAPCWINHVM": "ami-fc674feb"
+                "INFORMATICAPCWINHVM": "ami-0ecbcd19"
             },
             "us-east-2": {
                 "INFORMATICAPCWINHVM": "TBD"
