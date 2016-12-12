@@ -898,6 +898,28 @@
                                         ]
                                     ]
                                 }
+                            },
+                            "command": {
+                                "Fn::If": [
+                                    "EFSCreateCondition",
+                                    {
+                                        "Fn::Join": [
+                                            "",
+                                            [
+                                                "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                                {
+                                                    "Ref": "FileSystem"
+                                                },
+                                                ".efs.",
+                                                {
+                                                    "Ref": "AWS::Region"
+                                                },
+                                                ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                            ]
+                                        ]
+                                    },
+                                    "echo \"EFS Not Supported\""
+                                ]
                             }
                         }
                     }
@@ -1151,19 +1173,25 @@
                             },
                             "mount_it": {
                                 "command": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
-                                            {
-                                                "Ref": "FileSystem"
-                                            },
-                                            ".efs.",
-                                            {
-                                                "Ref": "AWS::Region"
-                                            },
-                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
-                                        ]
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        {
+                                            "Fn::Join": [
+                                                "",
+                                                [
+                                                    "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                                    {
+                                                        "Ref": "FileSystem"
+                                                    },
+                                                    ".efs.",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                ]
+                                            ]
+                                        },
+                                        "echo \"EFS Not Supported\""
                                     ]
                                 }
                             }
@@ -1424,19 +1452,25 @@
                             },
                             "mount_it": {
                                 "command": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
-                                            {
-                                                "Ref": "FileSystem"
-                                            },
-                                            ".efs.",
-                                            {
-                                                "Ref": "AWS::Region"
-                                            },
-                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
-                                        ]
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        {
+                                            "Fn::Join": [
+                                                "",
+                                                [
+                                                    "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                                    {
+                                                        "Ref": "FileSystem"
+                                                    },
+                                                    ".efs.",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                ]
+                                            ]
+                                        },
+                                        "echo \"EFS Not Supported\""
                                     ]
                                 }
                             }
@@ -1696,19 +1730,25 @@
                                 },
                                 "mount_it": {
                                     "command": {
-                                        "Fn::Join": [
-                                            "",
-                                            [
-                                                "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
-                                                {
-                                                    "Ref": "FileSystem"
-                                                },
-                                                ".efs.",
-                                                {
-                                                    "Ref": "AWS::Region"
-                                                },
-                                                ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
-                                            ]
+                                        "Fn::If": [
+                                            "EFSCreateCondition",
+                                            {
+                                                "Fn::Join": [
+                                                    "",
+                                                    [
+                                                        "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                                        {
+                                                            "Ref": "FileSystem"
+                                                        },
+                                                        ".efs.",
+                                                        {
+                                                            "Ref": "AWS::Region"
+                                                        },
+                                                        ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                    ]
+                                                ]
+                                            },
+                                            "echo \"EFS Not Supported\""
                                         ]
                                     }
                                 }
@@ -1969,20 +2009,26 @@
                                 }
                             },
                             "mount_it": {
-                                "command": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
-                                            {
-                                                "Ref": "FileSystem"
-                                            },
-                                            ".efs.",
-                                            {
-                                                "Ref": "AWS::Region"
-                                            },
-                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
-                                        ]
+                                 "command": {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        {
+                                            "Fn::Join": [
+                                                "",
+                                                [
+                                                    "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                                    {
+                                                        "Ref": "FileSystem"
+                                                    },
+                                                    ".efs.",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                ]
+                                            ]
+                                        },
+                                        "echo \"EFS Not Supported\""
                                     ]
                                 }
                             }
@@ -2242,20 +2288,26 @@
                                 }
                             },
                             "mount_it": {
-                                "command": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
-                                            {
-                                                "Ref": "FileSystem"
-                                            },
-                                            ".efs.",
-                                            {
-                                                "Ref": "AWS::Region"
-                                            },
-                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
-                                        ]
+                                 "command": {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        {
+                                            "Fn::Join": [
+                                                "",
+                                                [
+                                                    "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                                    {
+                                                        "Ref": "FileSystem"
+                                                    },
+                                                    ".efs.",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                ]
+                                            ]
+                                        },
+                                        "echo \"EFS Not Supported\""
                                     ]
                                 }
                             }
@@ -2515,20 +2567,26 @@
                                 }
                             },
                             "mount_it": {
-                                "command": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
-                                            {
-                                                "Ref": "FileSystem"
-                                            },
-                                            ".efs.",
-                                            {
-                                                "Ref": "AWS::Region"
-                                            },
-                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
-                                        ]
+                                 "command": {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        {
+                                            "Fn::Join": [
+                                                "",
+                                                [
+                                                    "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                                    {
+                                                        "Ref": "FileSystem"
+                                                    },
+                                                    ".efs.",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                ]
+                                            ]
+                                        },
+                                        "echo \"EFS Not Supported\""
                                     ]
                                 }
                             }
@@ -2788,20 +2846,26 @@
                                 }
                             },
                             "mount_it": {
-                                "command": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
-                                            {
-                                                "Ref": "FileSystem"
-                                            },
-                                            ".efs.",
-                                            {
-                                                "Ref": "AWS::Region"
-                                            },
-                                            ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
-                                        ]
+                                 "command": {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        {
+                                            "Fn::Join": [
+                                                "",
+                                                [
+                                                    "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                                    {
+                                                        "Ref": "FileSystem"
+                                                    },
+                                                    ".efs.",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                ]
+                                            ]
+                                        },
+                                        "echo \"EFS Not Supported\""
                                     ]
                                 }
                             }

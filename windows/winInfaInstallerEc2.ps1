@@ -1,4 +1,4 @@
-﻿$env:USERNAME="Administrator"
+﻿$env:USERNAME=$DOMAIN_USER_NAME
 $env:USERDOMAIN=$env:COMPUTERNAME
 $env:JOIN_HOST_NAME="$env:COMPUTERNAME"
 $env:DOMAIN_USER="Administrator"
