@@ -277,7 +277,7 @@
                 "INFORMATICAPCWINHVM": "ami-c872eda4"
             },
             "us-east-1": {
-                "INFORMATICAPCWINHVM": "ami-0ecbcd19"
+                "INFORMATICAPCWINHVM": "ami-697a777e"
             },
             "us-east-2": {
                 "INFORMATICAPCWINHVM": "TBD"
@@ -794,7 +794,7 @@
                 "AWS::CloudFormation::Init": {
                     "config": {
                         "files": {
-                            "c:\\InfaEc2Scripts\\License.key": {
+                            "C:\\InfaEc2Scripts\\License.key": {
                                 "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template"
                             }
                         },
@@ -1036,7 +1036,7 @@
                 "AWS::CloudFormation::Init": {
                     "config": {
                         "files": {
-                            "c:\\InfaEc2Scripts\\License.key": {
+                            "C:\\InfaEc2Scripts\\License.key": {
                                 "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template"
                             }
                         },
@@ -1278,7 +1278,7 @@
                 "AWS::CloudFormation::Init": {
                     "config": {
                         "files": {
-                            "c:\\InfaEc2Scripts\\License.key": {
+                            "C:\\InfaEc2Scripts\\License.key": {
                                 "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template"
                             }
                         },
@@ -1520,7 +1520,7 @@
                 "AWS::CloudFormation::Init": {
                     "config": {
                         "files": {
-                            "c:\\InfaEc2Scripts\\License.key": {
+                            "C:\\InfaEc2Scripts\\License.key": {
                                 "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template"
                             }
                         },
@@ -1762,7 +1762,7 @@
                 "AWS::CloudFormation::Init": {
                     "config": {
                         "files": {
-                            "c:\\InfaEc2Scripts\\License.key": {
+                            "C:\\InfaEc2Scripts\\License.key": {
                                 "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template"
                             }
                         },
@@ -2004,7 +2004,7 @@
                 "AWS::CloudFormation::Init": {
                     "config": {
                         "files": {
-                            "c:\\InfaEc2Scripts\\License.key": {
+                            "C:\\InfaEc2Scripts\\License.key": {
                                 "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template"
                             }
                         },
@@ -2246,7 +2246,7 @@
                 "AWS::CloudFormation::Init": {
                     "config": {
                         "files": {
-                            "c:\\InfaEc2Scripts\\License.key": {
+                            "C:\\InfaEc2Scripts\\License.key": {
                                 "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template"
                             }
                         },
@@ -2488,7 +2488,7 @@
                 "AWS::CloudFormation::Init": {
                     "config": {
                         "files": {
-                            "c:\\InfaEc2Scripts\\License.key": {
+                            "C:\\InfaEc2Scripts\\License.key": {
                                 "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template"
                             }
                         },

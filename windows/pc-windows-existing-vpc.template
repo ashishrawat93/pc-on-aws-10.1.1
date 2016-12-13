@@ -251,7 +251,7 @@
                     "INFORMATICAPCWINHVM": "TBD"
                 },
                 "ap-southeast-1": {
-                    "INFORMATICAPCWINHVM": "ami-1444e777"
+                    "INFORMATICAPCWINHVM": "ami-0ecbcd19"
                 },
                 "ap-southeast-2": {
                     "INFORMATICAPCWINHVM": "ami-ebb48b88"
@@ -266,7 +266,7 @@
                     "INFORMATICAPCWINHVM": "ami-c872eda4"
                 },
                 "us-east-1": {
-                    "INFORMATICAPCWINHVM": "ami-fc674feb"
+                    "INFORMATICAPCWINHVM": "ami-697a777e"
                 },
                 "us-east-2": {
                     "INFORMATICAPCWINHVM": "TBD"

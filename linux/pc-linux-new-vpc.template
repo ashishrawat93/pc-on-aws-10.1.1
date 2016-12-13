@@ -277,7 +277,7 @@
                 "INFORMATICAPCRHELHVM": "ami-281f8044"
             },
             "us-east-1": {
-                "INFORMATICAPCRHELHVM": "ami-0ecbcd19"
+                "INFORMATICAPCRHELHVM": "ami-697a777e"
             },
             "us-east-2": {
                 "INFORMATICAPCRHELHVM": "TBD"
@@ -939,18 +939,20 @@
                                     ]
                                 }
                             },
-                            "3-permissions": {
+                            "3-permissions":  {
                                 "command": {
                                     "Fn::Join": [
                                         "",
-                                        "sudo chmod -R 777 ",
-                                        {
-                                            "Fn::FindInMap": [
-                                                "Config",
-                                                "Settings",
-                                                "EFSDirectory"
-                                            ]
-                                        }
+                                        [
+                                            "sudo chmod -R 777 ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "Config",
+                                                    "Settings",
+                                                    "EFSDirectory"
+                                                ]
+                                            }
+                                        ]
                                     ]
                                 }
                             },
@@ -958,14 +960,16 @@
                                 "command": {
                                     "Fn::Join": [
                                         "",
-                                        "sudo chown ec2-user.ec2-user ",
-                                        {
-                                            "Fn::FindInMap": [
-                                                "Config",
-                                                "Settings",
-                                                "EFSDirectory"
-                                            ]
-                                        }
+                                        [
+                                            "sudo chown ec2-user.ec2-user ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "Config",
+                                                    "Settings",
+                                                    "EFSDirectory"
+                                                ]
+                                            }
+                                        ]
                                     ]
                                 }
                             }
@@ -1254,14 +1258,16 @@
                                 "command": {
                                     "Fn::Join": [
                                         "",
-                                        "sudo chmod -R 777 ",
-                                        {
-                                            "Fn::FindInMap": [
-                                                "Config",
-                                                "Settings",
-                                                "EFSDirectory"
-                                            ]
-                                        }
+                                        [
+                                            "sudo chmod -R 777 ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "Config",
+                                                    "Settings",
+                                                    "EFSDirectory"
+                                                ]
+                                            }
+                                        ]
                                     ]
                                 }
                             },
@@ -1269,14 +1275,16 @@
                                 "command": {
                                     "Fn::Join": [
                                         "",
-                                        "sudo chown ec2-user.ec2-user ",
-                                        {
-                                            "Fn::FindInMap": [
-                                                "Config",
-                                                "Settings",
-                                                "EFSDirectory"
-                                            ]
-                                        }
+                                        [
+                                            "sudo chown ec2-user.ec2-user ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "Config",
+                                                    "Settings",
+                                                    "EFSDirectory"
+                                                ]
+                                            }
+                                        ]
                                     ]
                                 }
                             }
@@ -1570,14 +1578,16 @@
                                 "command": {
                                     "Fn::Join": [
                                         "",
-                                        "sudo chmod -R 777 ",
-                                        {
-                                            "Fn::FindInMap": [
-                                                "Config",
-                                                "Settings",
-                                                "EFSDirectory"
-                                            ]
-                                        }
+                                        [
+                                            "sudo chmod -R 777 ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "Config",
+                                                    "Settings",
+                                                    "EFSDirectory"
+                                                ]
+                                            }
+                                        ]
                                     ]
                                 }
                             },
@@ -1585,14 +1595,16 @@
                                 "command": {
                                     "Fn::Join": [
                                         "",
-                                        "sudo chown ec2-user.ec2-user ",
-                                        {
-                                            "Fn::FindInMap": [
-                                                "Config",
-                                                "Settings",
-                                                "EFSDirectory"
-                                            ]
-                                        }
+                                        [
+                                            "sudo chown ec2-user.ec2-user ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "Config",
+                                                    "Settings",
+                                                    "EFSDirectory"
+                                                ]
+                                            }
+                                        ]
                                     ]
                                 }
                             }
@@ -1882,18 +1894,20 @@
                                     ]
                                 }
                             },
-                            "3-permissions": {
+                            "3-permissions":  {
                                 "command": {
                                     "Fn::Join": [
                                         "",
-                                        "sudo chmod -R 777 ",
-                                        {
-                                            "Fn::FindInMap": [
-                                                "Config",
-                                                "Settings",
-                                                "EFSDirectory"
-                                            ]
-                                        }
+                                        [
+                                            "sudo chmod -R 777 ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "Config",
+                                                    "Settings",
+                                                    "EFSDirectory"
+                                                ]
+                                            }
+                                        ]
                                     ]
                                 }
                             },
@@ -1901,14 +1915,16 @@
                                 "command": {
                                     "Fn::Join": [
                                         "",
-                                        "sudo chown ec2-user.ec2-user ",
-                                        {
-                                            "Fn::FindInMap": [
-                                                "Config",
-                                                "Settings",
-                                                "EFSDirectory"
-                                            ]
-                                        }
+                                        [
+                                            "sudo chown ec2-user.ec2-user ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "Config",
+                                                    "Settings",
+                                                    "EFSDirectory"
+                                                ]
+                                            }
+                                        ]
                                     ]
                                 }
                             }
@@ -2202,14 +2218,16 @@
                                 "command": {
                                     "Fn::Join": [
                                         "",
-                                        "sudo chmod -R 777 ",
-                                        {
-                                            "Fn::FindInMap": [
-                                                "Config",
-                                                "Settings",
-                                                "EFSDirectory"
-                                            ]
-                                        }
+                                        [
+                                            "sudo chmod -R 777 ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "Config",
+                                                    "Settings",
+                                                    "EFSDirectory"
+                                                ]
+                                            }
+                                        ]
                                     ]
                                 }
                             },
@@ -2217,14 +2235,16 @@
                                 "command": {
                                     "Fn::Join": [
                                         "",
-                                        "sudo chown ec2-user.ec2-user ",
-                                        {
-                                            "Fn::FindInMap": [
-                                                "Config",
-                                                "Settings",
-                                                "EFSDirectory"
-                                            ]
-                                        }
+                                        [
+                                            "sudo chown ec2-user.ec2-user ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "Config",
+                                                    "Settings",
+                                                    "EFSDirectory"
+                                                ]
+                                            }
+                                        ]
                                     ]
                                 }
                             }
@@ -2514,18 +2534,20 @@
                                     ]
                                 }
                             },
-                            "3-permissions": {
+                            "3-permissions":  {
                                 "command": {
                                     "Fn::Join": [
                                         "",
-                                        "sudo chmod -R 777 ",
-                                        {
-                                            "Fn::FindInMap": [
-                                                "Config",
-                                                "Settings",
-                                                "EFSDirectory"
-                                            ]
-                                        }
+                                        [
+                                            "sudo chmod -R 777 ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "Config",
+                                                    "Settings",
+                                                    "EFSDirectory"
+                                                ]
+                                            }
+                                        ]
                                     ]
                                 }
                             },
@@ -2533,14 +2555,16 @@
                                 "command": {
                                     "Fn::Join": [
                                         "",
-                                        "sudo chown ec2-user.ec2-user ",
-                                        {
-                                            "Fn::FindInMap": [
-                                                "Config",
-                                                "Settings",
-                                                "EFSDirectory"
-                                            ]
-                                        }
+                                        [
+                                            "sudo chown ec2-user.ec2-user ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "Config",
+                                                    "Settings",
+                                                    "EFSDirectory"
+                                                ]
+                                            }
+                                        ]
                                     ]
                                 }
                             }
@@ -2830,18 +2854,20 @@
                                     ]
                                 }
                             },
-                            "3-permissions": {
+                            "3-permissions":  {
                                 "command": {
                                     "Fn::Join": [
                                         "",
-                                        "sudo chmod -R 777 ",
-                                        {
-                                            "Fn::FindInMap": [
-                                                "Config",
-                                                "Settings",
-                                                "EFSDirectory"
-                                            ]
-                                        }
+                                        [
+                                            "sudo chmod -R 777 ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "Config",
+                                                    "Settings",
+                                                    "EFSDirectory"
+                                                ]
+                                            }
+                                        ]
                                     ]
                                 }
                             },
@@ -2849,14 +2875,16 @@
                                 "command": {
                                     "Fn::Join": [
                                         "",
-                                        "sudo chown ec2-user.ec2-user ",
-                                        {
-                                            "Fn::FindInMap": [
-                                                "Config",
-                                                "Settings",
-                                                "EFSDirectory"
-                                            ]
-                                        }
+                                        [
+                                            "sudo chown ec2-user.ec2-user ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "Config",
+                                                    "Settings",
+                                                    "EFSDirectory"
+                                                ]
+                                            }
+                                        ]
                                     ]
                                 }
                             }
@@ -3150,14 +3178,16 @@
                                 "command": {
                                     "Fn::Join": [
                                         "",
-                                        "sudo chmod -R 777 ",
-                                        {
-                                            "Fn::FindInMap": [
-                                                "Config",
-                                                "Settings",
-                                                "EFSDirectory"
-                                            ]
-                                        }
+                                        [
+                                            "sudo chmod -R 777 ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "Config",
+                                                    "Settings",
+                                                    "EFSDirectory"
+                                                ]
+                                            }
+                                        ]
                                     ]
                                 }
                             },
@@ -3165,14 +3195,16 @@
                                 "command": {
                                     "Fn::Join": [
                                         "",
-                                        "sudo chown ec2-user.ec2-user ",
-                                        {
-                                            "Fn::FindInMap": [
-                                                "Config",
-                                                "Settings",
-                                                "EFSDirectory"
-                                            ]
-                                        }
+                                        [
+                                            "sudo chown ec2-user.ec2-user ",
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "Config",
+                                                    "Settings",
+                                                    "EFSDirectory"
+                                                ]
+                                            }
+                                        ]
                                     ]
                                 }
                             }
