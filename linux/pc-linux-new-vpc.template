@@ -873,6 +873,15 @@
                                 "nfs-utils": []
                             }
                         },
+                        "files": {
+                            "/home/ec2-user/Informatica/10.1.0/lic.txt": {
+                                "source":"https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template",
+                                "mode":"000644",
+                                "owner": "ec2-user",
+                                "group": "ec2-user"
+                            }
+                            
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -899,27 +908,29 @@
                                     ]
                                 }
                             },
-                            "command": {
-                                "Fn::If": [
-                                    "EFSCreateCondition",
-                                    {
-                                        "Fn::Join": [
-                                            "",
-                                            [
-                                                "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
-                                                {
-                                                    "Ref": "FileSystem"
-                                                },
-                                                ".efs.",
-                                                {
-                                                    "Ref": "AWS::Region"
-                                                },
-                                                ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                            "mount_it": {
+                                "command": {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        {
+                                            "Fn::Join": [
+                                                "",
+                                                [
+                                                    "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                                    {
+                                                        "Ref": "FileSystem"
+                                                    },
+                                                    ".efs.",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                ]
                                             ]
-                                        ]
-                                    },
-                                    "echo \"EFS Not Supported\""
-                                ]
+                                        },
+                                        "echo \"EFS Not Supported\""
+                                    ]
+                                }
                             }
                         }
                     }
@@ -1727,30 +1738,30 @@
                                             }
                                         ]
                                     ]
-                                },
-                                "mount_it": {
-                                    "command": {
-                                        "Fn::If": [
-                                            "EFSCreateCondition",
-                                            {
-                                                "Fn::Join": [
-                                                    "",
-                                                    [
-                                                        "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
-                                                        {
-                                                            "Ref": "FileSystem"
-                                                        },
-                                                        ".efs.",
-                                                        {
-                                                            "Ref": "AWS::Region"
-                                                        },
-                                                        ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
-                                                    ]
+                                }
+                            },
+                            "mount_it": {
+                                "command": {
+                                    "Fn::If": [
+                                        "EFSCreateCondition",
+                                        {
+                                            "Fn::Join": [
+                                                "",
+                                                [
+                                                    "mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).",
+                                                    {
+                                                        "Ref": "FileSystem"
+                                                    },
+                                                    ".efs.",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
                                                 ]
-                                            },
-                                            "echo \"EFS Not Supported\""
-                                        ]
-                                    }
+                                            ]
+                                        },
+                                        "echo \"EFS Not Supported\""
+                                    ]
                                 }
                             }
                         }
@@ -2009,7 +2020,7 @@
                                 }
                             },
                             "mount_it": {
-                                 "command": {
+                                "command": {
                                     "Fn::If": [
                                         "EFSCreateCondition",
                                         {
@@ -2288,7 +2299,7 @@
                                 }
                             },
                             "mount_it": {
-                                 "command": {
+                                "command": {
                                     "Fn::If": [
                                         "EFSCreateCondition",
                                         {
@@ -2567,7 +2578,7 @@
                                 }
                             },
                             "mount_it": {
-                                 "command": {
+                                "command": {
                                     "Fn::If": [
                                         "EFSCreateCondition",
                                         {
@@ -2846,7 +2857,7 @@
                                 }
                             },
                             "mount_it": {
-                                 "command": {
+                                "command": {
                                     "Fn::If": [
                                         "EFSCreateCondition",
                                         {
