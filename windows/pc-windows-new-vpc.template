@@ -793,6 +793,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "files": {
+                            "c:\\InfaEc2Scripts\\License.key": {
+                                "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template"
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1030,6 +1035,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "files": {
+                            "c:\\InfaEc2Scripts\\License.key": {
+                                "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template"
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1267,6 +1277,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "files": {
+                            "c:\\InfaEc2Scripts\\License.key": {
+                                "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template"
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1504,6 +1519,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "files": {
+                            "c:\\InfaEc2Scripts\\License.key": {
+                                "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template"
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1741,6 +1761,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "files": {
+                            "c:\\InfaEc2Scripts\\License.key": {
+                                "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template"
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1978,6 +2003,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "files": {
+                            "c:\\InfaEc2Scripts\\License.key": {
+                                "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template"
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -2215,6 +2245,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "files": {
+                            "c:\\InfaEc2Scripts\\License.key": {
+                                "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template"
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -2452,6 +2487,11 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
+                        "files": {
+                            "c:\\InfaEc2Scripts\\License.key": {
+                                "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template"
+                            }
+                        },
                         "commands": {
                             "1-setup": {
                                 "command": {

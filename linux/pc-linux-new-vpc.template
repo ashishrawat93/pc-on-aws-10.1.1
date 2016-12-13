@@ -295,7 +295,8 @@
                 "DatabaseSize": "db.t2.large",
                 "IntegrationServiceName": "PowerCenterIntegrationService",
                 "RepositoryServiceName": "PowerCenterRepository",
-                "GridName": "InfaDefaultGrid"
+                "GridName": "InfaDefaultGrid",
+                "EFSDirectory": "/home/ec2-user/Informatica/10.1.0/infa_shared"
             },
             "Oracle-License-Included": {
                 "Engine": "oracle-se1",
@@ -875,12 +876,11 @@
                         },
                         "files": {
                             "/home/ec2-user/Informatica/10.1.0/lic.txt": {
-                                "source":"https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template",
-                                "mode":"000644",
+                                "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template",
+                                "mode": "000777",
                                 "owner": "ec2-user",
                                 "group": "ec2-user"
                             }
-                            
                         },
                         "commands": {
                             "1-setup": {
@@ -908,7 +908,7 @@
                                     ]
                                 }
                             },
-                            "mount_it": {
+                            "2-mount_it": {
                                 "command": {
                                     "Fn::If": [
                                         "EFSCreateCondition",
@@ -924,11 +924,48 @@
                                                     {
                                                         "Ref": "AWS::Region"
                                                     },
-                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                    ".amazonaws.com:/ ",
+                                                    {
+                                                        "Fn::FindInMap": [
+                                                            "Config",
+                                                            "Settings",
+                                                            "EFSDirectory"
+                                                        ]
+                                                    }
                                                 ]
                                             ]
                                         },
                                         "echo \"EFS Not Supported\""
+                                    ]
+                                }
+                            },
+                            "3-permissions": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        "sudo chmod -R 777 ",
+                                        {
+                                            "Fn::FindInMap": [
+                                                "Config",
+                                                "Settings",
+                                                "EFSDirectory"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            "4-owners": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        "sudo chown ec2-user.ec2-user ",
+                                        {
+                                            "Fn::FindInMap": [
+                                                "Config",
+                                                "Settings",
+                                                "EFSDirectory"
+                                            ]
+                                        }
                                     ]
                                 }
                             }
@@ -1182,7 +1219,7 @@
                                     ]
                                 }
                             },
-                            "mount_it": {
+                            "2-mount_it": {
                                 "command": {
                                     "Fn::If": [
                                         "EFSCreateCondition",
@@ -1198,11 +1235,48 @@
                                                     {
                                                         "Ref": "AWS::Region"
                                                     },
-                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                    ".amazonaws.com:/ ",
+                                                    {
+                                                        "Fn::FindInMap": [
+                                                            "Config",
+                                                            "Settings",
+                                                            "EFSDirectory"
+                                                        ]
+                                                    }
                                                 ]
                                             ]
                                         },
                                         "echo \"EFS Not Supported\""
+                                    ]
+                                }
+                            },
+                            "3-permissions": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        "sudo chmod -R 777 ",
+                                        {
+                                            "Fn::FindInMap": [
+                                                "Config",
+                                                "Settings",
+                                                "EFSDirectory"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            "4-owners": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        "sudo chown ec2-user.ec2-user ",
+                                        {
+                                            "Fn::FindInMap": [
+                                                "Config",
+                                                "Settings",
+                                                "EFSDirectory"
+                                            ]
+                                        }
                                     ]
                                 }
                             }
@@ -1461,7 +1535,7 @@
                                     ]
                                 }
                             },
-                            "mount_it": {
+                            "2-mount_it": {
                                 "command": {
                                     "Fn::If": [
                                         "EFSCreateCondition",
@@ -1477,11 +1551,48 @@
                                                     {
                                                         "Ref": "AWS::Region"
                                                     },
-                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                    ".amazonaws.com:/ ",
+                                                    {
+                                                        "Fn::FindInMap": [
+                                                            "Config",
+                                                            "Settings",
+                                                            "EFSDirectory"
+                                                        ]
+                                                    }
                                                 ]
                                             ]
                                         },
                                         "echo \"EFS Not Supported\""
+                                    ]
+                                }
+                            },
+                            "3-permissions": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        "sudo chmod -R 777 ",
+                                        {
+                                            "Fn::FindInMap": [
+                                                "Config",
+                                                "Settings",
+                                                "EFSDirectory"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            "4-owners": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        "sudo chown ec2-user.ec2-user ",
+                                        {
+                                            "Fn::FindInMap": [
+                                                "Config",
+                                                "Settings",
+                                                "EFSDirectory"
+                                            ]
+                                        }
                                     ]
                                 }
                             }
@@ -1740,7 +1851,7 @@
                                     ]
                                 }
                             },
-                            "mount_it": {
+                            "2-mount_it": {
                                 "command": {
                                     "Fn::If": [
                                         "EFSCreateCondition",
@@ -1756,11 +1867,48 @@
                                                     {
                                                         "Ref": "AWS::Region"
                                                     },
-                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                    ".amazonaws.com:/ ",
+                                                    {
+                                                        "Fn::FindInMap": [
+                                                            "Config",
+                                                            "Settings",
+                                                            "EFSDirectory"
+                                                        ]
+                                                    }
                                                 ]
                                             ]
                                         },
                                         "echo \"EFS Not Supported\""
+                                    ]
+                                }
+                            },
+                            "3-permissions": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        "sudo chmod -R 777 ",
+                                        {
+                                            "Fn::FindInMap": [
+                                                "Config",
+                                                "Settings",
+                                                "EFSDirectory"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            "4-owners": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        "sudo chown ec2-user.ec2-user ",
+                                        {
+                                            "Fn::FindInMap": [
+                                                "Config",
+                                                "Settings",
+                                                "EFSDirectory"
+                                            ]
+                                        }
                                     ]
                                 }
                             }
@@ -2019,7 +2167,7 @@
                                     ]
                                 }
                             },
-                            "mount_it": {
+                            "2-mount_it": {
                                 "command": {
                                     "Fn::If": [
                                         "EFSCreateCondition",
@@ -2035,11 +2183,48 @@
                                                     {
                                                         "Ref": "AWS::Region"
                                                     },
-                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                    ".amazonaws.com:/ ",
+                                                    {
+                                                        "Fn::FindInMap": [
+                                                            "Config",
+                                                            "Settings",
+                                                            "EFSDirectory"
+                                                        ]
+                                                    }
                                                 ]
                                             ]
                                         },
                                         "echo \"EFS Not Supported\""
+                                    ]
+                                }
+                            },
+                            "3-permissions": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        "sudo chmod -R 777 ",
+                                        {
+                                            "Fn::FindInMap": [
+                                                "Config",
+                                                "Settings",
+                                                "EFSDirectory"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            "4-owners": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        "sudo chown ec2-user.ec2-user ",
+                                        {
+                                            "Fn::FindInMap": [
+                                                "Config",
+                                                "Settings",
+                                                "EFSDirectory"
+                                            ]
+                                        }
                                     ]
                                 }
                             }
@@ -2298,7 +2483,7 @@
                                     ]
                                 }
                             },
-                            "mount_it": {
+                            "2-mount_it": {
                                 "command": {
                                     "Fn::If": [
                                         "EFSCreateCondition",
@@ -2314,11 +2499,48 @@
                                                     {
                                                         "Ref": "AWS::Region"
                                                     },
-                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                    ".amazonaws.com:/ ",
+                                                    {
+                                                        "Fn::FindInMap": [
+                                                            "Config",
+                                                            "Settings",
+                                                            "EFSDirectory"
+                                                        ]
+                                                    }
                                                 ]
                                             ]
                                         },
                                         "echo \"EFS Not Supported\""
+                                    ]
+                                }
+                            },
+                            "3-permissions": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        "sudo chmod -R 777 ",
+                                        {
+                                            "Fn::FindInMap": [
+                                                "Config",
+                                                "Settings",
+                                                "EFSDirectory"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            "4-owners": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        "sudo chown ec2-user.ec2-user ",
+                                        {
+                                            "Fn::FindInMap": [
+                                                "Config",
+                                                "Settings",
+                                                "EFSDirectory"
+                                            ]
+                                        }
                                     ]
                                 }
                             }
@@ -2577,7 +2799,7 @@
                                     ]
                                 }
                             },
-                            "mount_it": {
+                            "2-mount_it": {
                                 "command": {
                                     "Fn::If": [
                                         "EFSCreateCondition",
@@ -2593,11 +2815,48 @@
                                                     {
                                                         "Ref": "AWS::Region"
                                                     },
-                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                    ".amazonaws.com:/ ",
+                                                    {
+                                                        "Fn::FindInMap": [
+                                                            "Config",
+                                                            "Settings",
+                                                            "EFSDirectory"
+                                                        ]
+                                                    }
                                                 ]
                                             ]
                                         },
                                         "echo \"EFS Not Supported\""
+                                    ]
+                                }
+                            },
+                            "3-permissions": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        "sudo chmod -R 777 ",
+                                        {
+                                            "Fn::FindInMap": [
+                                                "Config",
+                                                "Settings",
+                                                "EFSDirectory"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            "4-owners": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        "sudo chown ec2-user.ec2-user ",
+                                        {
+                                            "Fn::FindInMap": [
+                                                "Config",
+                                                "Settings",
+                                                "EFSDirectory"
+                                            ]
+                                        }
                                     ]
                                 }
                             }
@@ -2856,7 +3115,7 @@
                                     ]
                                 }
                             },
-                            "mount_it": {
+                            "2-mount_it": {
                                 "command": {
                                     "Fn::If": [
                                         "EFSCreateCondition",
@@ -2872,11 +3131,48 @@
                                                     {
                                                         "Ref": "AWS::Region"
                                                     },
-                                                    ".amazonaws.com:/ /home/ec2-user/Informatica/10.1.0/infa_shared"
+                                                    ".amazonaws.com:/ ",
+                                                    {
+                                                        "Fn::FindInMap": [
+                                                            "Config",
+                                                            "Settings",
+                                                            "EFSDirectory"
+                                                        ]
+                                                    }
                                                 ]
                                             ]
                                         },
                                         "echo \"EFS Not Supported\""
+                                    ]
+                                }
+                            },
+                            "3-permissions": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        "sudo chmod -R 777 ",
+                                        {
+                                            "Fn::FindInMap": [
+                                                "Config",
+                                                "Settings",
+                                                "EFSDirectory"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            "4-owners": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        "sudo chown ec2-user.ec2-user ",
+                                        {
+                                            "Fn::FindInMap": [
+                                                "Config",
+                                                "Settings",
+                                                "EFSDirectory"
+                                            ]
+                                        }
                                     ]
                                 }
                             }
