@@ -45,7 +45,8 @@
                         "InformaticaNodeName",
                         "InformaticaDomainUsername",
                         "InformaticaDomainPassword",
-                        "EncryptionKeyPhrase"
+                        "EncryptionKeyPhrase",
+                        "LicenseKey"
                     ]
                 }
             ],
@@ -97,6 +98,9 @@
                 },
                 "VPCID": {
                     "default": "VPC ID"
+                },
+                "LicenseKey": {
+                    "default": "License Key"
                 }
             }
         }
@@ -212,6 +216,11 @@
         "VPCID": {
             "Description": "Which VPC should this be deployed to?",
             "Type": "AWS::EC2::VPC::Id"
+        },
+        "LicenseKey": {
+            "Description": "Informatica License Key. Provide a PUBLIC S3 link for the License Key. Optional Argument. Leave unassigned to go ahead without the Licence Key.",
+            "Type": "String",
+            "Default": "unassigned"
         }
     },
     "Rules": {
@@ -266,7 +275,7 @@
                 "INFORMATICAPCRHELHVM": "ami-281f8044"
             },
             "us-east-1": {
-                "INFORMATICAPCRHELHVM": "ami-697a777e"
+                "INFORMATICAPCRHELHVM": "ami-a15d52b6"
             },
             "us-east-2": {
                 "INFORMATICAPCRHELHVM": "TBD"
@@ -285,7 +294,8 @@
                 "IntegrationServiceName": "PowerCenterIntegrationService",
                 "RepositoryServiceName": "PowerCenterRepository",
                 "GridName": "InfaDefaultGrid",
-                "EFSDirectory": "/home/ec2-user/Informatica/10.1.0/infa_shared"
+                "EFSDirectory": "/home/ec2-user/Informatica/10.1.1/infa_shared",
+                "LicenseFile": "/home/ec2-user/Informatica/10.1.1/License.key"
             },
             "Oracle-License-Included": {
                 "Engine": "oracle-se1",
@@ -304,6 +314,18 @@
         }
     },
     "Conditions": {
+        "AddLicenseCondition": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "LicenseKey"
+                        },
+                        "unassigned"
+                    ]
+                }
+            ]
+        },
         "EFSCreateCondition": {
             "Fn::Or": [
                 {
@@ -638,8 +660,16 @@
                             }
                         },
                         "files": {
-                            "/home/ec2-user/Informatica/10.1.0/lic.txt": {
-                                "source": "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/informatica-powercenter-linux.template",
+                            "/home/ec2-user/Informatica/10.1.1/License.key": {
+                                "source": {
+                                    "Fn::If": [
+                                        "AddLicenseCondition",
+                                        {
+                                            "Ref": "LicenseKey"
+                                        },
+                                        "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/NotFound.txt"
+                                    ]
+                                },
                                 "mode": "000644",
                                 "owner": "ec2-user",
                                 "group": "ec2-user"
@@ -707,7 +737,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "sudo chmod -R 777 ",
+                                            "chmod -R 777 ",
                                             {
                                                 "Fn::FindInMap": [
                                                     "Config",
@@ -724,7 +754,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "sudo chown ec2-user.ec2-user ",
+                                            "chown ec2-user.ec2-user ",
                                             {
                                                 "Fn::FindInMap": [
                                                     "Config",
@@ -793,6 +823,15 @@
                                 "export DOMAIN_USER_NAME=\"",
                                 {
                                     "Ref": "InformaticaDomainUsername"
+                                },
+                                "\"\n",
+                                "export ADD_LICENSE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "AddLicenseCondition",
+                                        "1",
+                                        "0"
+                                    ]
                                 },
                                 "\"\n",
                                 "export EFS_CREATE_CONDITION=\"",
@@ -904,9 +943,9 @@
                                 "\"\n",
                                 "export JOIN_NODE_NAME=\"Informatica_NotApplicable_NodeName\" \n",
                                 "export DOMAIN_HOST_NAME=\"$HOSTNAME\" \n",
-                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "mkdir /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
-                                "sudo chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "sudo chmod -R 777 /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
@@ -1224,9 +1263,9 @@
                                     ]
                                 },
                                 "\"\n",
-                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "mkdir /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
-                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
@@ -1544,9 +1583,9 @@
                                     ]
                                 },
                                 "\"\n",
-                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "mkdir /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
-                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
@@ -1864,9 +1903,9 @@
                                     ]
                                 },
                                 "\"\n",
-                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "mkdir /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
-                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
@@ -1994,7 +2033,7 @@
                                     ]
                                 }
                             },
-                            "4-owners":{
+                            "4-owners": {
                                 "command": {
                                     "Fn::Join": [
                                         "",
@@ -2184,9 +2223,9 @@
                                     ]
                                 },
                                 "\"\n",
-                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "mkdir /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
-                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
@@ -2314,7 +2353,7 @@
                                     ]
                                 }
                             },
-                            "4-owners":{
+                            "4-owners": {
                                 "command": {
                                     "Fn::Join": [
                                         "",
@@ -2504,9 +2543,9 @@
                                     ]
                                 },
                                 "\"\n",
-                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "mkdir /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
-                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
@@ -2824,9 +2863,9 @@
                                     ]
                                 },
                                 "\"\n",
-                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "mkdir /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
-                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
@@ -3144,9 +3183,9 @@
                                     ]
                                 },
                                 "\"\n",
-                                "mkdir /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "mkdir /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
-                                "chmod -R 777 /home/ec2-user/Informatica/10.1.0/infa_shared",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",

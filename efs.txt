@@ -1,3 +1,16 @@
 mkdir $mountdir
 mount -t cifs //$storageName.file.core.windows.net/infaaeshare $mountdir -o vers=3.0,username=$storageName,password=$storageKey,dir_mode=0777,file_mode=0777
 echo //$storageName.file.core.windows.net/infaaeshare $mountdir cifs vers=3.0,username=$storageName,password=$storageKey,dir_mode=0777,file_mode=0777 >> /etc/fstab
+
+
+
+
+
+
+shared mount
+
+#Mounting azure shared file drive
+$cmd = "net use I: \\$storageName.file.core.windows.net\$shareName /u:$storageName $storageKey" 
+$cmd | Set-Content "$env:SystemDrive\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\MountShareDrive.cmd"
+
+runas /user:$osUserName net use I: \\$storageName.file.core.windows.net\$shareName /u:$storageName $storageKey
