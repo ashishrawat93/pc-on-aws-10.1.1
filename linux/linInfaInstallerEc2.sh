@@ -10,8 +10,8 @@ passkey=$4
 
 CLOUD_SUPPORT_ENABLE=1
 
-USER_INSTALL_DIR="\/home\/ec2-user\/Informatica\/10.1.0"
-KEY_DEST_LOCATION="\/home\/ec2-user\/Informatica\/10.1.0\/isp\/config\/keys"
+USER_INSTALL_DIR="\/home\/ec2-user\/Informatica\/10.1.1"
+KEY_DEST_LOCATION="\/home\/ec2-user\/Informatica\/10.1.1\/isp\/config\/keys"
 
 function setENV {
     echo "Setting env"
@@ -77,33 +77,43 @@ setENV
 cd /home/ec2-user/infainstaller
 echo Y Y | sh silentinstall.sh 
 
-USER_INSTALL_DIR="/home/ec2-user/Informatica/10.1.0"
+USER_INSTALL_DIR="/home/ec2-user/Informatica/10.1.1"
 chown -R ec2-user.ec2-user $USER_INSTALL_DIR
 
 
 function createPCServices {
      echo "creating PC services" >> /home/ec2-user/InfaServiceLog.log
 
-    sh /home/ec2-user/Informatica/10.1.0/isp/bin/infacmd.sh  createrepositoryservice -dn $DOMAIN_NAME -nn $NODE_NAME -sn $REPOSITORY_SERVICE_NAME -so DBUser=$REPO_USER DatabaseType=$DB_TYPE DBPassword=$dbpass ConnectString=$DB_SERVICENAME CodePage="UTF-8 encoding of Unicode"  OperatingMode=NORMAL -un $DOMAIN_USER -pd $domainpass -sd &>> /home/ec2-user/InfaServiceLog.log
+    sh /home/ec2-user/Informatica/10.1.1/isp/bin/infacmd.sh  createrepositoryservice -dn $DOMAIN_NAME -nn $NODE_NAME -sn $REPOSITORY_SERVICE_NAME -so DBUser=$REPO_USER DatabaseType=$DB_TYPE DBPassword=$dbpass ConnectString=$DB_SERVICENAME CodePage="UTF-8 encoding of Unicode"  OperatingMode=NORMAL -un $DOMAIN_USER -pd $domainpass -sd &>> /home/ec2-user/InfaServiceLog.log
 
        EXITCODE=$?
 
        if [ $SINGLE_NODE -eq 1 ]
 	then
-	   sh /home/ec2-user/Informatica/10.1.0/isp/bin/infacmd.sh  createintegrationservice -dn $DOMAIN_NAME -nn $NODE_NAME -un $DOMAIN_USER -pd $domainpass -sn $INTEGRATION_SERVICE_NAME  -rs $REPOSITORY_SERVICE_NAME  -ru $DOMAIN_USER -rp $domainpass -po codepage_id=106 -sd -ev INFA_CODEPAGENAME=UTF-8 &>> /home/ec2-user/InfaServiceLog.log
+	   sh /home/ec2-user/Informatica/10.1.1/isp/bin/infacmd.sh  createintegrationservice -dn $DOMAIN_NAME -nn $NODE_NAME -un $DOMAIN_USER -pd $domainpass -sn $INTEGRATION_SERVICE_NAME  -rs $REPOSITORY_SERVICE_NAME  -ru $DOMAIN_USER -rp $domainpass -po codepage_id=106 -sd -ev INFA_CODEPAGENAME=UTF-8 &>> /home/ec2-user/InfaServiceLog.log
 
 	   	EXITCODE=$(($? | EXITCODE))
 	else 
-	  sh /home/ec2-user/Informatica/10.1.0/isp/bin/infacmd.sh  creategrid -dn $DOMAIN_NAME -un $DOMAIN_USER -pd $domainpass -gn $GRID_NAME -nl $NODE_NAME &>> /home/ec2-user/InfaServiceLog.log
+	  sh /home/ec2-user/Informatica/10.1.1/isp/bin/infacmd.sh  creategrid -dn $DOMAIN_NAME -un $DOMAIN_USER -pd $domainpass -gn $GRID_NAME -nl $NODE_NAME &>> /home/ec2-user/InfaServiceLog.log
 
 	  	EXITCODE=$(($? | EXITCODE))
 
-	  sh /home/ec2-user/Informatica/10.1.0/isp/bin/infacmd.sh  createintegrationservice -dn $DOMAIN_NAME -gn $GRID_NAME -un $DOMAIN_USER -pd $domainpass -sn $INTEGRATION_SERVICE_NAME -rs  $REPOSITORY_SERVICE_NAME -ru $DOMAIN_USER -rp $domainpass  -po codepage_id=106 -sd -ev INFA_CODEPAGENAME=UTF-8 &>> /home/ec2-user/InfaServiceLog.log
+	  sh /home/ec2-user/Informatica/10.1.1/isp/bin/infacmd.sh  createintegrationservice -dn $DOMAIN_NAME -gn $GRID_NAME -un $DOMAIN_USER -pd $domainpass -sn $INTEGRATION_SERVICE_NAME -rs  $REPOSITORY_SERVICE_NAME -ru $DOMAIN_USER -rp $domainpass  -po codepage_id=106 -sd -ev INFA_CODEPAGENAME=UTF-8 &>> /home/ec2-user/InfaServiceLog.log
 
 	  	EXITCODE=$(($? | EXITCODE))
 
 	fi
 
+        if [ $ADD_LICENSE_CONDITION -eq 1 ]
+    then
+        echo "Adding license" >>  /home/ec2-user/InfaServiceLog.log
+
+        sh /home/ec2-user/Informatica/10.1.1/isp/bin/infacmd.sh addlicense -dn $DOMAIN_NAME -un $DOMAIN_USER -pd $domainpass -ln license -lf /home/ec2-user/Informatica/10.1.1/License.key &>> /home/ec2-user/InfaServiceLog.log
+        
+        EXITCODE=$(($? | EXITCODE))
+
+        rm -f /home/ec2-user/Informatica/10.1.1/License.key
+     fi   
          exit $EXITCODE
 
 }
@@ -111,11 +121,11 @@ if [ $JOIN_DOMAIN -eq 0 ]
 then
 	createPCServices
 else
-     sh /home/ec2-user/Informatica/10.1.0/isp/bin/infacmd.sh  updategrid -dn $DOMAIN_NAME -un $DOMAIN_USER -pd $domainpass -gn $GRID_NAME -nl  $JOIN_NODE_NAME -ul &>> /home/ec2-user/InfaServiceLog.log
+     sh /home/ec2-user/Informatica/10.1.1/isp/bin/infacmd.sh  updategrid -dn $DOMAIN_NAME -un $DOMAIN_USER -pd $domainpass -gn $GRID_NAME -nl  $JOIN_NODE_NAME -ul &>> /home/ec2-user/InfaServiceLog.log
 
     EXITCODE=$?
 
-     sh /home/ec2-user/Informatica/10.1.0/isp/bin/infacmd.sh  updateServiceProcess -dn $DOMAIN_NAME -un $DOMAIN_USER -pd $domainpass -sn $INTEGRATION_SERVICE_NAME -nn $JOIN_NODE_NAME -po CodePage_Id=106 -ev INFA_CODEPAGENAME=UTF-8 &>> /home/ec2-user/InfaServiceLog.log
+     sh /home/ec2-user/Informatica/10.1.1/isp/bin/infacmd.sh  updateServiceProcess -dn $DOMAIN_NAME -un $DOMAIN_USER -pd $domainpass -sn $INTEGRATION_SERVICE_NAME -nn $JOIN_NODE_NAME -po CodePage_Id=106 -ev INFA_CODEPAGENAME=UTF-8 &>> /home/ec2-user/InfaServiceLog.log
     
      EXITCODE=$(($? | EXITCODE))
      

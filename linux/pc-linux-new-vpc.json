@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS Cloud Formation Template for deploying Informatica PowerCenter Version 10.1.1 on EC2 RHEL7.0 instances. This template uses an existing VPC and two Private and Public subnets. It deploys an Instance of Amazon RDS with Oracle Database on the Private Subnet. The Informatica PowerCenter Instanes are deployed in the Public Subnet. The template deploys resources over two Availability Zones.",
+    "Description": "AWS Cloud Formation Template for deployment of Informatica Powercenter Version 10.1.1 on a VPC infrastructure. Informatica PowerCenter is deployed on RHEL 7.0. Amazon RDS instance in a private subnet is used as the repository for Informatica Domain Metadata. **WARNING** This template creates Amazon EC2 instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
@@ -9,10 +9,12 @@
                         "default": "Network Configuration"
                     },
                     "Parameters": [
-                        "VPCID",
-                        "PublicSubnet1ID",
-                        "PublicSubnet2ID",
-                        "DBSubnetIDs",
+                        "AvailabilityZones",
+                        "VPCCIDR",
+                        "PrivateSubnet1CIDR",
+                        "PrivateSubnet2CIDR",
+                        "PublicSubnet1CIDR",
+                        "PublicSubnet2CIDR",
                         "RemoteAccessCIDR"
                     ]
                 },
@@ -51,8 +53,8 @@
                 }
             ],
             "ParameterLabels": {
-                "DBSubnetIDs": {
-                    "default": "Informatica Database Subnets"
+                "AvailabilityZones": {
+                    "default": "Availability Zones"
                 },
                 "DatabasePassword": {
                     "default": "Database Password"
@@ -81,23 +83,29 @@
                 "KeyPairName": {
                     "default": "Key Pair Name"
                 },
-                "NumberOfPowerCenterInstances": {
-                    "default": "Number of Instances"
-                },
                 "PowerCenterInstanceType": {
                     "default": "Informatica Domain Instance Type"
                 },
-                "PublicSubnet1ID": {
-                    "default": "Public Subnet 1 ID"
+                "NumberOfPowerCenterInstances": {
+                    "default": "Number of Instances"
                 },
-                "PublicSubnet2ID": {
-                    "default": "Public Subnet 2 ID"
+                "PrivateSubnet1CIDR": {
+                    "default": "Private Subnet 1 CIDR"
+                },
+                "PrivateSubnet2CIDR": {
+                    "default": "Private Subnet 2 CIDR"
+                },
+                "PublicSubnet1CIDR": {
+                    "default": "Public Subnet 1 CIDR"
+                },
+                "PublicSubnet2CIDR": {
+                    "default": "Public Subnet 2 CIDR"
                 },
                 "RemoteAccessCIDR": {
                     "default": "Allowed Remote Access CIDR"
                 },
-                "VPCID": {
-                    "default": "VPC ID"
+                "VPCCIDR": {
+                    "default": "VPC CIDR"
                 },
                 "LicenseKey": {
                     "default": "License Key"
@@ -106,15 +114,15 @@
         }
     },
     "Parameters": {
-        "DBSubnetIDs": {
-            "Description": "Select two subnet IDs each from a different region in the VPC chosen above (such as: us-west-1b, us-west-1c)",
-            "Type": "List<AWS::EC2::Subnet::Id>"
+        "AvailabilityZones": {
+            "Description": "List of Availability Zones to use for the subnets in the VPC. Note: The logical order is preserved and only 2 AZs are used for this deployment",
+            "Type": "List<AWS::EC2::AvailabilityZone::Name>"
         },
         "DatabasePassword": {
             "Description": "Password for the Amazon RDS database account",
-            "MaxLength": "18",
+            "MaxLength": "30",
             "MinLength": "8",
-            "NoEcho": "True",
+            "NoEcho": "true",
             "Type": "String"
         },
         "DatabaseType": {
@@ -135,14 +143,14 @@
         "EncryptionKeyPhrase": {
             "AllowedPattern": "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$",
             "ConstraintDescription": "It should be 8 to 20 characters long, at least one uppercase letter at least one lowercase letter-at least one number Does not contain spaces",
-            "Description": "The text string used as the base word from which to generate an encryption key for the Informatica domain.",
+            "Description": "The text string used as the base word from which to generate an encryption key for the Informatica domain",
             "MaxLength": "32",
             "MinLength": "8",
             "NoEcho": "true",
             "Type": "String"
         },
         "InformaticaDomainName": {
-            "Description": "Name for the Informatica Domain.",
+            "Description": "Name for the Informatica Domain",
             "Type": "String",
             "Default": "InfaDomain",
             "MinLength": "4",
@@ -156,15 +164,33 @@
             "MaxLength": "20"
         },
         "InformaticaDomainUsername": {
-            "Description": "Username for the Informatica Domain.",
+            "Description": "Username for the Informatica Domain",
             "Default": "Administrator",
             "MaxLength": "32",
             "MinLength": "8",
             "Type": "String"
         },
         "InformaticaDomainPassword": {
-            "Description": "Password for the Informatica Domain. Administrator is the default Username for Informatica Domain",
-            "NoEcho": "True",
+            "Description": "Password for the Informatica Domain",
+            "MaxLength": "32",
+            "MinLength": "8",
+            "NoEcho": "true",
+            "Type": "String"
+        },
+        "PowerCenterInstanceType": {
+            "AllowedValues": [
+                "c4.xlarge",
+                "c4.2xlarge",
+                "c4.4xlarge",
+                "c4.8xlarge",
+                "r3.large",
+                "r3.xlarge",
+                "r3.2xlarge",
+                "r3.4xlarge",
+                "r3.8xlarge"
+            ],
+            "Default": "c4.2xlarge",
+            "Description": "Instance Type for Informatica Domain. Default is c4.2xlarge",
             "Type": "String"
         },
         "KeyPairName": {
@@ -183,29 +209,33 @@
             ],
             "Default": "4"
         },
-        "PowerCenterInstanceType": {
-            "AllowedValues": [
-                "c4.xlarge",
-                "c4.2xlarge",
-                "c4.4xlarge",
-                "c4.8xlarge",
-                "r3.large",
-                "r3.xlarge",
-                "r3.2xlarge",
-                "r3.4xlarge",
-                "r3.8xlarge"
-            ],
-            "Default": "c4.2xlarge",
-            "Description": "Instance Type for Informatica Domain. Default is c4.2xlarge",
+        "PrivateSubnet1CIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+            "Default": "10.0.0.0/19",
+            "Description": "CIDR block for private subnet 1 located in Availability Zone 1",
             "Type": "String"
         },
-        "PublicSubnet1ID": {
-            "Description": "Select a publicly accessible subnet ID located in Availability Zone 1 for the Informatica Domain",
-            "Type": "AWS::EC2::Subnet::Id"
+        "PrivateSubnet2CIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+            "Default": "10.0.32.0/19",
+            "Description": "CIDR block for private subnet 2 located in Availability Zone 2",
+            "Type": "String"
         },
-        "PublicSubnet2ID": {
-            "Description": "Select a publicly accessible subnet ID located in Availability Zone 2 for the Informatica Domain",
-            "Type": "AWS::EC2::Subnet::Id"
+        "PublicSubnet1CIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+            "Default": "10.0.128.0/20",
+            "Description": "CIDR Block for the public subnet 1 located in Availability Zone 1",
+            "Type": "String"
+        },
+        "PublicSubnet2CIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+            "Default": "10.0.144.0/20",
+            "Description": "CIDR Block for the public subnet 2 located in Availability Zone 2",
+            "Type": "String"
         },
         "RemoteAccessCIDR": {
             "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$",
@@ -213,36 +243,17 @@
             "Description": "Allowed CIDR block for external access to the Informatica Domain",
             "Type": "String"
         },
-        "VPCID": {
-            "Description": "Which VPC should this be deployed to?",
-            "Type": "AWS::EC2::VPC::Id"
+        "VPCCIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+            "Default": "10.0.0.0/16",
+            "Description": "CIDR Block for the VPC",
+            "Type": "String"
         },
         "LicenseKey": {
             "Description": "Informatica License Key. Provide a PUBLIC S3 link for the License Key. Optional Argument. Leave unassigned to go ahead without the Licence Key.",
             "Type": "String",
             "Default": "unassigned"
-        }
-    },
-    "Rules": {
-        "SubnetsInVPC": {
-            "Assertions": [
-                {
-                    "Assert": {
-                        "Fn::EachMemberIn": [
-                            {
-                                "Fn::ValueOfAll": [
-                                    "AWS::EC2::Subnet::Id",
-                                    "VpcId"
-                                ]
-                            },
-                            {
-                                "Fn::RefAll": "AWS::EC2::VPC::Id"
-                            }
-                        ]
-                    },
-                    "AssertDescription": "All subnets must in the VPC"
-                }
-            ]
         }
     },
     "Mappings": {
@@ -260,7 +271,7 @@
                 "INFORMATICAPCRHELHVM": "TBD"
             },
             "ap-southeast-1": {
-                "INFORMATICAPCRHELHVM": "ami-0ecbcd19"
+                "INFORMATICAPCRHELHVM": "ami-c6963aa5"
             },
             "ap-southeast-2": {
                 "INFORMATICAPCRHELHVM": "ami-03a59a60"
@@ -275,7 +286,7 @@
                 "INFORMATICAPCRHELHVM": "ami-281f8044"
             },
             "us-east-1": {
-                "INFORMATICAPCRHELHVM": "ami-a15d52b6"
+                "INFORMATICAPCRHELHVM": "ami-f4717be3"
             },
             "us-east-2": {
                 "INFORMATICAPCRHELHVM": "TBD"
@@ -294,8 +305,7 @@
                 "IntegrationServiceName": "PowerCenterIntegrationService",
                 "RepositoryServiceName": "PowerCenterRepository",
                 "GridName": "InfaDefaultGrid",
-                "EFSDirectory": "/home/ec2-user/Informatica/10.1.1/infa_shared",
-                "LicenseFile": "/home/ec2-user/Informatica/10.1.1/License.key"
+                "EFSDirectory": "/home/ec2-user/Informatica/10.1.1/infa_shared"
             },
             "Oracle-License-Included": {
                 "Engine": "oracle-se1",
@@ -306,7 +316,7 @@
             },
             "Oracle-Bring-Your-Own-License": {
                 "Engine": "oracle-se1",
-                "DB": "Oracle",
+                "DB": "Oralce",
                 "LicenseModel": "bring-your-own-license",
                 "AllocatedStorage": "50",
                 "Port": 1521
@@ -418,13 +428,239 @@
         }
     },
     "Resources": {
+        "VPC": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "VPCCIDR"
+                },
+                "EnableDnsSupport": "true",
+                "EnableDnsHostnames": "true",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "PowerCenter-VPC"
+                    },
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackName"
+                        }
+                    }
+                ]
+            }
+        },
+        "InternetGateway": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "PowerCenter-IGW"
+                    },
+                    {
+                        "Key": "Application",
+                        "Value": {
+                            "Ref": "AWS::StackName"
+                        }
+                    }
+                ]
+            }
+        },
+        "VPCGatewayAttachment": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "InternetGatewayId": {
+                    "Ref": "InternetGateway"
+                }
+            }
+        },
+        "DataTierSubnet1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "CidrBlock": {
+                    "Ref": "PrivateSubnet1CIDR"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        "0",
+                        {
+                            "Ref": "AvailabilityZones"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "PowerCenter DataTier1 Private subnet 1"
+                    },
+                    {
+                        "Key": "Network",
+                        "Value": "Private"
+                    }
+                ]
+            }
+        },
+        "DataTierSubnet2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "CidrBlock": {
+                    "Ref": "PrivateSubnet2CIDR"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        "1",
+                        {
+                            "Ref": "AvailabilityZones"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "PowerCenter DataTier2 Private subnet 2"
+                    },
+                    {
+                        "Key": "Network",
+                        "Value": "Private"
+                    }
+                ]
+            }
+        },
+        "PublicSubnet1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "CidrBlock": {
+                    "Ref": "PublicSubnet1CIDR"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        "0",
+                        {
+                            "Ref": "AvailabilityZones"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "PowerCenter Public subnet 1"
+                    },
+                    {
+                        "Key": "Network",
+                        "Value": "Public"
+                    }
+                ],
+                "MapPublicIpOnLaunch": true
+            }
+        },
+        "PublicSubnet2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "CidrBlock": {
+                    "Ref": "PublicSubnet2CIDR"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        "1",
+                        {
+                            "Ref": "AvailabilityZones"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "PowerCenter Public subnet 2"
+                    },
+                    {
+                        "Key": "Network",
+                        "Value": "Public"
+                    }
+                ],
+                "MapPublicIpOnLaunch": true
+            }
+        },
+        "PublicSubnetRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "Public Subnets"
+                    },
+                    {
+                        "Key": "Network",
+                        "Value": "Public"
+                    }
+                ]
+            }
+        },
+        "PublicSubnetRoute": {
+            "DependsOn": "VPCGatewayAttachment",
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "PublicSubnetRouteTable"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Ref": "InternetGateway"
+                }
+            }
+        },
+        "PublicSubnet1RouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "PublicSubnet1"
+                },
+                "RouteTableId": {
+                    "Ref": "PublicSubnetRouteTable"
+                }
+            }
+        },
+        "PublicSubnet2RouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "PublicSubnet2"
+                },
+                "RouteTableId": {
+                    "Ref": "PublicSubnetRouteTable"
+                }
+            }
+        },
         "DBSubnetGroup": {
             "Type": "AWS::RDS::DBSubnetGroup",
             "Properties": {
                 "DBSubnetGroupDescription": "Subnet Group for Informatica PowerCenter RDS Database",
-                "SubnetIds": {
-                    "Ref": "DBSubnetIDs"
-                },
+                "SubnetIds": [
+                    {
+                        "Ref": "DataTierSubnet1"
+                    },
+                    {
+                        "Ref": "DataTierSubnet2"
+                    }
+                ],
                 "Tags": [
                     {
                         "Key": "Name",
@@ -464,7 +700,7 @@
                     }
                 ],
                 "VpcId": {
-                    "Ref": "VPCID"
+                    "Ref": "VPC"
                 }
             }
         },
@@ -549,7 +785,7 @@
             "Properties": {
                 "GroupDescription": "Enable RDP and within VPC traffic",
                 "VpcId": {
-                    "Ref": "VPCID"
+                    "Ref": "VPC"
                 },
                 "SecurityGroupIngress": [
                     {
@@ -613,7 +849,7 @@
                     "Ref": "FileSystem"
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet1ID"
+                    "Ref": "PublicSubnet1"
                 },
                 "SecurityGroups": [
                     {
@@ -630,7 +866,7 @@
                     "Ref": "FileSystem"
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2ID"
+                    "Ref": "PublicSubnet2"
                 },
                 "SecurityGroups": [
                     {
@@ -670,7 +906,7 @@
                                         "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/NotFound.txt"
                                     ]
                                 },
-                                "mode": "000644",
+                                "mode": "000777",
                                 "owner": "ec2-user",
                                 "group": "ec2-user"
                             }
@@ -797,7 +1033,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet1ID"
+                    "Ref": "PublicSubnet1"
                 },
                 "SecurityGroupIds": [
                     {
@@ -823,15 +1059,6 @@
                                 "export DOMAIN_USER_NAME=\"",
                                 {
                                     "Ref": "InformaticaDomainUsername"
-                                },
-                                "\"\n",
-                                "export ADD_LICENSE_CONDITION=\"",
-                                {
-                                    "Fn::If": [
-                                        "AddLicenseCondition",
-                                        "1",
-                                        "0"
-                                    ]
                                 },
                                 "\"\n",
                                 "export EFS_CREATE_CONDITION=\"",
@@ -945,7 +1172,7 @@
                                 "export DOMAIN_HOST_NAME=\"$HOSTNAME\" \n",
                                 "mkdir /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
-                                "sudo chmod -R 777 /home/ec2-user/Informatica/10.1.1/infa_shared",
+                                "chmod -R 777 /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
@@ -1061,7 +1288,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "sudo chmod -R 777 ",
+                                            "chmod -R 777 ",
                                             {
                                                 "Fn::FindInMap": [
                                                     "Config",
@@ -1078,7 +1305,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "sudo chown ec2-user.ec2-user ",
+                                            "chown ec2-user.ec2-user ",
                                             {
                                                 "Fn::FindInMap": [
                                                     "Config",
@@ -1121,7 +1348,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2ID"
+                    "Ref": "PublicSubnet2"
                 },
                 "SecurityGroupIds": [
                     {
@@ -1381,7 +1608,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "sudo chmod -R 777 ",
+                                            "chmod -R 777 ",
                                             {
                                                 "Fn::FindInMap": [
                                                     "Config",
@@ -1398,7 +1625,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "sudo chown ec2-user.ec2-user ",
+                                            "chown ec2-user.ec2-user ",
                                             {
                                                 "Fn::FindInMap": [
                                                     "Config",
@@ -1441,7 +1668,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet1ID"
+                    "Ref": "PublicSubnet1"
                 },
                 "SecurityGroupIds": [
                     {
@@ -1701,7 +1928,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "sudo chmod -R 777 ",
+                                            "chmod -R 777 ",
                                             {
                                                 "Fn::FindInMap": [
                                                     "Config",
@@ -1718,7 +1945,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "sudo chown ec2-user.ec2-user ",
+                                            "chown ec2-user.ec2-user ",
                                             {
                                                 "Fn::FindInMap": [
                                                     "Config",
@@ -1761,7 +1988,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2ID"
+                    "Ref": "PublicSubnet2"
                 },
                 "SecurityGroupIds": [
                     {
@@ -2021,7 +2248,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "sudo chmod -R 777 ",
+                                            "chmod -R 777 ",
                                             {
                                                 "Fn::FindInMap": [
                                                     "Config",
@@ -2038,7 +2265,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "sudo chown ec2-user.ec2-user ",
+                                            "chown ec2-user.ec2-user ",
                                             {
                                                 "Fn::FindInMap": [
                                                     "Config",
@@ -2081,7 +2308,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet1ID"
+                    "Ref": "PublicSubnet1"
                 },
                 "SecurityGroupIds": [
                     {
@@ -2341,7 +2568,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "sudo chmod -R 777 ",
+                                            "chmod -R 777 ",
                                             {
                                                 "Fn::FindInMap": [
                                                     "Config",
@@ -2358,7 +2585,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "sudo chown ec2-user.ec2-user ",
+                                            "chown ec2-user.ec2-user ",
                                             {
                                                 "Fn::FindInMap": [
                                                     "Config",
@@ -2401,7 +2628,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2ID"
+                    "Ref": "PublicSubnet2"
                 },
                 "SecurityGroupIds": [
                     {
@@ -2661,7 +2888,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "sudo chmod -R 777 ",
+                                            "chmod -R 777 ",
                                             {
                                                 "Fn::FindInMap": [
                                                     "Config",
@@ -2678,7 +2905,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "sudo chown ec2-user.ec2-user ",
+                                            "chown ec2-user.ec2-user ",
                                             {
                                                 "Fn::FindInMap": [
                                                     "Config",
@@ -2721,7 +2948,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet1ID"
+                    "Ref": "PublicSubnet1"
                 },
                 "SecurityGroupIds": [
                     {
@@ -2981,7 +3208,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "sudo chmod -R 777 ",
+                                            "chmod -R 777 ",
                                             {
                                                 "Fn::FindInMap": [
                                                     "Config",
@@ -2998,7 +3225,7 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "sudo chown ec2-user.ec2-user ",
+                                            "chown ec2-user.ec2-user ",
                                             {
                                                 "Fn::FindInMap": [
                                                     "Config",
@@ -3041,7 +3268,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2ID"
+                    "Ref": "PublicSubnet2"
                 },
                 "SecurityGroupIds": [
                     {

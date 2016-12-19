@@ -14,3 +14,9 @@ $cmd = "net use I: \\$storageName.file.core.windows.net\$shareName /u:$storageNa
 $cmd | Set-Content "$env:SystemDrive\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\MountShareDrive.cmd"
 
 runas /user:$osUserName net use I: \\$storageName.file.core.windows.net\$shareName /u:$storageName $storageKey
+
+
+
+
+
+

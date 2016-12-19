@@ -248,7 +248,7 @@
         "Mappings": {
             "AWSAMIRegionMap": {
                 "AMI": {
-                    "INFORMATICAPCWINHVM": "Informatica-PowerCenter-10.1.0-WindowsServer2012R2-73eb10f0-ef93-494a-bff4-de78cbe56fcb-ami-611e3276.3"
+                    "INFORMATICAPCWINHVM": "Informatica-PowerCenter-10.1.1-WindowsServer2012R2-73eb10f0-ef93-494a-bff4-de78cbe56fcb-ami-611e3276.3"
                 },
                 "ap-northeast-1": {
                     "INFORMATICAPCWINHVM": "ami-6b862d0a"
@@ -275,7 +275,7 @@
                     "INFORMATICAPCWINHVM": "ami-c872eda4"
                 },
                 "us-east-1": {
-                    "INFORMATICAPCWINHVM": "ami-d86d62cf"
+                    "INFORMATICAPCWINHVM": "ami-6c73797b"
                 },
                 "us-east-2": {
                     "INFORMATICAPCWINHVM": "TBD"
