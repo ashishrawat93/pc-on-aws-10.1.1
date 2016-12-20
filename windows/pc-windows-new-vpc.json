@@ -286,7 +286,7 @@
                 "INFORMATICAPCWINHVM": "ami-c872eda4"
             },
             "us-east-1": {
-                "INFORMATICAPCWINHVM": "ami-6c73797b"
+                "INFORMATICAPCWINHVM": "ami-be786da9"
             },
             "us-east-2": {
                 "INFORMATICAPCWINHVM": "TBD"
@@ -915,6 +915,15 @@
                                 "$env:AWS_REGION=\"",
                                 {
                                     "Ref": "AWS::Region"
+                                },
+                                "\"\n",
+                                "$env:ADD_LICENSE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "AddLicenseCondition",
+                                        "1",
+                                        "0"
+                                    ]
                                 },
                                 "\"\n",
                                 "$env:DB_TYPE=\"",

@@ -1061,6 +1061,15 @@
                                     "Ref": "InformaticaDomainUsername"
                                 },
                                 "\"\n",
+                                "export ADD_LICENSE_CONDITION=\"",
+                                {
+                                    "Fn::If": [
+                                        "AddLicenseCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
                                 "export EFS_CREATE_CONDITION=\"",
                                 {
                                     "Fn::If": [

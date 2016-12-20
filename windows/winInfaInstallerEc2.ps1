@@ -1,7 +1,7 @@
-﻿$env:USERNAME="$env:DOMAIN_USER_NAME""
+﻿$env:USERNAME="Administrator"
 $env:USERDOMAIN=$env:COMPUTERNAME
 $env:JOIN_HOST_NAME="$env:COMPUTERNAME"
-$env:DOMAIN_USER="$env:DOMAIN_USER_NAME"
+$env:DOMAIN_USER="Administrator"
 $env:CLOUD_SUPPORT_ENABLE=1 
 
 $domainpass=$args[0]
@@ -73,6 +73,7 @@ C:\infainstaller\silentInstall.bat | Out-Null
 
 function createPCServices() {
     #ENABLE CRS AND IS after the issue of db resolution through native clients is resolved
+	
     ($out = C:\Informatica\10.1.1\isp\bin\infacmd createRepositoryService -dn $env:DOMAIN_NAME  -nn $env:NODE_NAME -sn $env:REPOSITORY_SERVICE_NAME -so DBUser=$env:REPO_USER DatabaseType=$env:DB_TYPE DBPassword=$repopass ConnectString=$env:DB_SERVICENAME CodePage="UTF-8 encoding of Unicode" OperatingMode=NORMAL -un $env:DOMAIN_USER -pd $domainpass -sd ) | Out-Null
     $code=$LASTEXITCODE
     ac C:\InfaServiceLog.log $out 
@@ -99,13 +100,23 @@ function createPCServices() {
 
         ac C:\InfaServiceLog.log $out 
     }
+	if ($env:ADD_LICENSE_CONDITION -eq 1) {
+		ac  C:\InfaServiceLog.log "Adding License" 
+		
+		($out = C:\Informatica\10.1.1\isp\bin\infacmd addlicense -dn $env:DOMAIN_NAME -un $env:DOMAIN_USER -pd $domainpass -ln license -lf C:\Informatica\10.1.1\License.key)
+		
+		$code=$code -bor $LASTEXITCODE
+		
+		rm  C:\Informatica\10.1.1\License.key
+		ac C:\InfaServiceLog.log $out 
+	}
      exit $code
 
 
 }
 
 if ($env:JOIN_DOMAIN -eq 0 ) {
-        ac  C:\InfaServiceLog.log "creationg pc services" 
+        ac  C:\InfaServiceLog.log "creating pc services" 
         createPCServices
    
 } else {
