@@ -1,7 +1,7 @@
 ﻿$env:USERNAME="Administrator"
 $env:USERDOMAIN=$env:COMPUTERNAME
 $env:JOIN_HOST_NAME="$env:COMPUTERNAME"
-$env:DOMAIN_USER="Administrator"
+$env:DOMAIN_USER="$env:DOMAIN_USER_NAME"
 $env:CLOUD_SUPPORT_ENABLE=1 
 
 $domainpass=$args[0]

@@ -275,7 +275,7 @@
                     "INFORMATICAPCWINHVM": "ami-c872eda4"
                 },
                 "us-east-1": {
-                    "INFORMATICAPCWINHVM": "ami-be786da9"
+                    "INFORMATICAPCWINHVM": "ami-c60410d1"
                 },
                 "us-east-2": {
                     "INFORMATICAPCWINHVM": "TBD"
@@ -576,20 +576,11 @@
                 "Type": "AWS::EC2::Instance",
                 "Metadata": {
                     "AWS::CloudFormation::Init": {
-                        "config": {
-                            "files": {
-                                "c:\\Informatica\\10.1.1\\License.key": {
-                                    "source": {
-                                        "Fn::If": [
-                                            "AddLicenseCondition",
-                                            {
-                                                "Ref": "LicenseKey"
-                                            },
-                                            "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/NotFound.txt"
-                                        ]
-                                    }
-                                }
-                            },
+                        "configSets": {
+                            "setupdomain" : ["config1"],
+                            "setupwithlicense" : ["config2","config1"]
+                        },
+                        "config1": {
                             "commands": {
                                 "1-setup": {
                                     "command": {
@@ -614,6 +605,15 @@
                                                 }
                                             ]
                                         ]
+                                    }
+                                }
+                            }
+                        },
+                        "config2": {
+                            "files": {
+                                "c:\\Informatica\\10.1.1\\License.key": {
+                                    "source": {
+                                        "Ref": "LicenseKey"
                                     }
                                 }
                             }
@@ -789,6 +789,14 @@
                                     {
                                         "Ref": "AWS::StackId"
                                     },
+                                    " --configsets ",
+                                    {
+                                        "Fn::If": [
+                                            "AddLicenseCondition",
+                                            "setupwithlicense",
+                                            "setupdomain"                                            
+                                        ]
+                                    }, 
                                     " --resource InfaMaster ",
                                     " --region ",
                                     {
