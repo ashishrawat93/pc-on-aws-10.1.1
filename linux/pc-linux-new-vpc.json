@@ -889,26 +889,19 @@
             "Type": "AWS::EC2::Instance",
             "Metadata": {
                 "AWS::CloudFormation::Init": {
-                    "config": {
+                    "configSets": {
+                        "setupdomain": [
+                            "config1"
+                        ],
+                        "setupwithlicense": [
+                            "config2",
+                            "config1"
+                        ]
+                    },
+                    "config1": {
                         "packages": {
                             "yum": {
                                 "nfs-utils": []
-                            }
-                        },
-                        "files": {
-                            "/home/ec2-user/Informatica/10.1.1/License.key": {
-                                "source": {
-                                    "Fn::If": [
-                                        "AddLicenseCondition",
-                                        {
-                                            "Ref": "LicenseKey"
-                                        },
-                                        "https://s3-ap-southeast-1.amazonaws.com/cnfscripts/NotFound.txt"
-                                    ]
-                                },
-                                "mode": "000777",
-                                "owner": "ec2-user",
-                                "group": "ec2-user"
                             }
                         },
                         "commands": {
@@ -1001,6 +994,18 @@
                                         ]
                                     ]
                                 }
+                            }
+                        }
+                    },
+                    "config2": {
+                        "files": {
+                            "/home/ec2-user/Informatica/10.1.1/License.key": {
+                                "source": {
+                                    "Ref": "LicenseKey"
+                                },
+                                "mode": "000777",
+                                "owner": "ec2-user",
+                                "group": "ec2-user"
                             }
                         }
                     }
@@ -1187,6 +1192,14 @@
                                 "/opt/aws/bin/cfn-init --stack ",
                                 {
                                     "Ref": "AWS::StackId"
+                                },
+                                " --configsets ",
+                                {
+                                    "Fn::If": [
+                                        "AddLicenseCondition",
+                                        "setupwithlicense",
+                                        "setupdomain"
+                                    ]
                                 },
                                 " --resource InfaMaster ",
                                 " --region ",
