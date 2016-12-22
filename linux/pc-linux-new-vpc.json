@@ -108,7 +108,7 @@
                     "default": "VPC CIDR"
                 },
                 "LicenseKey": {
-                    "default": "License Key"
+                    "default": "Informatica License Key"
                 }
             }
         }
@@ -159,7 +159,7 @@
         "InformaticaNodeName": {
             "Description": "Prefix for the Nodes in Informatica Domain. Node number will be the suffix for the nodes. Eg PowerCenterNode1, PowerCenterNode2",
             "Type": "String",
-            "Default": "PowerCenter",
+            "Default": "Infa",
             "MinLength": "2",
             "MaxLength": "20"
         },
@@ -251,9 +251,34 @@
             "Type": "String"
         },
         "LicenseKey": {
-            "Description": "Informatica License Key. Provide a PUBLIC S3 link for the License Key. Optional Argument. Leave unassigned to go ahead without the Licence Key.",
+            "Description": "*Optional Argument*. Provide a PUBLIC S3 link for the License Key file. Leave blank to go ahead without the Licence Key",
             "Type": "String",
-            "Default": "unassigned"
+            "Default": ""
+        },
+        "CreateEFS": {
+            "Description": "Create shared storage for High Availability. Default value is Yes. Shared storage is created only if it is available in your region",
+            "Type": "String",
+            "AllowedValues": [
+                "Yes",
+                "No"
+            ],
+            "Default": "Yes"
+        },
+        "RDSDatabaseName": {
+            "Description": "Database Name for RDS Instance",
+            "Type": "String",
+            "Default": "InfaDB",
+            "MinLength": "2",
+            "MaxLength": "20"
+        },
+        "EnableEIP": {
+            "Description": "Assign Elastic IPs to Instances. Default value is Yes",
+            "Type": "String",
+            "AllowedValues": [
+                "Yes",
+                "No"
+            ],
+            "Default": "Yes"
         }
     },
     "Mappings": {
@@ -331,7 +356,7 @@
                         {
                             "Ref": "LicenseKey"
                         },
-                        "unassigned"
+                        ""
                     ]
                 }
             ]

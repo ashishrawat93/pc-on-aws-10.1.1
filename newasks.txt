@@ -1,0 +1,8 @@
+1. Deployment into vpc option (how others are doing )
+2. PC DB expose.
+3. Cfninit expose passwords.
+4. Make Licence key blank. *optional argument*
+5. EFS support parameter.
+6. Elastic IPs Yes/No 
+7. Generic Informatica Node Name :InfaNode1
+8. New cloud formation  for single 1
