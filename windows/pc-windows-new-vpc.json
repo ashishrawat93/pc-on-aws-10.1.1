@@ -255,15 +255,6 @@
             "Type": "String",
             "Default": ""
         },
-        "CreateEFS": {
-            "Description": "Create shared storage for High Availability. Default value is Yes. Shared storage is created only if it is available in your region",
-            "Type": "String",
-            "AllowedValues": [
-                "Yes",
-                "No"
-            ],
-            "Default": "Yes"
-        },
         "RDSDatabaseName": {
             "Description": "Database Name for RDS Instance",
             "Type": "String",
@@ -348,6 +339,14 @@
         }
     },
     "Conditions": {
+        "EnableEIPCondition": {
+            "Fn::Equals": [
+                {
+                    "Ref": "EnableEIP"
+                },
+                "Yes"
+            ]
+        },
         "AddLicenseCondition": {
             "Fn::Not": [
                 {
@@ -420,6 +419,46 @@
                     "Ref": "NumberOfPowerCenterInstances"
                 },
                 "8"
+            ]
+        },
+        "2NodeEIPCondition": {
+            "Fn::And": [
+                {
+                    "Condition": "EnableEIPCondition"
+                },
+                {
+                    "Condition": "2NodeCondition"
+                }
+            ]
+        },
+        "4NodeEIPCondition": {
+            "Fn::And": [
+                {
+                    "Condition": "EnableEIPCondition"
+                },
+                {
+                    "Condition": "4NodeCondition"
+                }
+            ]
+        },
+        "6NodeEIPCondition": {
+            "Fn::And": [
+                {
+                    "Condition": "EnableEIPCondition"
+                },
+                {
+                    "Condition": "6NodeCondition"
+                }
+            ]
+        },
+        "8NodeEIPCondition": {
+            "Fn::And": [
+                {
+                    "Condition": "EnableEIPCondition"
+                },
+                {
+                    "Condition": "8NodeCondition"
+                }
             ]
         }
     },
@@ -826,6 +865,7 @@
         },
         "InfaMasterEIPAddress": {
             "Type": "AWS::EC2::EIP",
+            "Condition": "EnableEIPCondition",
             "Properties": {
                 "Domain": "vpc",
                 "InstanceId": {
@@ -1095,7 +1135,7 @@
             }
         },
         "InfaNode2EIPAddress": {
-            "Condition": "2NodeCondition",
+            "Condition": "2NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",
@@ -1332,7 +1372,7 @@
             }
         },
         "InfaNode3EIPAddress": {
-            "Condition": "4NodeCondition",
+            "Condition": "4NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",
@@ -1569,7 +1609,7 @@
             }
         },
         "InfaNode4EIPAddress": {
-            "Condition": "4NodeCondition",
+            "Condition": "4NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",
@@ -1806,7 +1846,7 @@
             }
         },
         "InfaNode5EIPAddress": {
-            "Condition": "6NodeCondition",
+            "Condition": "6NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",
@@ -2043,7 +2083,7 @@
             }
         },
         "InfaNode6EIPAddress": {
-            "Condition": "6NodeCondition",
+            "Condition": "6NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",
@@ -2280,7 +2320,7 @@
             }
         },
         "InfaNode7EIPAddress": {
-            "Condition": "8NodeCondition",
+            "Condition": "8NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",
@@ -2517,7 +2557,7 @@
             }
         },
         "InfaNode8EIPAddress": {
-            "Condition": "8NodeCondition",
+            "Condition": "8NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",

@@ -339,6 +339,14 @@
         }
     },
     "Conditions": {
+        "EnableEIPCondition": {
+            "Fn::Equals": [
+                {
+                    "Ref": "EnableEIP"
+                },
+                "Yes"
+            ]
+        },
         "AddLicenseCondition": {
             "Fn::Not": [
                 {
@@ -351,7 +359,7 @@
                 }
             ]
         },
-        "EFSCreateCondition": {
+        "EFSRegionSupport": {
             "Fn::Or": [
                 {
                     "Fn::Equals": [
@@ -376,6 +384,24 @@
                         },
                         "eu-west-1"
                     ]
+                }
+            ]
+        },
+        "EFSUserChoice": {
+            "Fn::Equals": [
+                {
+                    "Ref": "CreateEFS"
+                },
+                "Yes"
+            ]
+        },
+        "EFSCreateCondition": {
+            "Fn::And": [
+                {
+                    "Condition": "EFSUserChoice"
+                },
+                {
+                    "Condition": "EFSRegionSupport"
                 }
             ]
         },
@@ -439,6 +465,46 @@
                     "Ref": "NumberOfPowerCenterInstances"
                 },
                 "8"
+            ]
+        },
+        "2NodeEIPCondition": {
+            "Fn::And": [
+                {
+                    "Condition": "EnableEIPCondition"
+                },
+                {
+                    "Condition": "2NodeCondition"
+                }
+            ]
+        },
+        "4NodeEIPCondition": {
+            "Fn::And": [
+                {
+                    "Condition": "EnableEIPCondition"
+                },
+                {
+                    "Condition": "4NodeCondition"
+                }
+            ]
+        },
+        "6NodeEIPCondition": {
+            "Fn::And": [
+                {
+                    "Condition": "EnableEIPCondition"
+                },
+                {
+                    "Condition": "6NodeCondition"
+                }
+            ]
+        },
+        "8NodeEIPCondition": {
+            "Fn::And": [
+                {
+                    "Condition": "EnableEIPCondition"
+                },
+                {
+                    "Condition": "8NodeCondition"
+                }
             ]
         }
     },
@@ -666,6 +732,7 @@
         },
         "InfaMasterEIPAddress": {
             "Type": "AWS::EC2::EIP",
+            "Condition": "EnableEIPCondition",
             "Properties": {
                 "Domain": "vpc",
                 "InstanceId": {
@@ -1020,7 +1087,7 @@
             }
         },
         "InfaNode2EIPAddress": {
-            "Condition": "2NodeCondition",
+            "Condition": "2NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",
@@ -1340,7 +1407,7 @@
             }
         },
         "InfaNode3EIPAddress": {
-            "Condition": "4NodeCondition",
+            "Condition": "4NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",
@@ -1660,7 +1727,7 @@
             }
         },
         "InfaNode4EIPAddress": {
-            "Condition": "4NodeCondition",
+            "Condition": "4NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",
@@ -1980,7 +2047,7 @@
             }
         },
         "InfaNode5EIPAddress": {
-            "Condition": "6NodeCondition",
+            "Condition": "6NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",
@@ -2300,7 +2367,7 @@
             }
         },
         "InfaNode6EIPAddress": {
-            "Condition": "6NodeCondition",
+            "Condition": "6NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",
@@ -2620,7 +2687,7 @@
             }
         },
         "InfaNode7EIPAddress": {
-            "Condition": "8NodeCondition",
+            "Condition": "8NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",
@@ -2940,7 +3007,7 @@
             }
         },
         "InfaNode8EIPAddress": {
-            "Condition": "8NodeCondition",
+            "Condition": "8NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",
