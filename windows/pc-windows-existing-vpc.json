@@ -23,7 +23,8 @@
                         "Parameters": [
                             "KeyPairName",
                             "PowerCenterInstanceType",
-                            "NumberOfPowerCenterInstances"
+                            "NumberOfPowerCenterInstances",
+                            "EnableEIP"
                         ]
                     },
                     {
@@ -32,6 +33,7 @@
                         },
                         "Parameters": [
                             "DatabaseType",
+                            "RDSDatabaseName",
                             "DatabaseUsername",
                             "DatabasePassword"
                         ]
@@ -53,6 +55,9 @@
                 "ParameterLabels": {
                     "DBSubnetIDs": {
                         "default": "Informatica Database Subnets"
+                    },
+                    "RDSDatabaseName": {
+                        "default": "Database Name"
                     },
                     "DatabasePassword": {
                         "default": "Database Password"
@@ -83,6 +88,9 @@
                     },
                     "NumberOfPowerCenterInstances": {
                         "default": "Number of Instances"
+                    },
+                    "EnableEIP": {
+                        "default": "Enable Elastic IP Addressing"
                     },
                     "PowerCenterInstanceType": {
                         "default": "Informatica Domain Instance Type"
@@ -149,7 +157,7 @@
                 "MaxLength": "20"
             },
             "InformaticaNodeName": {
-                "Description": "Prefix for the Nodes in Informatica Domain. Node number will be the suffix for the nodes. Eg PowerCenterNode1, PowerCenterNode2",
+                "Description": "Prefix for the Nodes in Informatica Domain. Node number will be the suffix for the nodes. Eg InfaNode1, InfaNode2",
                 "Type": "String",
                 "Default": "Infa",
                 "MinLength": "2",

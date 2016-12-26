@@ -23,7 +23,9 @@
                     "Parameters": [
                         "KeyPairName",
                         "PowerCenterInstanceType",
-                        "NumberOfPowerCenterInstances"
+                        "NumberOfPowerCenterInstances",
+                        "EnableEIP",
+                        "CreateEFS"
                     ]
                 },
                 {
@@ -32,6 +34,7 @@
                     },
                     "Parameters": [
                         "DatabaseType",
+                        "RDSDatabaseName",
                         "DatabaseUsername",
                         "DatabasePassword"
                     ]
@@ -53,6 +56,9 @@
             "ParameterLabels": {
                 "DBSubnetIDs": {
                     "default": "Informatica Database Subnets"
+                },
+                "RDSDatabaseName":{
+                    "default": "Database Name"
                 },
                 "DatabasePassword": {
                     "default": "Database Password"
@@ -86,6 +92,12 @@
                 },
                 "PowerCenterInstanceType": {
                     "default": "Informatica Domain Instance Type"
+                },
+                "EnableEIP": {
+                    "default": "Enable Elastic IP Addressing"
+                },
+                "CreateEFS": {
+                    "default": "Create Shared Storage"
                 },
                 "PublicSubnet1ID": {
                     "default": "Public Subnet 1 ID"
@@ -149,7 +161,7 @@
             "MaxLength": "20"
         },
         "InformaticaNodeName": {
-            "Description": "Prefix for the Nodes in Informatica Domain. Node number will be the suffix for the nodes. Eg PowerCenterNode1, PowerCenterNode2",
+            "Description": "Prefix for the Nodes in Informatica Domain. Node number will be the suffix for the nodes. Eg InfaNode1, InfaNode2",
             "Type": "String",
             "Default": "Infa",
             "MinLength": "2",
