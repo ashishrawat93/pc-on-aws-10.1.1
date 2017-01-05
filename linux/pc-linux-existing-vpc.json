@@ -97,7 +97,7 @@
                     "default": "Enable Elastic IP Addressing"
                 },
                 "CreateEFS": {
-                    "default": "Create Shared Storage"
+                    "default": "Create Elastic File System"
                 },
                 "PublicSubnet1ID": {
                     "default": "Public Subnet 1 ID"

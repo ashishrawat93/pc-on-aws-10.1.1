@@ -99,7 +99,7 @@
                     "default": "Enable Elastic IP Addressing"
                 },
                 "CreateEFS": {
-                    "default": "Create Shared Storage"
+                    "default": "Create Elastic File System"
                 },
                 "PrivateSubnet1CIDR": {
                     "default": "Private Subnet 1 CIDR"
