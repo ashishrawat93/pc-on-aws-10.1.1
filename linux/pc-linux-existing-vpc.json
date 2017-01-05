@@ -334,6 +334,63 @@
                 "EFSDirectory": "/home/ec2-user/Informatica/10.1.1/infa_shared",
                 "LicenseFile": "/home/ec2-user/Informatica/10.1.1/License.key"
             },
+            "Oracle-Enterprise-Edition-12.1.0-BYOL": {
+                "Engine": "oracle-ee",
+                "DB": "Oracle",
+                "LicenseModel": "bring-your-own-license",
+                "AllocatedStorage": "100",
+                "Port": 1521
+            },
+             "Oracle-Enterprise-Edition-11.2.0-BYOL": {
+                "Engine": "oracle-ee",
+                "DB": "Oracle",
+                "LicenseModel": "bring-your-own-license",
+                "AllocatedStorage": "100",
+                "Port": 1521
+            },
+             "Oracle-Standard-Edition-12.1.0-BYOL": {
+                "Engine": "oracle-se",
+                "DB": "Oracle",
+                "LicenseModel": "bring-your-own-license",
+                "AllocatedStorage": "100",
+                "Port": 1521
+            },
+             "Oracle-Standard-Edition-11.2.0-BYOL": {
+                "Engine": "oracle-ee",
+                "DB": "Oracle",
+                "LicenseModel": "bring-your-own-license",
+                "AllocatedStorage": "100",
+                "Port": 1521
+            },
+             "Oracle-Standard-Edition-One-12.1.0-BYOL": {
+                "Engine": "oracle-se1",
+                "DB": "Oracle",
+                "LicenseModel": "bring-your-own-license",
+                "AllocatedStorage": "100",
+                "Port": 1521
+            },
+            "Oracle-Standard-Edition-One-11.2.0-BYOL": {
+                "Engine": "oracle-se1",
+                "DB": "Oracle",
+                "LicenseModel": "bring-your-own-license",
+                "AllocatedStorage": "100",
+                "Port": 1521
+            },
+            "Oracle-Standard-Edition-One-12.1.0-License-Included": {
+                "Engine": "oracle-se1",
+                "DB": "Oracle",
+                "LicenseModel": "license-included",
+                "AllocatedStorage": "100",
+                "Port": 1521
+            },
+            "Oracle-Standard-Edition-One-11.2.0-License-Included": {
+                "Engine": "oracle-se1",
+                "DB": "Oracle",
+                "LicenseModel": "license-included",
+                "AllocatedStorage": "100",
+                "Port": 1521
+            },
+
             "Oracle-License-Included": {
                 "Engine": "oracle-se1",
                 "DB": "Oracle",
@@ -609,6 +666,7 @@
                         "Engine"
                     ]
                 },
+                "EngineVersion" : "12.1",
                 "LicenseModel": {
                     "Fn::FindInMap": [
                         "Config",
