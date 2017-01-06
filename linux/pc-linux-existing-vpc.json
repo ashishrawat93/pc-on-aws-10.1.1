@@ -57,7 +57,7 @@
                 "DBSubnetIDs": {
                     "default": "Informatica Database Subnets"
                 },
-                "RDSDatabaseName":{
+                "RDSDatabaseName": {
                     "default": "Database Name"
                 },
                 "DatabasePassword": {
@@ -131,10 +131,16 @@
         },
         "DatabaseType": {
             "AllowedValues": [
-                "Oracle-License-Included",
-                "Oracle-Bring-Your-Own-License"
+                "Oracle-Standard-Edition-One-12.1.0-License-Included",
+                "Oracle-Standard-Edition-One-11.2.0-License-Included",
+                "Oracle-Standard-Edition-One-12.1.0-BYOL",
+                "Oracle-Standard-Edition-One-11.2.0-BYOL",
+                "Oracle-Enterprise-Edition-12.1.0-BYOL",
+                "Oracle-Enterprise-Edition-11.2.0-BYOL",
+                "Oracle-Standard-Edition-12.1.0-BYOL",
+                "Oracle-Standard-Edition-11.2.0-BYOL"
             ],
-            "Default": "Oracle-License-Included",
+            "Default": "Oracle-Standard-Edition-One-12.1.0-License-Included",
             "Description": "The type of database to use in Amazon RDS. Currently, you can only use Oracle",
             "Type": "String"
         },
@@ -337,34 +343,44 @@
             "Oracle-Enterprise-Edition-12.1.0-BYOL": {
                 "Engine": "oracle-ee",
                 "DB": "Oracle",
+                "Version": "12.1",
+                "DatabaseSize": "db.m3.large",
                 "LicenseModel": "bring-your-own-license",
                 "AllocatedStorage": "100",
                 "Port": 1521
             },
-             "Oracle-Enterprise-Edition-11.2.0-BYOL": {
+            "Oracle-Enterprise-Edition-11.2.0-BYOL": {
                 "Engine": "oracle-ee",
                 "DB": "Oracle",
+                "Version": "11.2",
+                "DatabaseSize": "db.t2.large",
                 "LicenseModel": "bring-your-own-license",
                 "AllocatedStorage": "100",
                 "Port": 1521
             },
-             "Oracle-Standard-Edition-12.1.0-BYOL": {
+            "Oracle-Standard-Edition-12.1.0-BYOL": {
                 "Engine": "oracle-se",
                 "DB": "Oracle",
+                "Version": "12.1",
+                "DatabaseSize": "db.m3.large",
                 "LicenseModel": "bring-your-own-license",
                 "AllocatedStorage": "100",
                 "Port": 1521
             },
-             "Oracle-Standard-Edition-11.2.0-BYOL": {
+            "Oracle-Standard-Edition-11.2.0-BYOL": {
                 "Engine": "oracle-ee",
                 "DB": "Oracle",
+                "Version": "11.2",
+                "DatabaseSize": "db.t2.large",
                 "LicenseModel": "bring-your-own-license",
                 "AllocatedStorage": "100",
                 "Port": 1521
             },
-             "Oracle-Standard-Edition-One-12.1.0-BYOL": {
+            "Oracle-Standard-Edition-One-12.1.0-BYOL": {
                 "Engine": "oracle-se1",
                 "DB": "Oracle",
+                "Version": "12.1",
+                "DatabaseSize": "db.m3.large",
                 "LicenseModel": "bring-your-own-license",
                 "AllocatedStorage": "100",
                 "Port": 1521
@@ -372,6 +388,8 @@
             "Oracle-Standard-Edition-One-11.2.0-BYOL": {
                 "Engine": "oracle-se1",
                 "DB": "Oracle",
+                "Version": "11.2",
+                "DatabaseSize": "db.m3.large",
                 "LicenseModel": "bring-your-own-license",
                 "AllocatedStorage": "100",
                 "Port": 1521
@@ -379,6 +397,8 @@
             "Oracle-Standard-Edition-One-12.1.0-License-Included": {
                 "Engine": "oracle-se1",
                 "DB": "Oracle",
+                "Version": "12.1",
+                "DatabaseSize": "db.m3.large",
                 "LicenseModel": "license-included",
                 "AllocatedStorage": "100",
                 "Port": 1521
@@ -386,11 +406,12 @@
             "Oracle-Standard-Edition-One-11.2.0-License-Included": {
                 "Engine": "oracle-se1",
                 "DB": "Oracle",
+                "Version": "11.2",
+                "DatabaseSize": "db.t2.large",
                 "LicenseModel": "license-included",
                 "AllocatedStorage": "100",
                 "Port": 1521
             },
-
             "Oracle-License-Included": {
                 "Engine": "oracle-se1",
                 "DB": "Oracle",
@@ -643,7 +664,9 @@
                 "DBInstanceClass": {
                     "Fn::FindInMap": [
                         "Config",
-                        "Settings",
+                        {
+                            "Ref": "DatabaseType"
+                        },
                         "DatabaseSize"
                     ]
                 },
@@ -666,7 +689,15 @@
                         "Engine"
                     ]
                 },
-                "EngineVersion" : "12.1",
+                "EngineVersion": {
+                    "Fn::FindInMap": [
+                        "Config",
+                        {
+                            "Ref": "DatabaseType"
+                        },
+                        "Version"
+                    ]
+                },
                 "LicenseModel": {
                     "Fn::FindInMap": [
                         "Config",
@@ -761,7 +792,7 @@
                 "FileSystemTags": [
                     {
                         "Key": "Name",
-                        "Value": "EFS"
+                        "Value": "InformaticaEFS"
                     }
                 ]
             }
@@ -825,11 +856,7 @@
                         ]
                     },
                     "config1": {
-                        "packages": {
-                            "yum": {
-                                "nfs-utils": []
-                            }
-                        },
+                        
                         "commands": {
                             "1-setup": {
                                 "command": {

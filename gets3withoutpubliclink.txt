@@ -1,0 +1,136 @@
+"EMRInstanceRole": {
+	 "Type": "AWS::IAM::Role",
+	 "Properties": {
+		 "AssumeRolePolicyDocument": {
+			 "Statement": [
+				 {
+					 "Effect": "Allow",
+					 "Principal": {
+						 "Service": [ "ec2.amazonaws.com" ]
+					 },
+					 "Action": [ "sts:AssumeRole" ]
+				 }
+			 ]
+		 },
+		 "Path": "/"
+	 }
+	},
+	"RolePolicies": {
+	 "Type": "AWS::IAM::Policy",
+	 "Properties": {
+		 "PolicyName": "S3Download",
+		 "PolicyDocument": {
+			 "Statement": [
+				 {
+					 "Action": [ "s3:GetObject" ],
+					 "Effect": "Allow",
+					 "Resource":"*"
+				 }
+			 ]
+		 },
+		 "Roles": [ { "Ref": "EMRInstanceRole" } ]
+	 }
+	},
+	"EMRInstanceProfile":{
+		"Type":"AWS::IAM::InstanceProfile",
+			"Properties":{
+			"Path":"/",
+			"Roles":[
+			   {
+				  "Ref":"EMRInstanceRole"
+			   }
+			]
+		}
+	},
+	"ServerInstanceRole":{
+		"Type":"AWS::IAM::Role",
+		"Properties":{
+			"AssumeRolePolicyDocument":{
+			"Version":"2012-10-17",
+			"Statement":[
+			  {
+				 "Effect":"Allow",
+				 "Principal":{
+					"Service":"ec2.amazonaws.com"
+				 },
+				 "Action":"sts:AssumeRole"
+			  }
+		   ]
+		},
+		"Path":"/",
+		"ManagedPolicyArns":[
+		   "arn:aws:iam::aws:policy/AmazonElasticMapReduceFullAccess"
+		],
+		"Policies":[
+		   {
+			  "PolicyName":"MyS3Policy",
+			  "PolicyDocument":{
+				 "Version":"2012-10-17",
+				 "Statement":[
+					{
+					   "Effect":"Allow",
+					   "Action":[
+						  "s3:Get*",
+						  "s3:List*"
+					   ],
+					   "Resource":[
+						  "arn:aws:s3:::*"
+					   ]
+					}
+				 ]
+			  }
+		   }
+		]
+	 }
+	},
+	"ServerInstanceProfile":{
+	 "Type":"AWS::IAM::InstanceProfile",
+	 "Properties":{
+		"Path":"/",
+		"Roles":[
+		   {
+			  "Ref":"ServerInstanceRole"
+		   }
+		]
+	 }
+	},
+	"InstanceRole": {
+	 "Type": "AWS::IAM::Role",
+	 "Properties": {
+		 "AssumeRolePolicyDocument": {
+			 "Statement": [
+				 {
+					 "Effect": "Allow",
+					 "Principal": {
+						 "Service": [ "ec2.amazonaws.com" ]
+					 },
+					 "Action": [ "sts:AssumeRole" ]
+				 }
+			 ]
+		 },
+		 "Path": "/"
+	 }
+	},
+	"RolePolicies": {
+	 "Type": "AWS::IAM::Policy",
+	 "Properties": {
+		 "PolicyName": "S3Download",
+		 "PolicyDocument": {
+			 "Statement": [
+				 {
+					 "Action": [ "s3:GetObject" ],
+					 "Effect": "Allow",
+					 "Resource": [ { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "InformaticaBDMKeyS3Bucket" }, "/", { "Ref" : "InformaticaBDMKeyName" }]] } ]
+				 }
+			 ]
+		 },
+		 "Roles": [ { "Ref": "InstanceRole" } ]
+	 }
+	},
+	"InstanceProfile": {
+	 "Type": "AWS::IAM::InstanceProfile",
+	 "Properties": {
+		 "Path": "/",
+		 "Roles": [ { "Ref": "InstanceRole" } ]
+	 }
+	},
