@@ -139,8 +139,14 @@
         },
         "DatabaseType": {
             "AllowedValues": [
-                "Oracle-License-Included",
-                "Oracle-Bring-Your-Own-License"
+                "Oracle-Standard-Edition-One-12.1.0-License-Included",
+                "Oracle-Standard-Edition-One-11.2.0-License-Included",
+                "Oracle-Standard-Edition-One-12.1.0-BYOL",
+                "Oracle-Standard-Edition-One-11.2.0-BYOL",
+                "Oracle-Enterprise-Edition-12.1.0-BYOL",
+                "Oracle-Enterprise-Edition-11.2.0-BYOL",
+                "Oracle-Standard-Edition-12.1.0-BYOL",
+                "Oracle-Standard-Edition-11.2.0-BYOL"
             ],
             "Default": "Oracle-License-Included",
             "Description": "The type of database to use in Amazon RDS. Currently, you can only use Oracle",
@@ -207,7 +213,9 @@
         },
         "KeyPairName": {
             "Description": "Name of an existing EC2 KeyPair to enable external access to the Informatica Domain",
-            "Type": "AWS::EC2::KeyPair::KeyName"
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "MaxLength": "32",
+            "MinLength": "1"
         },
         "NumberOfPowerCenterInstances": {
             "Description": "Number of PowerCenter Nodes. Each node runs on one EC2 Instance",
@@ -343,6 +351,78 @@
                 "RepositoryServiceName": "PowerCenterRepository",
                 "GridName": "InfaDefaultGrid",
                 "EFSDirectory": "/home/ec2-user/Informatica/10.1.1/infa_shared"
+            },
+            "Oracle-Enterprise-Edition-12.1.0-BYOL": {
+                "Engine": "oracle-ee",
+                "DB": "Oracle",
+                "Version": "12.1",
+                "DatabaseSize": "db.m3.large",
+                "LicenseModel": "bring-your-own-license",
+                "AllocatedStorage": "100",
+                "Port": 1521
+            },
+            "Oracle-Enterprise-Edition-11.2.0-BYOL": {
+                "Engine": "oracle-ee",
+                "DB": "Oracle",
+                "Version": "11.2",
+                "DatabaseSize": "db.t2.large",
+                "LicenseModel": "bring-your-own-license",
+                "AllocatedStorage": "100",
+                "Port": 1521
+            },
+            "Oracle-Standard-Edition-12.1.0-BYOL": {
+                "Engine": "oracle-se",
+                "DB": "Oracle",
+                "Version": "12.1",
+                "DatabaseSize": "db.m3.large",
+                "LicenseModel": "bring-your-own-license",
+                "AllocatedStorage": "100",
+                "Port": 1521
+            },
+            "Oracle-Standard-Edition-11.2.0-BYOL": {
+                "Engine": "oracle-ee",
+                "DB": "Oracle",
+                "Version": "11.2",
+                "DatabaseSize": "db.t2.large",
+                "LicenseModel": "bring-your-own-license",
+                "AllocatedStorage": "100",
+                "Port": 1521
+            },
+            "Oracle-Standard-Edition-One-12.1.0-BYOL": {
+                "Engine": "oracle-se1",
+                "DB": "Oracle",
+                "Version": "12.1",
+                "DatabaseSize": "db.m3.large",
+                "LicenseModel": "bring-your-own-license",
+                "AllocatedStorage": "100",
+                "Port": 1521
+            },
+            "Oracle-Standard-Edition-One-11.2.0-BYOL": {
+                "Engine": "oracle-se1",
+                "DB": "Oracle",
+                "Version": "11.2",
+                "DatabaseSize": "db.m3.large",
+                "LicenseModel": "bring-your-own-license",
+                "AllocatedStorage": "100",
+                "Port": 1521
+            },
+            "Oracle-Standard-Edition-One-12.1.0-License-Included": {
+                "Engine": "oracle-se1",
+                "DB": "Oracle",
+                "Version": "12.1",
+                "DatabaseSize": "db.m3.large",
+                "LicenseModel": "license-included",
+                "AllocatedStorage": "100",
+                "Port": 1521
+            },
+            "Oracle-Standard-Edition-One-11.2.0-License-Included": {
+                "Engine": "oracle-se1",
+                "DB": "Oracle",
+                "Version": "11.2",
+                "DatabaseSize": "db.t2.large",
+                "LicenseModel": "license-included",
+                "AllocatedStorage": "100",
+                "Port": 1521
             },
             "Oracle-License-Included": {
                 "Engine": "oracle-se1",
@@ -1003,11 +1083,6 @@
                         ]
                     },
                     "config1": {
-                        "packages": {
-                            "yum": {
-                                "nfs-utils": []
-                            }
-                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1351,11 +1426,6 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        "packages": {
-                            "yum": {
-                                "nfs-utils": []
-                            }
-                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1671,11 +1741,6 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        "packages": {
-                            "yum": {
-                                "nfs-utils": []
-                            }
-                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1991,11 +2056,6 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        "packages": {
-                            "yum": {
-                                "nfs-utils": []
-                            }
-                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -2311,11 +2371,6 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        "packages": {
-                            "yum": {
-                                "nfs-utils": []
-                            }
-                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -2631,11 +2686,6 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        "packages": {
-                            "yum": {
-                                "nfs-utils": []
-                            }
-                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -2951,11 +3001,6 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        "packages": {
-                            "yum": {
-                                "nfs-utils": []
-                            }
-                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -3271,11 +3316,6 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        "packages": {
-                            "yum": {
-                                "nfs-utils": []
-                            }
-                        },
                         "commands": {
                             "1-setup": {
                                 "command": {

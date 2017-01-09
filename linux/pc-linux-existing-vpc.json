@@ -183,11 +183,15 @@
         "InformaticaDomainPassword": {
             "Description": "Password for the Informatica Domain. Administrator is the default Username for Informatica Domain",
             "NoEcho": "True",
+            "MaxLength": "32",
+            "MinLength": "8",
             "Type": "String"
         },
         "KeyPairName": {
             "Description": "Name of an existing EC2 KeyPair to enable external access to the Informatica Domain",
-            "Type": "AWS::EC2::KeyPair::KeyName"
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "MaxLength": "32",
+            "MinLength": "1"
         },
         "NumberOfPowerCenterInstances": {
             "Description": "Number of PowerCenter Nodes. Each node runs on one EC2 Instance",
@@ -1200,11 +1204,6 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        "packages": {
-                            "yum": {
-                                "nfs-utils": []
-                            }
-                        },
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1520,11 +1519,7 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        "packages": {
-                            "yum": {
-                                "nfs-utils": []
-                            }
-                        },
+                        
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1840,11 +1835,7 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        "packages": {
-                            "yum": {
-                                "nfs-utils": []
-                            }
-                        },
+                        
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -2160,11 +2151,7 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        "packages": {
-                            "yum": {
-                                "nfs-utils": []
-                            }
-                        },
+                        
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -2480,11 +2467,7 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        "packages": {
-                            "yum": {
-                                "nfs-utils": []
-                            }
-                        },
+                       
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -2800,11 +2783,7 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        "packages": {
-                            "yum": {
-                                "nfs-utils": []
-                            }
-                        },
+                       
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -3120,11 +3099,7 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        "packages": {
-                            "yum": {
-                                "nfs-utils": []
-                            }
-                        },
+                       
                         "commands": {
                             "1-setup": {
                                 "command": {
