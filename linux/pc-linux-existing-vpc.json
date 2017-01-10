@@ -36,7 +36,8 @@
                         "DatabaseType",
                         "RDSDatabaseName",
                         "DatabaseUsername",
-                        "DatabasePassword"
+                        "DatabasePassword",
+                        "DatabasePasswordConfirm"
                     ]
                 },
                 {
@@ -48,6 +49,7 @@
                         "InformaticaNodeName",
                         "InformaticaDomainUsername",
                         "InformaticaDomainPassword",
+                        "InformaticaDomainPasswordConfirm",
                         "EncryptionKeyPhrase",
                         "LicenseKey"
                     ]
@@ -62,6 +64,9 @@
                 },
                 "DatabasePassword": {
                     "default": "Database Password"
+                },
+                "DatabasePasswordConfirm": {
+                    "default": "Confirm Password"
                 },
                 "DatabaseType": {
                     "default": "Database Type"
@@ -80,6 +85,9 @@
                 },
                 "InformaticaDomainUsername": {
                     "default": "Informatica Administrator Username"
+                },
+                "InformaticaDomainPasswordConfirm": {
+                    "default": "Confirm Password"
                 },
                 "InformaticaDomainPassword": {
                     "default": "Informatica Administrator Password"
@@ -122,7 +130,27 @@
             "Description": "Select two subnet IDs each from a different region in the VPC chosen above (such as: us-west-1b, us-west-1c)",
             "Type": "List<AWS::EC2::Subnet::Id>"
         },
+        "RDSDatabaseName": {
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
+            "Description": "Database Name for RDS Instance. Default value is InfaDB",
+            "Type": "String",
+            "Default": "InfaDB",
+            "MinLength": "4",
+            "MaxLength": "20"
+        },
         "DatabasePassword": {
+            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$@\/]).{7,123}$",
+            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"), at(@), slash(\/) and dollar($)  are not allowed",
+            "Description": "Password for the Amazon RDS database account",
+            "MaxLength": "18",
+            "MinLength": "8",
+            "NoEcho": "True",
+            "Type": "String"
+        },
+        "DatabasePasswordConfirm": {
+            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$@\/]).{7,123}$",
+            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"), at(@), slash(\/) and dollar($)  are not allowed",
             "Description": "Password for the Amazon RDS database account",
             "MaxLength": "18",
             "MinLength": "8",
@@ -145,13 +173,15 @@
             "Type": "String"
         },
         "DatabaseUsername": {
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
             "Description": "Username for the Amazon RDS database account",
             "MaxLength": "30",
-            "MinLength": "2",
+            "MinLength": "4",
             "Type": "String"
         },
         "EncryptionKeyPhrase": {
-            "AllowedPattern": "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$",
+            "AllowedPattern": "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{7,}$",
             "ConstraintDescription": "It should be 8 to 20 characters long, at least one uppercase letter at least one lowercase letter-at least one number Does not contain spaces",
             "Description": "The text string used as the base word from which to generate an encryption key for the Informatica domain.",
             "MaxLength": "32",
@@ -160,6 +190,8 @@
             "Type": "String"
         },
         "InformaticaDomainName": {
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
             "Description": "Name for the Informatica Domain.",
             "Type": "String",
             "Default": "InfaDomain",
@@ -167,20 +199,35 @@
             "MaxLength": "20"
         },
         "InformaticaNodeName": {
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
             "Description": "Prefix for the Nodes in Informatica Domain. Node number will be the suffix for the nodes. Eg InfaNode1, InfaNode2",
             "Type": "String",
             "Default": "Infa",
-            "MinLength": "2",
+            "MinLength": "4",
             "MaxLength": "20"
         },
         "InformaticaDomainUsername": {
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
             "Description": "Username for the Informatica Domain.",
             "Default": "Administrator",
+            "MaxLength": "20",
+            "MinLength": "4",
+            "Type": "String"
+        },
+        "InformaticaDomainPassword": {
+            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$]).{7,32}$",
+            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
+            "Description": "Password for the Informatica Domain. Administrator is the default Username for Informatica Domain",
+            "NoEcho": "True",
             "MaxLength": "32",
             "MinLength": "8",
             "Type": "String"
         },
-        "InformaticaDomainPassword": {
+        "InformaticaDomainPasswordConfirm": {
+            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$]).{7,32}$",
+            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
             "Description": "Password for the Informatica Domain. Administrator is the default Username for Informatica Domain",
             "NoEcho": "True",
             "MaxLength": "32",
@@ -253,13 +300,6 @@
             ],
             "Default": "Yes"
         },
-        "RDSDatabaseName": {
-            "Description": "Database Name for RDS Instance. Default value is InfaDB",
-            "Type": "String",
-            "Default": "InfaDB",
-            "MinLength": "2",
-            "MaxLength": "20"
-        },
         "EnableEIP": {
             "Description": "Assign Elastic IPs to Instances. Default value is Yes",
             "Type": "String",
@@ -288,6 +328,40 @@
                         ]
                     },
                     "AssertDescription": "All subnets must in the VPC"
+                }
+            ]
+        },
+        "InformaticaPasswordConfirm": {
+            "Assertions": [
+                {
+                    "Assert": {
+                        "Fn::Equals": [
+                            {
+                                "Ref": "InformaticaDomainPassword"
+                            },
+                            {
+                                "Ref": "InformaticaDomainPasswordConfirm"
+                            }
+                        ]
+                    },
+                    "AssertDescription": "Informatica Domain Passwords do not match"
+                }
+            ]
+        },
+        "DatabasePasswordConfirm": {
+            "Assertions": [
+                {
+                    "Assert": {
+                        "Fn::Equals": [
+                            {
+                                "Ref": "DatabasePassword"
+                            },
+                            {
+                                "Ref": "DatabasePasswordConfirm"
+                            }
+                        ]
+                    },
+                    "AssertDescription": "Database Passwords do not match"
                 }
             ]
         }
@@ -860,7 +934,6 @@
                         ]
                     },
                     "config1": {
-                        
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1519,7 +1592,6 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -1835,7 +1907,6 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -2151,7 +2222,6 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -2467,7 +2537,6 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                       
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -2783,7 +2852,6 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                       
                         "commands": {
                             "1-setup": {
                                 "command": {
@@ -3099,7 +3167,6 @@
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
-                       
                         "commands": {
                             "1-setup": {
                                 "command": {

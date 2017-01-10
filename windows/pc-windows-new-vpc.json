@@ -37,7 +37,8 @@
                         "DatabaseType",
                         "RDSDatabaseName",
                         "DatabaseUsername",
-                        "DatabasePassword"
+                        "DatabasePassword",
+                        "DatabasePasswordConfirm"
                     ]
                 },
                 {
@@ -49,6 +50,7 @@
                         "InformaticaNodeName",
                         "InformaticaDomainUsername",
                         "InformaticaDomainPassword",
+                        "InformaticaDomainPasswordConfirm",
                         "EncryptionKeyPhrase",
                         "LicenseKey"
                     ]
@@ -60,6 +62,9 @@
                 },
                 "DatabasePassword": {
                     "default": "Database Password"
+                },
+                "DatabasePasswordConfirm": {
+                    "default": "Confirm Password"
                 },
                 "RDSDatabaseName": {
                     "default": "Database Name"
@@ -84,6 +89,9 @@
                 },
                 "InformaticaDomainPassword": {
                     "default": "Informatica Administrator Password"
+                },
+                "InformaticaDomainPasswordConfirm": {
+                    "default": "Confirm Password"
                 },
                 "KeyPairName": {
                     "default": "Key Pair Name"
@@ -133,6 +141,13 @@
             "NoEcho": "true",
             "Type": "String"
         },
+        "DatabasePasswordConfirm": {
+            "Description": "Password for the Amazon RDS database account",
+            "MaxLength": "30",
+            "MinLength": "8",
+            "NoEcho": "true",
+            "Type": "String"
+        },
         "DatabaseType": {
             "AllowedValues": [
                 "Oracle-Standard-Edition-One-12.1.0-License-Included",
@@ -144,7 +159,7 @@
                 "Oracle-Standard-Edition-12.1.0-BYOL",
                 "Oracle-Standard-Edition-11.2.0-BYOL"
             ],
-            "Default": "Oracle-License-Included",
+            "Default": "Oracle-Standard-Edition-One-12.1.0-License-Included",
             "Description": "The type of database to use in Amazon RDS. Currently, you can only use Oracle",
             "Type": "String"
         },
@@ -191,6 +206,13 @@
             "NoEcho": "true",
             "Type": "String"
         },
+        "InformaticaDomainPasswordConfirm": {
+            "Description": "Password for the Informatica Domain",
+            "MaxLength": "32",
+            "MinLength": "8",
+            "NoEcho": "true",
+            "Type": "String"
+        },
         "PowerCenterInstanceType": {
             "AllowedValues": [
                 "c4.xlarge",
@@ -210,7 +232,7 @@
         "KeyPairName": {
             "Description": "Name of an existing EC2 KeyPair to enable external access to the Informatica Domain",
             "Type": "AWS::EC2::KeyPair::KeyName",
-              "MaxLength": "32",
+            "MaxLength": "32",
             "MinLength": "1"
         },
         "NumberOfPowerCenterInstances": {
@@ -286,6 +308,42 @@
                 "No"
             ],
             "Default": "Yes"
+        }
+    },
+    "Rules": {
+        "InformaticaPasswordConfirm": {
+            "Assertions": [
+                {
+                    "Assert": {
+                        "Fn::Equals": [
+                            {
+                                "Ref": "InformaticaDomainPassword"
+                            },
+                            {
+                                "Ref": "InformaticaDomainPasswordConfirm"
+                            }
+                        ]
+                    },
+                    "AssertDescription": "Informatica Domain Passwords do not match"
+                }
+            ]
+        },
+        "DatabasePasswordConfirm": {
+            "Assertions": [
+                {
+                    "Assert": {
+                        "Fn::Equals": [
+                            {
+                                "Ref": "DatabasePassword"
+                            },
+                            {
+                                "Ref": "DatabasePasswordConfirm"
+                            }
+                        ]
+                    },
+                    "AssertDescription": "Database Passwords do not match"
+                }
+            ]
         }
     },
     "Mappings": {
