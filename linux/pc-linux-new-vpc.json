@@ -138,16 +138,29 @@
             "Description": "List of Availability Zones to use for the subnets in the VPC. Note: The logical order is preserved and only 2 AZs are used for this deployment",
             "Type": "List<AWS::EC2::AvailabilityZone::Name>"
         },
+        "RDSDatabaseName": {
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
+            "Description": "Database Name for RDS Instance",
+            "Type": "String",
+            "Default": "InfaDB",
+            "MinLength": "4",
+            "MaxLength": "20"
+        },
         "DatabasePassword": {
+            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$@\/]).{7,123}$",
+            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"), at(@), slash(\/) and dollar($)  are not allowed",
             "Description": "Password for the Amazon RDS database account",
-            "MaxLength": "30",
+            "MaxLength": "18",
             "MinLength": "8",
             "NoEcho": "true",
             "Type": "String"
         },
         "DatabasePasswordConfirm": {
+            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$@\/]).{7,123}$",
+            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"), at(@), slash(\/) and dollar($)  are not allowed",
             "Description": "Password for the Amazon RDS database account",
-            "MaxLength": "30",
+            "MaxLength": "18",
             "MinLength": "8",
             "NoEcho": "true",
             "Type": "String"
@@ -168,9 +181,11 @@
             "Type": "String"
         },
         "DatabaseUsername": {
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
             "Description": "Username for the Amazon RDS database account",
             "MaxLength": "30",
-            "MinLength": "2",
+            "MinLength": "4",
             "Type": "String"
         },
         "EncryptionKeyPhrase": {
@@ -183,13 +198,17 @@
             "Type": "String"
         },
         "InformaticaDomainName": {
-            "Description": "Name for the Informatica Domain",
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{7,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
+            "Description": "Name for the Informatica Domain.",
             "Type": "String",
             "Default": "InfaDomain",
-            "MinLength": "4",
+            "MinLength": "8",
             "MaxLength": "20"
         },
         "InformaticaNodeName": {
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
             "Description": "Prefix for the Nodes in Informatica Domain. Node number will be the suffix for the nodes. Eg InfaNode1, InfaNode2",
             "Type": "String",
             "Default": "Infa",
@@ -197,24 +216,30 @@
             "MaxLength": "20"
         },
         "InformaticaDomainUsername": {
-            "Description": "Username for the Informatica Domain",
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{7,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
+            "Description": "Username for the Informatica Domain.",
             "Default": "Administrator",
             "MaxLength": "32",
             "MinLength": "8",
             "Type": "String"
         },
         "InformaticaDomainPassword": {
-            "Description": "Password for the Informatica Domain",
+            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$]).{7,32}$",
+            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
+            "Description": "Password for the Informatica Domain. Administrator is the default Username for Informatica Domain",
             "MaxLength": "32",
             "MinLength": "8",
             "NoEcho": "true",
             "Type": "String"
         },
         "InformaticaDomainPasswordConfirm": {
-            "Description": "Password for the Informatica Domain",
+            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$]).{7,32}$",
+            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
+            "Description": "Password for the Informatica Domain. Administrator is the default Username for Informatica Domain",
+            "NoEcho": "True",
             "MaxLength": "32",
             "MinLength": "8",
-            "NoEcho": "true",
             "Type": "String"
         },
         "PowerCenterInstanceType": {
@@ -305,13 +330,6 @@
                 "No"
             ],
             "Default": "Yes"
-        },
-        "RDSDatabaseName": {
-            "Description": "Database Name for RDS Instance",
-            "Type": "String",
-            "Default": "InfaDB",
-            "MinLength": "2",
-            "MaxLength": "20"
         },
         "EnableEIP": {
             "Description": "Assign Elastic IPs to Instances. Default value is Yes",

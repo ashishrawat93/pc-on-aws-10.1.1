@@ -181,7 +181,7 @@
             "Type": "String"
         },
         "EncryptionKeyPhrase": {
-            "AllowedPattern": "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{7,}$",
+            "AllowedPattern": "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$",
             "ConstraintDescription": "It should be 8 to 20 characters long, at least one uppercase letter at least one lowercase letter-at least one number Does not contain spaces",
             "Description": "The text string used as the base word from which to generate an encryption key for the Informatica domain.",
             "MaxLength": "32",
@@ -190,12 +190,12 @@
             "Type": "String"
         },
         "InformaticaDomainName": {
-            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{7,20})$",
             "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
             "Description": "Name for the Informatica Domain.",
             "Type": "String",
             "Default": "InfaDomain",
-            "MinLength": "4",
+            "MinLength": "8",
             "MaxLength": "20"
         },
         "InformaticaNodeName": {
@@ -208,12 +208,12 @@
             "MaxLength": "20"
         },
         "InformaticaDomainUsername": {
-            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{7,20})$",
             "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
             "Description": "Username for the Informatica Domain.",
             "Default": "Administrator",
             "MaxLength": "20",
-            "MinLength": "4",
+            "MinLength": "8",
             "Type": "String"
         },
         "InformaticaDomainPassword": {
