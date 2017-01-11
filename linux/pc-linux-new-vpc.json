@@ -148,21 +148,21 @@
             "MaxLength": "20"
         },
         "DatabasePassword": {
-            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$@\/]).{7,123}$",
-            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"), at(@), slash(\/) and dollar($)  are not allowed",
-            "Description": "Password for the Amazon RDS database account",
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 8-18",
+            "Description": "Password for the Amazon RDS database account. Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 8-18",
             "MaxLength": "18",
             "MinLength": "8",
-            "NoEcho": "true",
+            "NoEcho": "True",
             "Type": "String"
         },
         "DatabasePasswordConfirm": {
-            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$@\/]).{7,123}$",
-            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"), at(@), slash(\/) and dollar($)  are not allowed",
-            "Description": "Password for the Amazon RDS database account",
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 8-18",
+            "Description": "Password for the Amazon RDS database account.",
             "MaxLength": "18",
             "MinLength": "8",
-            "NoEcho": "true",
+            "NoEcho": "True",
             "Type": "String"
         },
         "DatabaseType": {
@@ -227,16 +227,16 @@
         "InformaticaDomainPassword": {
             "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$]).{7,32}$",
             "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
-            "Description": "Password for the Informatica Domain. Administrator is the default Username for Informatica Domain",
+            "Description": "Password for the Informatica Domain. Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
+            "NoEcho": "True",
             "MaxLength": "32",
             "MinLength": "8",
-            "NoEcho": "true",
             "Type": "String"
         },
         "InformaticaDomainPasswordConfirm": {
             "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$]).{7,32}$",
             "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
-            "Description": "Password for the Informatica Domain. Administrator is the default Username for Informatica Domain",
+            "Description": "Password for the Informatica Domain.",
             "NoEcho": "True",
             "MaxLength": "32",
             "MinLength": "8",
@@ -407,7 +407,7 @@
                 "INFORMATICAPCRHELHVM": "ami-281f8044"
             },
             "us-east-1": {
-                "INFORMATICAPCRHELHVM": "ami-f4717be3"
+                "INFORMATICAPCRHELHVM": "ami-d0d233c6"
             },
             "us-east-2": {
                 "INFORMATICAPCRHELHVM": "TBD"
