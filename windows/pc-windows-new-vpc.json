@@ -409,7 +409,6 @@
         },
         "Config": {
             "Settings": {
-                "DatabaseName": "pc",
                 "DatabaseSize": "db.t2.large",
                 "IntegrationServiceName": "PowerCenterIntegrationService",
                 "RepositoryServiceName": "PowerCenterRepository",
@@ -924,11 +923,7 @@
                     ]
                 },
                 "DBName": {
-                    "Fn::FindInMap": [
-                        "Config",
-                        "Settings",
-                        "DatabaseName"
-                    ]
+                   "Ref": "RDSDatabaseName"
                 },
                 "DBSubnetGroupName": {
                     "Ref": "DBSubnetGroup"
@@ -1213,11 +1208,7 @@
                                 "\"\n",
                                 "$env:DB_SERVICENAME=\"",
                                 {
-                                    "Fn::FindInMap": [
-                                        "Config",
-                                        "Settings",
-                                        "DatabaseName"
-                                    ]
+                                    "Ref": "RDSDatabaseName"
                                 },
                                 "\"\n",
                                 "$env:DOMAIN_NAME=\"",
@@ -1437,11 +1428,7 @@
                                 "\"\n",
                                 "$env:DB_SERVICENAME=\"",
                                 {
-                                    "Fn::FindInMap": [
-                                        "Config",
-                                        "Settings",
-                                        "DatabaseName"
-                                    ]
+                                    "Ref": "RDSDatabaseName"
                                 },
                                 "\"\n",
                                 "$env:DOMAIN_NAME=\"",
@@ -1674,11 +1661,7 @@
                                 "\"\n",
                                 "$env:DB_SERVICENAME=\"",
                                 {
-                                    "Fn::FindInMap": [
-                                        "Config",
-                                        "Settings",
-                                        "DatabaseName"
-                                    ]
+                                   "Ref": "RDSDatabaseName"
                                 },
                                 "\"\n",
                                 "$env:DOMAIN_NAME=\"",
@@ -1911,11 +1894,7 @@
                                 "\"\n",
                                 "$env:DB_SERVICENAME=\"",
                                 {
-                                    "Fn::FindInMap": [
-                                        "Config",
-                                        "Settings",
-                                        "DatabaseName"
-                                    ]
+                                   "Ref": "RDSDatabaseName"
                                 },
                                 "\"\n",
                                 "$env:DOMAIN_NAME=\"",
@@ -2148,11 +2127,7 @@
                                 "\"\n",
                                 "$env:DB_SERVICENAME=\"",
                                 {
-                                    "Fn::FindInMap": [
-                                        "Config",
-                                        "Settings",
-                                        "DatabaseName"
-                                    ]
+                                  "Ref": "RDSDatabaseName"
                                 },
                                 "\"\n",
                                 "$env:DOMAIN_NAME=\"",
@@ -2385,11 +2360,7 @@
                                 "\"\n",
                                 "$env:DB_SERVICENAME=\"",
                                 {
-                                    "Fn::FindInMap": [
-                                        "Config",
-                                        "Settings",
-                                        "DatabaseName"
-                                    ]
+                                    "Ref": "RDSDatabaseName"
                                 },
                                 "\"\n",
                                 "$env:DOMAIN_NAME=\"",
@@ -2622,11 +2593,7 @@
                                 "\"\n",
                                 "$env:DB_SERVICENAME=\"",
                                 {
-                                    "Fn::FindInMap": [
-                                        "Config",
-                                        "Settings",
-                                        "DatabaseName"
-                                    ]
+                                   "Ref": "RDSDatabaseName"
                                 },
                                 "\"\n",
                                 "$env:DOMAIN_NAME=\"",
@@ -2859,11 +2826,7 @@
                                 "\"\n",
                                 "$env:DB_SERVICENAME=\"",
                                 {
-                                    "Fn::FindInMap": [
-                                        "Config",
-                                        "Settings",
-                                        "DatabaseName"
-                                    ]
+                                    "Ref": "RDSDatabaseName"
                                 },
                                 "\"\n",
                                 "$env:DOMAIN_NAME=\"",
