@@ -138,7 +138,6 @@
             "Description": "List of Availability Zones to use for the subnets in the VPC. Note: The logical order is preserved and only 2 AZs are used for this deployment",
             "Type": "List<AWS::EC2::AvailabilityZone::Name>",
             "MinLength": "1"
-            
         },
         "RDSDatabaseName": {
             "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
@@ -984,7 +983,7 @@
                     ]
                 },
                 "DBName": {
-                   "Ref": "RDSDatabaseName"
+                    "Ref": "RDSDatabaseName"
                 },
                 "DBSubnetGroupName": {
                     "Ref": "DBSubnetGroup"
@@ -2313,7 +2312,7 @@
                                 "\"\n",
                                 "export DB_SERVICENAME=\"",
                                 {
-                                   "Ref": "RDSDatabaseName"
+                                    "Ref": "RDSDatabaseName"
                                 },
                                 "\"\n",
                                 "export DOMAIN_NAME=\"",
@@ -2935,7 +2934,7 @@
                                 "\"\n",
                                 "export DB_SERVICENAME=\"",
                                 {
-                                   "Ref": "RDSDatabaseName"
+                                    "Ref": "RDSDatabaseName"
                                 },
                                 "\"\n",
                                 "export DOMAIN_NAME=\"",
@@ -3557,7 +3556,7 @@
                                 "\"\n",
                                 "export DB_SERVICENAME=\"",
                                 {
-                                   "Ref": "RDSDatabaseName"
+                                    "Ref": "RDSDatabaseName"
                                 },
                                 "\"\n",
                                 "export DOMAIN_NAME=\"",
@@ -3695,6 +3694,24 @@
                 "Ref": "RDSInstance"
             },
             "Description": "RDS Instance ID"
+        },
+        "RDSEndpointAddress": {
+            "Description": "RDS Address",
+            "Value": {
+                "Fn::GetAtt": [
+                    "RDSInstance",
+                    "Endpoint.Address"
+                ]
+            }
+        },
+        "RDSEndpointPort": {
+            "Description": "RDS Port",
+            "Value": {
+                "Fn::GetAtt": [
+                    "RDSInstance",
+                    "Endpoint.Port"
+                ]
+            }
         }
     }
 }

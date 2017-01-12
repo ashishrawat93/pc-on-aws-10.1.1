@@ -1,0 +1,607 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "AWS Cloud Formation Template for deployment of Informatica Powercenter Version 10.1.1 on a VPC infrastructure. Adding node to existing domain.",
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": "Network Configuration"
+                    },
+                    "Parameters": [
+                        "PublicSubnet1ID",
+                        "SecurityGroup"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Amazon EC2 Configuration"
+                    },
+                    "Parameters": [
+                        "KeyPairName",
+                        "PowerCenterInstanceType",
+                        "EnableEIP"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Amazon RDS Configuration"
+                    },
+                    "Parameters": [
+                        "RDSDatabaseNameServiceName",
+                        "RDSEndpointAddress",
+                        "RDSEndpointPort",
+                        "DatabaseUsername",
+                        "DatabasePassword",
+                        "DatabasePasswordConfirm"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Informatica PowerCenter Configuration"
+                    },
+                    "Parameters": [
+                        "InformaticaDomainName",
+                        "InformaticaDomainUsername",
+                        "InformaticaDomainPassword",
+                        "InformaticaDomainPasswordConfirm",
+                        "InformaticaMasterNodeName",
+                        "MasterNodePrivateIP",
+                        "InformaticaNodeName",
+                        "EncryptionKeyPhrase"
+                    ]
+                }
+            ],
+            "ParameterLabels": {
+                "PublicSubnet1ID": {
+                    "default": "Subnet ID"
+                },
+                "SecurityGroup": {
+                    "default": "Security Group"
+                },
+                "KeyPairName": {
+                    "default": "Key Pair Name"
+                },
+                "PowerCenterInstanceType": {
+                    "default": "Informatica Domain Instance Type"
+                },
+                "EnableEIP": {
+                    "default": "Enable Elastic IP Addressing"
+                },
+                "RDSDatabaseNameServiceName": {
+                    "default": "RDS Database Service Name"
+                },
+                "RDSEndpointAddress": {
+                    "default": "RDS Endpoint Address"
+                },
+                "RDSEndpointPort": {
+                    "dafault": "RDS Endpoint Port"
+                },
+                "DatabaseUsername": {
+                    "default": "Database Username"
+                },
+                "DatabasePassword": {
+                    "default": "Database Password"
+                },
+                "DatabasePasswordConfirm": {
+                    "default": "Confirm Password"
+                },
+                "InformaticaDomainName": {
+                    "default": "Informatica Domain Name"
+                },
+                "InformaticaDomainUsername": {
+                    "default": "Informatica Administrator Username"
+                },
+                "InformaticaDomainPassword": {
+                    "default": "Informatica Administrator Password"
+                },
+                "InformaticaDomainPasswordConfirm": {
+                    "default": "Confirm Password"
+                },
+                "InformaticaMasterNodeName": {
+                    "default": "Informatica Master Node Name"
+                },
+                "MasterNodePrivateIP": {
+                    "default": "Master Node Private IP Address"
+                },
+                "InformaticaNodeName": {
+                    "default": "New Node Name"
+                },
+                "EncryptionKeyPhrase": {
+                    "default": "Encryption Key Phrase"
+                }
+            }
+        }
+    },
+    "Parameters": {
+        "RDSDatabaseNameServiceName": {
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
+            "Description": "Database Name for RDS Instance",
+            "Type": "String",
+            "Default": "InfaDB",
+            "MinLength": "4",
+            "MaxLength": "20"
+        },
+        "RDSEndpointAddress": {
+            "Type": "String",
+            "Description": "Database Name for RDS Instance",
+            "MinLength": "4",
+            "MaxLength": "82"
+        },
+        "RDSEndpointPort": {
+            "Type": "String",
+            "Default": "1521",
+            "MinLength": "3",
+            "MaxLength": "6"
+        },
+        "DatabasePassword": {
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 8-18",
+            "Description": "Password for the Amazon RDS database account. Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 8-18",
+            "MaxLength": "18",
+            "MinLength": "8",
+            "NoEcho": "True",
+            "Type": "String"
+        },
+        "DatabasePasswordConfirm": {
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 8-18",
+            "Description": "Password for the Amazon RDS database account.",
+            "MaxLength": "18",
+            "MinLength": "8",
+            "NoEcho": "True",
+            "Type": "String"
+        },
+        "MasterNodePrivateIP": {
+            "Type": "String",
+            "Description": "private Ip address",
+            "MinLength": "4",
+            "MaxLength": "42"
+        },
+        "DatabaseUsername": {
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
+            "Description": "Username for the Amazon RDS database account",
+            "MaxLength": "30",
+            "MinLength": "4",
+            "Type": "String"
+        },
+        "EncryptionKeyPhrase": {
+            "AllowedPattern": "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$",
+            "ConstraintDescription": "It should be 8 to 20 characters long, at least one uppercase letter at least one lowercase letter-at least one number Does not contain spaces",
+            "Description": "The text string used as the base word from which to generate an encryption key for the Informatica domain",
+            "MaxLength": "32",
+            "MinLength": "8",
+            "NoEcho": "true",
+            "Type": "String"
+        },
+        "InformaticaMasterNodeName": {
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
+            "Description": "Prefix for the Nodes in Informatica Domain. Node number will be the suffix for the nodes. Eg InfaNode1, InfaNode2",
+            "Type": "String",
+            "Default": "Infa",
+            "MinLength": "2",
+            "MaxLength": "20"
+        },
+        "InformaticaNodeName": {
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
+            "Description": "Prefix for the Nodes in Informatica Domain. Node number will be the suffix for the nodes. Eg InfaNode1, InfaNode2",
+            "Type": "String",
+            "Default": "Infa",
+            "MinLength": "2",
+            "MaxLength": "20"
+        },
+        "InformaticaDomainName": {
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{7,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
+            "Description": "Name for the Informatica Domain.",
+            "Type": "String",
+            "Default": "InfaDomain",
+            "MinLength": "8",
+            "MaxLength": "20"
+        },
+        "InformaticaDomainUsername": {
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{7,20})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
+            "Description": "Username for the Informatica Domain.",
+            "Default": "Administrator",
+            "MaxLength": "32",
+            "MinLength": "8",
+            "Type": "String"
+        },
+        "InformaticaDomainPassword": {
+            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$]).{7,32}$",
+            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
+            "Description": "Password for the Informatica Domain. Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
+            "NoEcho": "True",
+            "MaxLength": "32",
+            "MinLength": "8",
+            "Type": "String"
+        },
+        "InformaticaDomainPasswordConfirm": {
+            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$]).{7,32}$",
+            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
+            "Description": "Password for the Informatica Domain.",
+            "NoEcho": "True",
+            "MaxLength": "32",
+            "MinLength": "8",
+            "Type": "String"
+        },
+        "PowerCenterInstanceType": {
+            "AllowedValues": [
+                "c4.xlarge",
+                "c4.2xlarge",
+                "c4.4xlarge",
+                "c4.8xlarge",
+                "r3.large",
+                "r3.xlarge",
+                "r3.2xlarge",
+                "r3.4xlarge",
+                "r3.8xlarge"
+            ],
+            "Default": "c4.2xlarge",
+            "Description": "Instance Type for Informatica Domain. Default is c4.2xlarge",
+            "Type": "String"
+        },
+        "KeyPairName": {
+            "Description": "Name of an existing EC2 KeyPair to enable external access to the Informatica Domain",
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "MaxLength": "32",
+            "MinLength": "1"
+        },
+        "PublicSubnet1ID": {
+            "Description": "Select a publicly accessible subnet ID located in Availability Zone 1 for the Informatica Domain",
+            "Type": "AWS::EC2::Subnet::Id",
+            "MinLength": "1"
+        },
+        "EnableEIP": {
+            "Description": "Assign Elastic IPs to Instances. Default value is Yes",
+            "Type": "String",
+            "AllowedValues": [
+                "Yes",
+                "No"
+            ],
+            "Default": "Yes"
+        },
+        "SecurityGroup": {
+            "Description": "Secuity group where you want to launch the instance",
+            "Type": "AWS::EC2::SecurityGroup::Id",
+            "MinLength": "1"
+        }
+    },
+    "Rules": {
+        "InformaticaPasswordConfirm": {
+            "Assertions": [
+                {
+                    "Assert": {
+                        "Fn::Equals": [
+                            {
+                                "Ref": "InformaticaDomainPassword"
+                            },
+                            {
+                                "Ref": "InformaticaDomainPasswordConfirm"
+                            }
+                        ]
+                    },
+                    "AssertDescription": "Informatica Domain Passwords do not match"
+                }
+            ]
+        },
+        "DatabasePasswordConfirm": {
+            "Assertions": [
+                {
+                    "Assert": {
+                        "Fn::Equals": [
+                            {
+                                "Ref": "DatabasePassword"
+                            },
+                            {
+                                "Ref": "DatabasePasswordConfirm"
+                            }
+                        ]
+                    },
+                    "AssertDescription": "Database Passwords do not match"
+                }
+            ]
+        }
+    },
+    "Mappings": {
+        "AWSAMIRegionMap": {
+            "AMI": {
+                "INFORMATICAPCWINHVM": "Informatica-PowerCenter-10.1.0-WindowsServer2012R2-73eb10f0-ef93-494a-bff4-de78cbe56fcb-ami-611e3276.3"
+            },
+            "ap-northeast-1": {
+                "INFORMATICAPCWINHVM": "ami-6b862d0a"
+            },
+            "ap-northeast-2": {
+                "INFORMATICAPCWINHVM": "TBD"
+            },
+            "ap-south-1": {
+                "INFORMATICAPCWINHVM": "TBD"
+            },
+            "ap-southeast-1": {
+                "INFORMATICAPCWINHVM": "ami-0ecbcd19"
+            },
+            "ap-southeast-2": {
+                "INFORMATICAPCWINHVM": "ami-ebb48b88"
+            },
+            "eu-central-1": {
+                "INFORMATICAPCWINHVM": "ami-11a4617e"
+            },
+            "eu-west-1": {
+                "INFORMATICAPCWINHVM": "ami-3db3e34e"
+            },
+            "sa-east-1": {
+                "INFORMATICAPCWINHVM": "ami-c872eda4"
+            },
+            "us-east-1": {
+                "INFORMATICAPCWINHVM": "ami-c60410d1"
+            },
+            "us-east-2": {
+                "INFORMATICAPCWINHVM": "TBD"
+            },
+            "us-west-1": {
+                "INFORMATICAPCWINHVM": "ami-329fca52"
+            },
+            "us-west-2": {
+                "INFORMATICAPCWINHVM": "ami-d42d8fb4"
+            }
+        },
+        "Config": {
+            "Settings": {
+                "IntegrationServiceName": "PowerCenterIntegrationService",
+                "RepositoryServiceName": "PowerCenterRepository",
+                "GridName": "InfaDefaultGrid",
+                "DatabaseType": "Oracle",
+                "EFSDirectory": "/home/ec2-user/Informatica/10.1.1/infa_shared",
+                "LicenseFile": "/home/ec2-user/Informatica/10.1.1/License.key"
+            }
+        }
+    },
+    "Conditions": {
+        "EnableEIPCondition": {
+            "Fn::Equals": [
+                {
+                    "Ref": "EnableEIP"
+                },
+                "Yes"
+            ]
+        }
+    },
+    "Resources": {
+        "InfaElasticIPAddress": {
+            "Condition": "EnableEIPCondition",
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc",
+                "InstanceId": {
+                    "Ref": "InfaNode"
+                }
+            }
+        },
+        "InfaNode": {
+            "Type": "AWS::EC2::Instance",
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "commands": {
+                            "1-setup": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell -F C:\\InfaEc2Scripts\\winInfaInstallerEc2.ps1 ",
+                                            {
+                                                "Ref": "InformaticaDomainPassword"
+                                            },
+                                            " ",
+                                            {
+                                                "Ref": "DatabasePassword"
+                                            },
+                                            " null ",
+                                            {
+                                                "Ref": "EncryptionKeyPhrase"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Ref": "InformaticaNodeName"
+                        }
+                    }
+                ],
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSAMIRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "INFORMATICAPCRHELHVM"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet1ID"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "SecurityGroup"
+                    }
+                ],
+                "InstanceType": {
+                    "Ref": "PowerCenterInstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyPairName"
+                },
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "<powershell>\n",
+                                "echo \"Initializing variables\" \n",
+                                "$env:CREATE_DOMAIN=0 \n",
+                                "$env:JOIN_DOMAIN=1 \n",
+                                "$env:SERVES_AS_GATEWAY=1",
+                                "\n",
+                                "$env:DOMAIN_USER_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainUsername"
+                                },
+                                "\"\n",
+                                "$env:AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"\n",
+                                "$env:DB_TYPE=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "DatabaseType"
+                                    ]
+                                },
+                                "\"\n",
+                                "$env:DB_ADDRESS=\"",
+                                {
+                                    "Ref": "RDSEndpointAddress"
+                                },
+                                "\"\n",
+                                "$env:DB_PORT=\"",
+                                {
+                                    "Ref": "RDSEndpointPort"
+                                },
+                                "\"\n",
+                                "$env:DB_UNAME=\"",
+                                {
+                                    "Ref": "DatabaseUsername"
+                                },
+                                "\"\n",
+                                "$env:DB_SERVICENAME=\"",
+                                {
+                                    "Ref": "RDSDatabaseNameServiceName"
+                                },
+                                "\"\n",
+                                "$env:DOMAIN_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainName"
+                                },
+                                "\"\n",
+                                "$env:NODE_NAME=\"",
+                                {
+                                    "Ref": "InformaticaMasterNodeName"
+                                },
+                                "\"\n",
+                                "$env:GRID_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "GridName"
+                                    ]
+                                },
+                                "\"\n",
+                                "$env:JOIN_NODE_NAME=\"",
+                                {
+                                    "Ref": "InformaticaNodeName"
+                                },
+                                "\"\n",
+                                "$env:INTEGRATION_SERVICE_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "IntegrationServiceName"
+                                    ]
+                                },
+                                "\"\n",
+                                "$env:DOMAIN_HOST_NAME=\"",
+                                {
+                                    "Ref": "MasterNodePrivateIP"
+                                },
+                                "\"\n",
+                                "echo \"running cfn init\" \n",
+                                "cfn-init --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "echo \"running cfn signal\" \n",
+                                "cfn-signal -e $LASTEXITCODE ",
+                                " --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "</powershell>"
+                            ]
+                        ]
+                    }
+                }
+            },
+            "CreationPolicy": {
+                "ResourceSignal": {
+                    "Timeout": "PT1H"
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "PowerCenterAgentIP": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "InfaNode",
+                    "PublicIp"
+                ]
+            },
+            "Description": "Elastic IP address of the PowerCenter instance"
+        },
+        "InstanceID": {
+            "Description": "Instance ID of the newly created EC2 Master instance",
+            "Value": {
+                "Ref": "InfaNode"
+            }
+        },
+        "AvailabilityZone": {
+            "Description": "Availability Zone of the newly created EC2 instances",
+            "Value": {
+                "Fn::GetAtt": [
+                    "InfaNode",
+                    "AvailabilityZone"
+                ]
+            }
+        },
+        "PublicDNS": {
+            "Description": "Public DNS name of the newly created EC2 Master instance",
+            "Value": {
+                "Fn::GetAtt": [
+                    "InfaNode",
+                    "PublicDnsName"
+                ]
+            }
+        }
+    }
+}

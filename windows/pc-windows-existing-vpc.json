@@ -1660,7 +1660,7 @@
                                     "\"\n",
                                     "$env:DB_SERVICENAME=\"",
                                     {
-                                       "Ref": "RDSDatabaseName"
+                                        "Ref": "RDSDatabaseName"
                                     },
                                     "\"\n",
                                     "$env:DOMAIN_NAME=\"",
@@ -1893,7 +1893,7 @@
                                     "\"\n",
                                     "$env:DB_SERVICENAME=\"",
                                     {
-                                       "Ref": "RDSDatabaseName"
+                                        "Ref": "RDSDatabaseName"
                                     },
                                     "\"\n",
                                     "$env:DOMAIN_NAME=\"",
@@ -2126,7 +2126,7 @@
                                     "\"\n",
                                     "$env:DB_SERVICENAME=\"",
                                     {
-                                       "Ref": "RDSDatabaseName"
+                                        "Ref": "RDSDatabaseName"
                                     },
                                     "\"\n",
                                     "$env:DOMAIN_NAME=\"",
@@ -2727,6 +2727,24 @@
                     "Ref": "RDSInstance"
                 },
                 "Description": "RDS Instance ID"
+            },
+            "RDSEndpointAddress": {
+            "Description": "RDS Address",
+            "Value": {
+                "Fn::GetAtt": [
+                    "RDSInstance",
+                    "Endpoint.Address"
+                ]
             }
+        },
+        "RDSEndpointPort": {
+            "Description": "RDS Port",
+            "Value": {
+                "Fn::GetAtt": [
+                    "RDSInstance",
+                    "Endpoint.Port"
+                ]
+            }
+        }
         }
     }
