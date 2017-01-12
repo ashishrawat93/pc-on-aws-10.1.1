@@ -124,7 +124,8 @@
         "Parameters": {
             "DBSubnetIDs": {
                 "Description": "Select two subnet IDs each from a different region in the VPC chosen above (such as: us-west-1b, us-west-1c)",
-                "Type": "List<AWS::EC2::Subnet::Id>"
+                "Type": "List<AWS::EC2::Subnet::Id>",
+                "MinLength": "1"
             },
             "RDSDatabaseName": {
                 "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
@@ -266,11 +267,13 @@
             },
             "PublicSubnet1ID": {
                 "Description": "Select a publicly accessible subnet ID located in Availability Zone 1 for the Informatica Domain",
-                "Type": "AWS::EC2::Subnet::Id"
+                "Type": "AWS::EC2::Subnet::Id",
+                "MinLength": "1"
             },
             "PublicSubnet2ID": {
                 "Description": "Select a publicly accessible subnet ID located in Availability Zone 2 for the Informatica Domain",
-                "Type": "AWS::EC2::Subnet::Id"
+                "Type": "AWS::EC2::Subnet::Id",
+                "MinLength": "1"
             },
             "RemoteAccessCIDR": {
                 "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$",
@@ -280,7 +283,8 @@
             },
             "VPCID": {
                 "Description": "Which VPC should this be deployed to?",
-                "Type": "AWS::EC2::VPC::Id"
+                "Type": "AWS::EC2::VPC::Id",
+                "MinLength": "1"
             },
             "LicenseKey": {
                 "Description": "*Optional Argument*. Provide a PUBLIC S3 link for the License Key file. Leave blank to go ahead without the Licence Key",
