@@ -1,0 +1,233 @@
+"InfaNode16EIPAddress": {
+            "Condition": "16NodeEIPCondition",
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc",
+                "InstanceId": {
+                    "Ref": "InfaNode16"
+                }
+            }
+        },
+        "InfaNode16": {
+            "Condition": "16NodeCondition",
+            "DependsOn": "InfaMaster",
+            "Type": "AWS::EC2::Instance",
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "commands": {
+                            "1-setup": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell -F C:\\InfaEc2Scripts\\winInfaInstallerEc2.ps1 ",
+                                            {
+                                                "Ref": "InformaticaDomainPassword"
+                                            },
+                                            " ",
+                                            {
+                                                "Ref": "DatabasePassword"
+                                            },
+                                            " null ",
+                                            {
+                                                "Ref": "EncryptionKeyPhrase"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "InformaticaNodeName"
+                                    },
+                                    "Node16"
+                                ]
+                            ]
+                        }
+                    }
+                ],
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSAMIRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "INFORMATICAPCWINHVM"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet2"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "InstanceSecurityGroup"
+                    }
+                ],
+                "InstanceType": {
+                    "Ref": "PowerCenterInstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyPairName"
+                },
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "<powershell>\n",
+                                "echo \"Initializing variables\" \n",
+                                "$env:CREATE_DOMAIN=0 \n",
+                                "$env:JOIN_DOMAIN=1 \n",
+                                "$env:SERVES_AS_GATEWAY=1",
+                                "\n",
+                                "$env:DOMAIN_USER_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainUsername"
+                                },
+                                "\"\n",
+                                "$env:AWS_REGION=\"",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\"\n",
+                                "$env:DB_TYPE=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        {
+                                            "Ref": "DatabaseType"
+                                        },
+                                        "DB"
+                                    ]
+                                },
+                                "\"\n",
+                                "$env:DB_ADDRESS=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Address"
+                                    ]
+                                },
+                                "\"\n",
+                                "$env:DB_PORT=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "RDSInstance",
+                                        "Endpoint.Port"
+                                    ]
+                                },
+                                "\"\n",
+                                "$env:DB_UNAME=\"",
+                                {
+                                    "Ref": "DatabaseUsername"
+                                },
+                                "\"\n",
+                                "$env:DB_SERVICENAME=\"",
+                                {
+                                    "Ref": "RDSDatabaseName"
+                                },
+                                "\"\n",
+                                "$env:DOMAIN_NAME=\"",
+                                {
+                                    "Ref": "InformaticaDomainName"
+                                },
+                                "\"\n",
+                                "$env:NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node1"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "$env:GRID_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "GridName"
+                                    ]
+                                },
+                                "\"\n",
+                                "$env:JOIN_NODE_NAME=\"",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "InformaticaNodeName"
+                                            },
+                                            "Node16"
+                                        ]
+                                    ]
+                                },
+                                "\"\n",
+                                "$env:INTEGRATION_SERVICE_NAME=\"",
+                                {
+                                    "Fn::FindInMap": [
+                                        "Config",
+                                        "Settings",
+                                        "IntegrationServiceName"
+                                    ]
+                                },
+                                "\"\n",
+                                "$env:DOMAIN_HOST_NAME=\"",
+                                {
+                                    "Fn::GetAtt": [
+                                        "InfaMaster",
+                                        "PrivateIp"
+                                    ]
+                                },
+                                "\"\n",
+                                "echo \"running cfn init\" \n",
+                                "cfn-init --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode16 ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "echo \"running cfn signal\" \n",
+                                "cfn-signal -e $LASTEXITCODE ",
+                                " --stack ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                " --resource InfaNode16 ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "<powershell>"
+                            ]
+                        ]
+                    }
+                }
+            },
+            "CreationPolicy": {
+                "ResourceSignal": {
+                    "Timeout": "PT2H30M"
+                }
+            }
+        }
