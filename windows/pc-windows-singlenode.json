@@ -54,7 +54,7 @@
             ],
             "ParameterLabels": {
                 "PublicSubnet1ID": {
-                    "default": "Subnet ID"
+                    "default": "Public Subnet ID"
                 },
                 "SecurityGroup": {
                     "default": "Security Group"
@@ -428,7 +428,7 @@
                         {
                             "Ref": "AWS::Region"
                         },
-                        "INFORMATICAPCRHELHVM"
+                        "INFORMATICAPCWINHVM"
                     ]
                 },
                 "SubnetId": {

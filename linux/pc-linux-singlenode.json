@@ -54,7 +54,7 @@
             ],
             "ParameterLabels": {
                 "PublicSubnet1ID": {
-                    "default": "Subnet ID"
+                    "default": "Public Subnet ID"
                 },
                 "SecurityGroup": {
                     "default": "Security Group"
@@ -63,7 +63,7 @@
                     "default": "Key Pair Name"
                 },
                 "PowerCenterInstanceType": {
-                    "default": "Informatica Domain Instance Type"
+                    "default": "New Node Instance Type"
                 },
                 "EnableEIP": {
                     "default": "Enable Elastic IP Addressing"
@@ -608,5 +608,4 @@
             }
         }
     }
-}
 }
