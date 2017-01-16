@@ -136,13 +136,13 @@
             "MinLength": "1"
         },
         "RDSDatabaseName": {
-            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
-            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{4,8})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-8",
             "Description": "Database Name for RDS Instance. Default value is InfaDB",
             "Type": "String",
             "Default": "InfaDB",
             "MinLength": "4",
-            "MaxLength": "20"
+            "MaxLength": "8"
         },
         "DatabasePassword": {
             "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
@@ -525,6 +525,12 @@
                         ""
                     ]
                 }
+            ]
+        },
+        "SingleNodeCondition": {
+            "Fn::Equals": [
+                "NumberOfPowerCenterInstances",
+                "1"
             ]
         },
         "2NodeCondition": {
@@ -1295,6 +1301,15 @@
                                 "$env:CREATE_DOMAIN=1 \n",
                                 "$env:JOIN_DOMAIN=0 \n",
                                 "$env:SERVES_AS_GATEWAY=0 \n",
+                                "exort SINGLE_NODE=\"",
+                                {
+                                    "Fn::If": [
+                                        "SingleNodeCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
                                 "$env:DOMAIN_USER_NAME=\"",
                                 {
                                     "Ref": "InformaticaDomainUsername"
@@ -3311,7 +3326,8 @@
                     "Timeout": "PT2H30M"
                 }
             }
-        },"InfaNode10EIPAddress": {
+        },
+        "InfaNode10EIPAddress": {
             "Condition": "10NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
@@ -3776,7 +3792,8 @@
                     "Timeout": "PT2H30M"
                 }
             }
-        },"InfaNode12EIPAddress": {
+        },
+        "InfaNode12EIPAddress": {
             "Condition": "12NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
@@ -4008,7 +4025,8 @@
                     "Timeout": "PT2H30M"
                 }
             }
-        },"InfaNode13EIPAddress": {
+        },
+        "InfaNode13EIPAddress": {
             "Condition": "14NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {

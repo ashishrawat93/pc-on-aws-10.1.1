@@ -140,13 +140,13 @@
             "MinLength": "1"
         },
         "RDSDatabaseName": {
-            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
-            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{4,8})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-8",
             "Description": "Database Name for RDS Instance",
             "Type": "String",
             "Default": "InfaDB",
             "MinLength": "4",
-            "MaxLength": "20"
+            "MaxLength": "8"
         },
         "DatabasePassword": {
             "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
@@ -585,6 +585,12 @@
                 {
                     "Condition": "EFSRegionSupport"
                 }
+            ]
+        },
+        "SingleNodeCondition": {
+            "Fn::Equals": [
+                "NumberOfPowerCenterInstances",
+                "1"
             ]
         },
         "2NodeCondition": {
@@ -1469,6 +1475,15 @@
                                 "echo \"Initializing variables\" \n",
                                 "export CREATE_DOMAIN=1 \n",
                                 "export JOIN_DOMAIN=0 \n",
+                                "exort SINGLE_NODE=\"",
+                                {
+                                    "Fn::If": [
+                                        "SingleNodeCondition",
+                                        "1",
+                                        "0"
+                                    ]
+                                },
+                                "\"\n",
                                 "export SERVES_AS_GATEWAY=0 \n",
                                 "export DOMAIN_USER_NAME=\"",
                                 {

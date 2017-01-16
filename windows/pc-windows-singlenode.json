@@ -115,13 +115,13 @@
     },
     "Parameters": {
         "RDSDatabaseNameServiceName": {
-            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
-            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
+            "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{4,8})$",
+            "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-8",
             "Description": "Database Name for RDS Instance",
             "Type": "String",
             "Default": "InfaDB",
             "MinLength": "4",
-            "MaxLength": "20"
+            "MaxLength": "8"
         },
         "RDSEndpointAddress": {
             "Type": "String",
