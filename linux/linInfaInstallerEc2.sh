@@ -125,6 +125,8 @@ else
 
     EXITCODE=$?
 
+     sh sleep 30;
+
      sh /home/ec2-user/Informatica/10.1.1/isp/bin/infacmd.sh  updateServiceProcess -dn $DOMAIN_NAME -un $DOMAIN_USER -pd $domainpass -sn $INTEGRATION_SERVICE_NAME -nn $JOIN_NODE_NAME -po CodePage_Id=106 -ev INFA_CODEPAGENAME=UTF-8 &>> /home/ec2-user/InfaServiceLog.log
     
      EXITCODE=$(($? | EXITCODE))

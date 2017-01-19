@@ -403,7 +403,7 @@
                 "INFORMATICAPCRHELHVM": "ami-281f8044"
             },
             "us-east-1": {
-                "INFORMATICAPCRHELHVM": "ami-d0d233c6"
+                "INFORMATICAPCRHELHVM": "ami-9620ce80"
             },
             "us-east-2": {
                 "INFORMATICAPCRHELHVM": "TBD"
@@ -1423,7 +1423,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT3H"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -1734,7 +1734,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -2045,7 +2045,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -2356,7 +2356,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -2667,7 +2667,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -2978,7 +2978,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -3289,7 +3289,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -3600,7 +3600,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -3739,7 +3739,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2ID"
+                    "Ref": "PublicSubnet1ID"
                 },
                 "SecurityGroupIds": [
                     {
@@ -3911,7 +3911,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -4222,7 +4222,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -4361,7 +4361,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2ID"
+                    "Ref": "PublicSubnet1ID"
                 },
                 "SecurityGroupIds": [
                     {
@@ -4533,7 +4533,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -4844,7 +4844,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -4983,7 +4983,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2ID"
+                    "Ref": "PublicSubnet1ID"
                 },
                 "SecurityGroupIds": [
                     {
@@ -5155,7 +5155,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -5466,7 +5466,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -5605,7 +5605,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2ID"
+                    "Ref": "PublicSubnet1ID"
                 },
                 "SecurityGroupIds": [
                     {
@@ -5777,7 +5777,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -6088,7 +6088,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         }

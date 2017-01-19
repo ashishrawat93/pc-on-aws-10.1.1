@@ -1459,7 +1459,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT3H"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -1692,7 +1692,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -1925,7 +1925,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -2158,7 +2158,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -2391,7 +2391,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -2624,7 +2624,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -2857,7 +2857,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -3082,7 +3082,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -3090,7 +3090,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -3164,7 +3164,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2"
+                    "Ref": "PublicSubnet1"
                 },
                 "SecurityGroupIds": [
                     {
@@ -3315,7 +3315,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -3323,7 +3323,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -3548,7 +3548,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -3556,7 +3556,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -3630,7 +3630,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2"
+                    "Ref": "PublicSubnet1"
                 },
                 "SecurityGroupIds": [
                     {
@@ -3781,7 +3781,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -3789,7 +3789,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -4014,7 +4014,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -4022,7 +4022,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -4096,7 +4096,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2"
+                    "Ref": "PublicSubnet1"
                 },
                 "SecurityGroupIds": [
                     {
@@ -4247,7 +4247,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -4255,7 +4255,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -4480,7 +4480,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -4488,7 +4488,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -4562,7 +4562,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2"
+                    "Ref": "PublicSubnet1"
                 },
                 "SecurityGroupIds": [
                     {
@@ -4713,7 +4713,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -4721,7 +4721,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         },
@@ -4946,7 +4946,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -4954,7 +4954,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT2H30M"
+                    "Timeout": "PT1H"
                 }
             }
         }
