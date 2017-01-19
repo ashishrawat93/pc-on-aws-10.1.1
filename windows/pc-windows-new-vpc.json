@@ -399,7 +399,7 @@
                 "INFORMATICAPCWINHVM": "ami-c872eda4"
             },
             "us-east-1": {
-                "INFORMATICAPCWINHVM": "ami-c60410d1"
+                "INFORMATICAPCWINHVM": "ami-3d668f2b"
             },
             "us-east-2": {
                 "INFORMATICAPCWINHVM": "TBD"
@@ -3082,7 +3082,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -3315,7 +3315,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -3548,7 +3548,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -3781,7 +3781,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -4014,7 +4014,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -4247,7 +4247,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -4480,7 +4480,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -4713,7 +4713,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
@@ -4946,7 +4946,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "<powershell>"
+                                "</powershell>"
                             ]
                         ]
                     }
