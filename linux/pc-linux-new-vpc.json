@@ -412,7 +412,7 @@
                 "INFORMATICAPCRHELHVM": "ami-281f8044"
             },
             "us-east-1": {
-                "INFORMATICAPCRHELHVM": "ami-9620ce80"
+                "INFORMATICAPCRHELHVM": "ami-d0d233c6"
             },
             "us-east-2": {
                 "INFORMATICAPCRHELHVM": "TBD"
@@ -1646,7 +1646,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT1H"
+                    "Timeout": "PT3H"
                 }
             }
         },
@@ -1957,7 +1957,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT1H"
+                    "Timeout": "PT2H30M"
                 }
             }
         },
@@ -2268,7 +2268,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT1H"
+                    "Timeout": "PT2H30M"
                 }
             }
         },
@@ -2579,7 +2579,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT1H"
+                    "Timeout": "PT2H30M"
                 }
             }
         },
@@ -2890,7 +2890,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT1H"
+                    "Timeout": "PT2H30M"
                 }
             }
         },
@@ -3201,7 +3201,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT1H"
+                    "Timeout": "PT2H30M"
                 }
             }
         },
@@ -3512,7 +3512,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT1H"
+                    "Timeout": "PT2H30M"
                 }
             }
         },
@@ -3823,7 +3823,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT1H"
+                    "Timeout": "PT2H30M"
                 }
             }
         },
@@ -3962,7 +3962,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet1"
+                    "Ref": "PublicSubnet2"
                 },
                 "SecurityGroupIds": [
                     {
@@ -4134,7 +4134,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT1H"
+                    "Timeout": "PT2H30M"
                 }
             }
         },
@@ -4445,7 +4445,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT1H"
+                    "Timeout": "PT2H30M"
                 }
             }
         },
@@ -4584,7 +4584,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet1"
+                    "Ref": "PublicSubnet2"
                 },
                 "SecurityGroupIds": [
                     {
@@ -4756,7 +4756,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT1H"
+                    "Timeout": "PT2H30M"
                 }
             }
         },
@@ -5067,7 +5067,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT1H"
+                    "Timeout": "PT2H30M"
                 }
             }
         },
@@ -5206,7 +5206,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet1"
+                    "Ref": "PublicSubnet2"
                 },
                 "SecurityGroupIds": [
                     {
@@ -5378,21 +5378,21 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT1H"
+                    "Timeout": "PT2H30M"
                 }
             }
         },
-        "InfaNode14EIPAddress": {
+        "InfaNode13EIPAddress": {
             "Condition": "14NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",
                 "InstanceId": {
-                    "Ref": "InfaNode14"
+                    "Ref": "InfaNode13"
                 }
             }
         },
-        "InfaNode14": {
+        "InfaNode13": {
             "Condition": "14NodeCondition",
             "DependsOn": "InfaMaster",
             "Type": "AWS::EC2::Instance",
@@ -5501,7 +5501,7 @@
                                     {
                                         "Ref": "InformaticaNodeName"
                                     },
-                                    "Node14"
+                                    "Node13"
                                 ]
                             ]
                         }
@@ -5517,7 +5517,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet1"
+                    "Ref": "PublicSubnet2"
                 },
                 "SecurityGroupIds": [
                     {
@@ -5633,7 +5633,7 @@
                                             {
                                                 "Ref": "InformaticaNodeName"
                                             },
-                                            "Node14"
+                                            "Node13"
                                         ]
                                     ]
                                 },
@@ -5664,7 +5664,7 @@
                                 {
                                     "Ref": "AWS::StackId"
                                 },
-                                " --resource InfaNode14 ",
+                                " --resource InfaNode13 ",
                                 " --region ",
                                 {
                                     "Ref": "AWS::Region"
@@ -5676,7 +5676,7 @@
                                 {
                                     "Ref": "AWS::StackId"
                                 },
-                                " --resource InfaNode14 ",
+                                " --resource InfaNode13 ",
                                 " --region ",
                                 {
                                     "Ref": "AWS::Region"
@@ -5689,7 +5689,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT1H"
+                    "Timeout": "PT2H30M"
                 }
             }
         },
@@ -6000,7 +6000,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT1H"
+                    "Timeout": "PT2H30M"
                 }
             }
         },
@@ -6311,7 +6311,7 @@
             },
             "CreationPolicy": {
                 "ResourceSignal": {
-                    "Timeout": "PT1H"
+                    "Timeout": "PT2H30M"
                 }
             }
         }
