@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS Cloud Formation Template for deployment of Informatica Powercenter Version 10.1.1 on a VPC infrastructure. Informatica PowerCenter is deployed on RHEL 7.3. This template uses an existing VPC and two Private and two Public subnets. It deploys an Instance of Amazon RDS with Oracle Database on the Private Subnet. The Informatica PowerCenter Instanes are deployed in the Public Subnet. The template deploys resources over two Availability Zones. **WARNING** This template creates Amazon EC2 instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
+    "Description": "AWS Cloud Formation Template for deployment of Informatica Powercenter Version 10.1.1 on a VPC infrastructure. Informatica PowerCenter is deployed on RHEL 7.3. This template uses an existing VPC and two Private and two Public subnets. It deploys an Instance of Amazon RDS with Oracle Database on the Private Subnet. The Informatica PowerCenter Instanes are deployed in the Public Subnet. The template deploys  resources over two Availability Zones. **WARNING** This template creates Amazon EC2 instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
