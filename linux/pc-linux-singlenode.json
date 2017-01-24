@@ -139,7 +139,7 @@
         "DatabasePassword": {
             "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
             "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 8-18",
-            "Description": "Password for the Amazon RDS database account. Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 8-18",
+            "Description": "Password of the Amazon RDS database account. Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 8-18",
             "MaxLength": "18",
             "MinLength": "8",
             "NoEcho": "True",
@@ -148,7 +148,7 @@
         "DatabasePasswordConfirm": {
             "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
             "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 8-18",
-            "Description": "Password for the Amazon RDS database account.",
+            "Description": "Password of the Amazon RDS database account.",
             "MaxLength": "18",
             "MinLength": "8",
             "NoEcho": "True",
@@ -163,7 +163,7 @@
         "DatabaseUsername": {
             "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
             "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
-            "Description": "Username for the Amazon RDS database account",
+            "Description": "Username of the Amazon RDS database account",
             "MaxLength": "30",
             "MinLength": "4",
             "Type": "String"
@@ -189,7 +189,7 @@
         "InformaticaNodeName": {
             "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
             "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
-            "Description": "Node Name for the new Node that will get added to the Informatica Domain",
+            "Description": "Node Name of the new Node that will get added to the Informatica Domain",
             "Type": "String",
             "Default": "Infa",
             "MinLength": "2",
@@ -198,7 +198,7 @@
         "InformaticaDomainName": {
             "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{7,20})$",
             "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
-            "Description": "Name for the Informatica Domain.",
+            "Description": "Name of the Informatica Domain.",
             "Type": "String",
             "Default": "InfaDomain",
             "MinLength": "8",
@@ -207,8 +207,7 @@
         "InformaticaDomainUsername": {
             "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{7,20})$",
             "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
-            "Description": "Username for the Informatica Domain.",
-            "Default": "Administrator",
+            "Description": "Username of the Informatica Domain.",
             "MaxLength": "32",
             "MinLength": "8",
             "Type": "String"
@@ -216,7 +215,7 @@
         "InformaticaDomainPassword": {
             "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$&]).{7,32}$",
             "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"),ampersand(&) and dollar($) is not allowed",
-            "Description": "Password for the Informatica Domain. Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"),ampersand(&) and dollar($) is not allowed",
+            "Description": "Password of the Informatica Domain. Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"),ampersand(&) and dollar($) is not allowed",
             "NoEcho": "True",
             "MaxLength": "32",
             "MinLength": "8",
@@ -225,7 +224,7 @@
         "InformaticaDomainPasswordConfirm": {
             "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$&]).{7,32}$",
             "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"),ampersand(&)s and dollar($) is not allowed",
-            "Description": "Password for the Informatica Domain.",
+            "Description": "Password of the Informatica Domain.",
             "NoEcho": "True",
             "MaxLength": "32",
             "MinLength": "8",
