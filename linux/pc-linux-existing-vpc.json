@@ -3739,7 +3739,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2ID"
+                    "Ref": "PublicSubnet1ID"
                 },
                 "SecurityGroupIds": [
                     {
@@ -4361,7 +4361,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2ID"
+                    "Ref": "PublicSubnet1ID"
                 },
                 "SecurityGroupIds": [
                     {
@@ -4983,7 +4983,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2ID"
+                    "Ref": "PublicSubnet1ID"
                 },
                 "SecurityGroupIds": [
                     {
@@ -5605,7 +5605,7 @@
                     ]
                 },
                 "SubnetId": {
-                    "Ref": "PublicSubnet2ID"
+                    "Ref": "PublicSubnet1ID"
                 },
                 "SecurityGroupIds": [
                     {

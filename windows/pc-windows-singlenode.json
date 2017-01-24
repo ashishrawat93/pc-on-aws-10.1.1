@@ -117,7 +117,7 @@
         "RDSDatabaseNameServiceName": {
             "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{4,8})$",
             "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-8",
-            "Description": "Database Name for RDS Instance on which the Informatica Domain is deployed",
+            "Description": "Database Name of RDS Instance on which the Informatica Domain is deployed",
             "Type": "String",
             "Default": "InfaDB",
             "MinLength": "4",
