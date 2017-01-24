@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS Cloud Formation Template for deployment of Informatica Powercenter Version 10.1.1 on a VPC infrastructure. Adding node to existing domain.",
+    "Description": "AWS Cloud Formation Template for deployment of Informatica Powercenter Version 10.1.1 on a VPC infrastructure. This template lets you add a new node to and existing Windows Informatica Deployment. **WARNING** This template creates Amazon EC2 instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
@@ -74,9 +74,6 @@
                 "RDSEndpointAddress": {
                     "default": "RDS Endpoint Address"
                 },
-                "RDSEndpointPort": {
-                    "dafault": "RDS Endpoint Port"
-                },
                 "DatabaseUsername": {
                     "default": "Database Username"
                 },
@@ -109,6 +106,9 @@
                 },
                 "EncryptionKeyPhrase": {
                     "default": "Encryption Key Phrase"
+                },
+                "RDSEndpointPort": {
+                    "default": "RDS Database Port"
                 }
             }
         }
@@ -117,7 +117,7 @@
         "RDSDatabaseNameServiceName": {
             "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{4,8})$",
             "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-8",
-            "Description": "Database Name for RDS Instance",
+            "Description": "Database Name for RDS Instance on which the Informatica Domain is deployed",
             "Type": "String",
             "Default": "InfaDB",
             "MinLength": "4",
@@ -125,12 +125,13 @@
         },
         "RDSEndpointAddress": {
             "Type": "String",
-            "Description": "Database Name for RDS Instance",
+            "Description": "RDS Endpoint Address of the Informatica Domain Database",
             "MinLength": "4",
             "MaxLength": "82"
         },
         "RDSEndpointPort": {
             "Type": "String",
+            "Description": "RDS Database Port of the Informatica Domain Database",
             "Default": "1521",
             "MinLength": "3",
             "MaxLength": "6"
@@ -155,7 +156,7 @@
         },
         "MasterNodePrivateIP": {
             "Type": "String",
-            "Description": "private Ip address",
+            "Description": "Private Ip address of the Informatica Master Node",
             "MinLength": "4",
             "MaxLength": "42"
         },
@@ -179,16 +180,15 @@
         "InformaticaMasterNodeName": {
             "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
             "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
-            "Description": "Prefix for the Nodes in Informatica Domain. Node number will be the suffix for the nodes. Eg InfaNode1, InfaNode2",
+            "Description": "Name of the Informatica Master Node",
             "Type": "String",
-            "Default": "Infa",
-            "MinLength": "2",
+            "MinLength": "4",
             "MaxLength": "20"
         },
         "InformaticaNodeName": {
             "AllowedPattern": "^([a-zA-Z][a-z0-9A-Z_]{3,20})$",
             "ConstraintDescription": "Only alphanumeric characters and underscore are allowed. Should begin with an alphabet. The value must be 4-20",
-            "Description": "Prefix for the Nodes in Informatica Domain. Node number will be the suffix for the nodes. Eg InfaNode1, InfaNode2",
+            "Description": "Node Name for the new Node that will get added to the Informatica Domain",
             "Type": "String",
             "Default": "Infa",
             "MinLength": "2",
@@ -213,17 +213,17 @@
             "Type": "String"
         },
         "InformaticaDomainPassword": {
-            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$]).{7,32}$",
-            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
-            "Description": "Password for the Informatica Domain. Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
+            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$&]).{7,32}$",
+            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"),ampersand(&) and dollar($) is not allowed",
+            "Description": "Password for the Informatica Domain. Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"),ampersand(&) and dollar($) is not allowed",
             "NoEcho": "True",
             "MaxLength": "32",
             "MinLength": "8",
             "Type": "String"
         },
         "InformaticaDomainPasswordConfirm": {
-            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$]).{7,32}$",
-            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
+            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$&]).{7,32}$",
+            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"),ampersand(&) and dollar($) is not allowed",
             "Description": "Password for the Informatica Domain.",
             "NoEcho": "True",
             "MaxLength": "32",
@@ -253,7 +253,7 @@
             "MinLength": "1"
         },
         "PublicSubnet1ID": {
-            "Description": "Select a publicly accessible subnet ID located in Availability Zone 1 for the Informatica Domain",
+            "Description": "Select a publicly accessible subnet ID for the new Informatica Node which is same as the Subnet for Informatica Master Node",
             "Type": "AWS::EC2::Subnet::Id",
             "MinLength": "1"
         },
@@ -267,7 +267,7 @@
             "Default": "Yes"
         },
         "SecurityGroup": {
-            "Description": "Secuity group where you want to launch the instance",
+            "Description": "Select a Secuity group which belongs to  the Public Subnet above",
             "Type": "AWS::EC2::SecurityGroup::Id",
             "MinLength": "1"
         }
@@ -311,10 +311,10 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "AMI": {
-                "INFORMATICAPCWINHVM": "Informatica-PowerCenter-10.1.0-WindowsServer2012R2-73eb10f0-ef93-494a-bff4-de78cbe56fcb-ami-611e3276.3"
+                "INFORMATICAPCWINHVM": "Informatica-PowerCenter-10.1.1-WindowsServer2012R2"
             },
             "ap-northeast-1": {
-                "INFORMATICAPCWINHVM": "ami-6b862d0a"
+                "INFORMATICAPCWINHVM": "TBD"
             },
             "ap-northeast-2": {
                 "INFORMATICAPCWINHVM": "TBD"
@@ -323,31 +323,31 @@
                 "INFORMATICAPCWINHVM": "TBD"
             },
             "ap-southeast-1": {
-                "INFORMATICAPCWINHVM": "ami-0ecbcd19"
+                "INFORMATICAPCWINHVM": "TBD"
             },
             "ap-southeast-2": {
-                "INFORMATICAPCWINHVM": "ami-ebb48b88"
+                "INFORMATICAPCWINHVM": "TBD"
             },
             "eu-central-1": {
-                "INFORMATICAPCWINHVM": "ami-11a4617e"
+                "INFORMATICAPCWINHVM": "TBD"
             },
             "eu-west-1": {
-                "INFORMATICAPCWINHVM": "ami-3db3e34e"
+                "INFORMATICAPCWINHVM": "TBD"
             },
             "sa-east-1": {
-                "INFORMATICAPCWINHVM": "ami-c872eda4"
+                "INFORMATICAPCWINHVM": "TBD"
             },
             "us-east-1": {
-                "INFORMATICAPCWINHVM": "ami-c60410d1"
+                "INFORMATICAPCWINHVM": "ami-12719a04"
             },
             "us-east-2": {
                 "INFORMATICAPCWINHVM": "TBD"
             },
             "us-west-1": {
-                "INFORMATICAPCWINHVM": "ami-329fca52"
+                "INFORMATICAPCWINHVM": "TBD"
             },
             "us-west-2": {
-                "INFORMATICAPCWINHVM": "ami-d42d8fb4"
+                "INFORMATICAPCWINHVM": "TBD"
             }
         },
         "Config": {

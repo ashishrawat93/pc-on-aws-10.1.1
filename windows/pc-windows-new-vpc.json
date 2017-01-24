@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS Cloud Formation Template for deployment of Informatica Powercenter Version 10.1.0 on a VPC infrastructure. Informatica PowerCenter is deployed on RHEL 7.0. Amazon RDS instance in a private subnet is used as the repository for Informatica Domain Metadata. **WARNING** This template creates Amazon EC2 instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
+    "Description": "AWS Cloud Formation Template for deployment of Informatica Powercenter Version 10.1.1 on a VPC infrastructure. Informatica PowerCenter is deployed on Windows Server 2012 R2. Amazon RDS instance in a private subnet is used as the repository for Informatica Domain Metadata. The template deploys resources over two Availability Zones. **WARNING** This template creates Amazon EC2 instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
@@ -131,7 +131,7 @@
     },
     "Parameters": {
         "AvailabilityZones": {
-            "Description": "List of Availability Zones to use for the subnets in the VPC. Note: The logical order is preserved and only 2 AZs are used for this deployment",
+            "Description": "Select two Availability Zones to use for the subnets in the VPC. Note: The logical order is preserved and only 2 AZs are used for this deployment",
             "Type": "List<AWS::EC2::AvailabilityZone::Name>",
             "MinLength": "1"
         },
@@ -222,17 +222,17 @@
             "Type": "String"
         },
         "InformaticaDomainPassword": {
-            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$]).{7,32}$",
-            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
-            "Description": "Password for the Informatica Domain. Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
+            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$&]).{7,32}$",
+            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"),ampersand(&) and dollar($) is not allowed",
+            "Description": "Password for the Informatica Domain. Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"),ampersand(&) and dollar($) is not allowed",
             "NoEcho": "True",
             "MaxLength": "32",
             "MinLength": "8",
             "Type": "String"
         },
         "InformaticaDomainPasswordConfirm": {
-            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$]).{7,32}$",
-            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
+            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$&]).{7,32}$",
+            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"),ampersand(&) and dollar($) is not allowed",
             "Description": "Password for the Informatica Domain.",
             "NoEcho": "True",
             "MaxLength": "32",
@@ -372,10 +372,10 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "AMI": {
-                "INFORMATICAPCWINHVM": "Informatica-PowerCenter-10.1.0-WindowsServer2012R2-73eb10f0-ef93-494a-bff4-de78cbe56fcb-ami-611e3276.3"
+                "INFORMATICAPCWINHVM": "Informatica-PowerCenter-10.1.1-WindowsServer2012R2"
             },
             "ap-northeast-1": {
-                "INFORMATICAPCWINHVM": "ami-6b862d0a"
+                "INFORMATICAPCWINHVM": "TBD"
             },
             "ap-northeast-2": {
                 "INFORMATICAPCWINHVM": "TBD"
@@ -384,31 +384,31 @@
                 "INFORMATICAPCWINHVM": "TBD"
             },
             "ap-southeast-1": {
-                "INFORMATICAPCWINHVM": "ami-c6963aa5"
+                "INFORMATICAPCWINHVM": "TBD"
             },
             "ap-southeast-2": {
-                "INFORMATICAPCWINHVM": "ami-c6963aa5"
+                "INFORMATICAPCWINHVM": "TBD"
             },
             "eu-central-1": {
-                "INFORMATICAPCWINHVM": "ami-11a4617e"
+                "INFORMATICAPCWINHVM": "TBD"
             },
             "eu-west-1": {
-                "INFORMATICAPCWINHVM": "ami-3db3e34e"
+                "INFORMATICAPCWINHVM": "TBD"
             },
             "sa-east-1": {
-                "INFORMATICAPCWINHVM": "ami-c872eda4"
+                "INFORMATICAPCWINHVM": "TBD"
             },
             "us-east-1": {
-                "INFORMATICAPCWINHVM": "ami-3d668f2b"
+                "INFORMATICAPCWINHVM": "ami-12719a04"
             },
             "us-east-2": {
                 "INFORMATICAPCWINHVM": "TBD"
             },
             "us-west-1": {
-                "INFORMATICAPCWINHVM": "ami-329fca52"
+                "INFORMATICAPCWINHVM": "TBD"
             },
             "us-west-2": {
-                "INFORMATICAPCWINHVM": "ami-d42d8fb4"
+                "INFORMATICAPCWINHVM": "TBD"
             }
         },
         "Config": {
@@ -1301,7 +1301,7 @@
                                 "$env:CREATE_DOMAIN=1 \n",
                                 "$env:JOIN_DOMAIN=0 \n",
                                 "$env:SERVES_AS_GATEWAY=0 \n",
-                                "exort SINGLE_NODE=\"",
+                                "$env:SINGLE_NODE=\"",
                                 {
                                     "Fn::If": [
                                         "SingleNodeCondition",

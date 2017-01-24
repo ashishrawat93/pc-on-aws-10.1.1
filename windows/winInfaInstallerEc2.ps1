@@ -120,11 +120,13 @@ if ($env:JOIN_DOMAIN -eq 0 ) {
         createPCServices
    
 } else {
+	ac C:\InfaServiceLog.log "Updating the grid with node"
      ($out = C:\Informatica\10.1.1\isp\bin\infacmd updategrid -dn $env:DOMAIN_NAME -un $env:DOMAIN_USER -pd $domainpass -gn $env:GRID_NAME -nl  $env:JOIN_NODE_NAME -ul) |Out-Null
      $code = $LASTEXITCODE
      ac C:\InfaServiceLog.log $out
-     ($out = C:\Informatica\10.1.1\isp\bin\infacmd updateServiceProcess -dn $env:DOMAIN_NAME -un $env:DOMAIN_USER -pd $domainpass -sn $env:INTEGRATION_SERVICE_NAME -nn $env:JOIN_NODE_NAME -po CodePage_Id=106 -ev INFA_CODEPAGENAME=UTF-8) | Out-Null
-     $code = $code -bor $LASTEXITCODE
+  	ac C:\InfaServiceLog.log "Updating service process"
+	   ($out = C:\Informatica\10.1.1\isp\bin\infacmd updateServiceProcess -dn $env:DOMAIN_NAME -un $env:DOMAIN_USER -pd $domainpass -sn $env:INTEGRATION_SERVICE_NAME -nn $env:JOIN_NODE_NAME -po CodePage_Id=106 -ev INFA_CODEPAGENAME=UTF-8) | Out-Null
+     
      ac C:\InfaServiceLog.log $out
      exit $code
 }

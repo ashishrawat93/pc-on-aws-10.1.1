@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS Cloud Formation Template for deployment of Informatica Powercenter Version 10.1.1 on a VPC infrastructure. Informatica PowerCenter is deployed on RHEL 7.0. Amazon RDS instance in a private subnet is used as the repository for Informatica Domain Metadata. **WARNING** This template creates Amazon EC2 instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
+    "Description": "AWS Cloud Formation Template for deployment of Informatica Powercenter Version 10.1.1 on a VPC infrastructure. Informatica PowerCenter is deployed on RHEL 7.3.  Amazon RDS instance in a private subnet is used as the repository for Informatica Domain Metadata. The template deploys resources over two Availability Zones. **WARNING** This template creates Amazon EC2 instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
@@ -135,7 +135,7 @@
     },
     "Parameters": {
         "AvailabilityZones": {
-            "Description": "List of Availability Zones to use for the subnets in the VPC. Note: The logical order is preserved and only 2 AZs are used for this deployment",
+            "Description": "Select two Availability Zones to use for the subnets in the VPC. Note: The logical order is preserved and only 2 AZs are used for this deployment",
             "Type": "List<AWS::EC2::AvailabilityZone::Name>",
             "MinLength": "1"
         },
@@ -226,17 +226,17 @@
             "Type": "String"
         },
         "InformaticaDomainPassword": {
-            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$]).{7,32}$",
-            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
-            "Description": "Password for the Informatica Domain. Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
+            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$&]).{7,32}$",
+            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"),ampersand(&) and dollar($) is not allowed",
+            "Description": "Password for the Informatica Domain. Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"),ampersand(&) and dollar($) is not allowed",
             "NoEcho": "True",
             "MaxLength": "32",
             "MinLength": "8",
             "Type": "String"
         },
         "InformaticaDomainPasswordConfirm": {
-            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$]).{7,32}$",
-            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
+            "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$&]).{7,32}$",
+            "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"),ampersand(&) and dollar($) is not allowed",
             "Description": "Password for the Informatica Domain.",
             "NoEcho": "True",
             "MaxLength": "32",
@@ -385,10 +385,10 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "AMI": {
-                "INFORMATICAPCRHELHVM": "Informatica-PowerCenter-10.1.0-RHEL7.0-b1c14762-8f3f-41df-ae2c-91adee508cf9-ami-1bbc950c.3"
+                "INFORMATICAPCRHELHVM": "Informatica-PowerCenter-10.1.1-RHEL7"
             },
             "ap-northeast-1": {
-                "INFORMATICAPCRHELHVM": "ami-0677dc67"
+                "INFORMATICAPCRHELHVM": "TBD"
             },
             "ap-northeast-2": {
                 "INFORMATICAPCRHELHVM": "TBD"
@@ -397,31 +397,31 @@
                 "INFORMATICAPCRHELHVM": "TBD"
             },
             "ap-southeast-1": {
-                "INFORMATICAPCRHELHVM": "ami-c6963aa5"
+                "INFORMATICAPCRHELHVM": "TBD"
             },
             "ap-southeast-2": {
-                "INFORMATICAPCRHELHVM": "ami-03a59a60"
+                "INFORMATICAPCRHELHVM": "TBD"
             },
             "eu-central-1": {
-                "INFORMATICAPCRHELHVM": "ami-37a86d58"
+                "INFORMATICAPCRHELHVM": "TBD"
             },
             "eu-west-1": {
-                "INFORMATICAPCRHELHVM": "ami-83c999f0"
+                "INFORMATICAPCRHELHVM": "TBD"
             },
             "sa-east-1": {
-                "INFORMATICAPCRHELHVM": "ami-281f8044"
+                "INFORMATICAPCRHELHVM": "TBD"
             },
             "us-east-1": {
-                "INFORMATICAPCRHELHVM": "ami-d0d233c6"
+                "INFORMATICAPCRHELHVM": "ami-8c5fab9a"
             },
             "us-east-2": {
                 "INFORMATICAPCRHELHVM": "TBD"
             },
             "us-west-1": {
-                "INFORMATICAPCRHELHVM": "ami-5482d734"
+                "INFORMATICAPCRHELHVM": "TBD"
             },
             "us-west-2": {
-                "INFORMATICAPCRHELHVM": "ami-f713b197"
+                "INFORMATICAPCRHELHVM": "TBD"
             }
         },
         "Config": {

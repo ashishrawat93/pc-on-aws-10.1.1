@@ -1,6 +1,6 @@
     {
         "AWSTemplateFormatVersion": "2010-09-09",
-        "Description": "AWS Cloud Formation Template for deploying Informatica PowerCenter Version 10.1.0 on EC2 Windows 2012 R2 instances. This template uses an existing VPC and two Private and Public subnets. It deploys an Instance of Amazon RDS with Oracle Database on the Private Subnet. The Informatica PowerCenter Instanes are deployed in the Public Subnet. The template deploys resources over two Availability Zones.",
+        "Description": "AWS Cloud Formation Template for deployment of Informatica Powercenter Version 10.1.1 on a VPC infrastructure. Informatica PowerCenter is deployed on Windows Server 2012 R2. This template uses an existing VPC and two Private and two Public subnets. It deploys an Instance of Amazon RDS with Oracle Database on the Private Subnet. The Informatica PowerCenter Instanes are deployed in the Public Subnet. The template deploys resources over two Availability Zones. **WARNING** This template creates Amazon EC2 instance and related resources. You will be billed for the AWS resources used if you create a stack from this template.",
         "Metadata": {
             "AWS::CloudFormation::Interface": {
                 "ParameterGroups": [
@@ -214,16 +214,16 @@
                 "Type": "String"
             },
             "InformaticaDomainPassword": {
-                "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$]).{7,32}$",
-                "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
-                "Description": "Password for the Informatica Domain. Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
+                "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$&]).{7,32}$",
+                "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"),ampersand(&) and dollar($) is not allowed",
+                "Description": "Password for the Informatica Domain. Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\"),ampersand(&) and dollar($) is not allowed",
                 "NoEcho": "True",
                 "MaxLength": "32",
                 "MinLength": "8",
                 "Type": "String"
             },
             "InformaticaDomainPasswordConfirm": {
-                "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$]).{7,32}$",
+                "AllowedPattern": "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\s\\w])(?!.*[\"$&]).{7,32}$",
                 "ConstraintDescription": "Password must be at least 8 characters in length. Should contain at least one special character, number, upper-case and lower-case character. Double quote(\") and dollar($) is not allowed",
                 "Description": "Password for the Informatica Domain.",
                 "NoEcho": "True",
@@ -364,10 +364,10 @@
         "Mappings": {
             "AWSAMIRegionMap": {
                 "AMI": {
-                    "INFORMATICAPCWINHVM": "Informatica-PowerCenter-10.1.0-WindowsServer2012R2-73eb10f0-ef93-494a-bff4-de78cbe56fcb-ami-611e3276.3"
+                    "INFORMATICAPCWINHVM": "Informatica-PowerCenter-10.1.1-WindowsServer2012R2"
                 },
                 "ap-northeast-1": {
-                    "INFORMATICAPCWINHVM": "ami-6b862d0a"
+                    "INFORMATICAPCWINHVM": "TBD"
                 },
                 "ap-northeast-2": {
                     "INFORMATICAPCWINHVM": "TBD"
@@ -376,31 +376,31 @@
                     "INFORMATICAPCWINHVM": "TBD"
                 },
                 "ap-southeast-1": {
-                    "INFORMATICAPCWINHVM": "ami-0ecbcd19"
+                    "INFORMATICAPCWINHVM": "TBD"
                 },
                 "ap-southeast-2": {
-                    "INFORMATICAPCWINHVM": "ami-ebb48b88"
+                    "INFORMATICAPCWINHVM": "TBD"
                 },
                 "eu-central-1": {
-                    "INFORMATICAPCWINHVM": "ami-11a4617e"
+                    "INFORMATICAPCWINHVM": "TBD"
                 },
                 "eu-west-1": {
-                    "INFORMATICAPCWINHVM": "ami-3db3e34e"
+                    "INFORMATICAPCWINHVM": "TBD"
                 },
                 "sa-east-1": {
-                    "INFORMATICAPCWINHVM": "ami-c872eda4"
+                    "INFORMATICAPCWINHVM": "TBD"
                 },
                 "us-east-1": {
-                    "INFORMATICAPCWINHVM": "ami-3d668f2b"
+                    "INFORMATICAPCWINHVM": "ami-12719a04"
                 },
                 "us-east-2": {
                     "INFORMATICAPCWINHVM": "TBD"
                 },
                 "us-west-1": {
-                    "INFORMATICAPCWINHVM": "ami-329fca52"
+                    "INFORMATICAPCWINHVM": "TBD"
                 },
                 "us-west-2": {
-                    "INFORMATICAPCWINHVM": "ami-d42d8fb4"
+                    "INFORMATICAPCWINHVM": "TBD"
                 }
             },
             "Config": {
@@ -1067,7 +1067,7 @@
                                     "$env:CREATE_DOMAIN=1 \n",
                                     "$env:JOIN_DOMAIN=0 \n",
                                     "$env:SERVES_AS_GATEWAY=0 \n",
-                                    "exort SINGLE_NODE=\"",
+                                    "$env:SINGLE_NODE=\"",
                                     {
                                         "Fn::If": [
                                             "SingleNodeCondition",
@@ -3093,17 +3093,17 @@
                     }
                 }
             },
-            "InfaNode9EIPAddress": {
+            "InfaNode10EIPAddress": {
                 "Condition": "10NodeEIPCondition",
                 "Type": "AWS::EC2::EIP",
                 "Properties": {
                     "Domain": "vpc",
                     "InstanceId": {
-                        "Ref": "InfaNode9"
+                        "Ref": "InfaNode10"
                     }
                 }
             },
-            "InfaNode9": {
+            "InfaNode10": {
                 "Condition": "10NodeCondition",
                 "DependsOn": "InfaMaster",
                 "Type": "AWS::EC2::Instance",
@@ -3147,7 +3147,7 @@
                                         {
                                             "Ref": "InformaticaNodeName"
                                         },
-                                        "Node9"
+                                        "Node10"
                                     ]
                                 ]
                             }
@@ -3269,7 +3269,7 @@
                                                 {
                                                     "Ref": "InformaticaNodeName"
                                                 },
-                                                "Node9"
+                                                "Node10"
                                             ]
                                         ]
                                     },
@@ -3296,7 +3296,7 @@
                                     {
                                         "Ref": "AWS::StackId"
                                     },
-                                    " --resource InfaNode9 ",
+                                    " --resource InfaNode10 ",
                                     " --region ",
                                     {
                                         "Ref": "AWS::Region"
@@ -3308,7 +3308,7 @@
                                     {
                                         "Ref": "AWS::StackId"
                                     },
-                                    " --resource InfaNode9 ",
+                                    " --resource InfaNode10 ",
                                     " --region ",
                                     {
                                         "Ref": "AWS::Region"
