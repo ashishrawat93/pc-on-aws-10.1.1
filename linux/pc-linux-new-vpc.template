@@ -5382,17 +5382,17 @@
                 }
             }
         },
-        "InfaNode13EIPAddress": {
+        "InfaNode14EIPAddress": {
             "Condition": "14NodeEIPCondition",
             "Type": "AWS::EC2::EIP",
             "Properties": {
                 "Domain": "vpc",
                 "InstanceId": {
-                    "Ref": "InfaNode13"
+                    "Ref": "InfaNode14"
                 }
             }
         },
-        "InfaNode13": {
+        "InfaNode14": {
             "Condition": "14NodeCondition",
             "DependsOn": "InfaMaster",
             "Type": "AWS::EC2::Instance",
@@ -5501,7 +5501,7 @@
                                     {
                                         "Ref": "InformaticaNodeName"
                                     },
-                                    "Node13"
+                                    "Node14"
                                 ]
                             ]
                         }
@@ -5633,7 +5633,7 @@
                                             {
                                                 "Ref": "InformaticaNodeName"
                                             },
-                                            "Node13"
+                                            "Node14"
                                         ]
                                     ]
                                 },
@@ -5664,7 +5664,7 @@
                                 {
                                     "Ref": "AWS::StackId"
                                 },
-                                " --resource InfaNode13 ",
+                                " --resource InfaNode14 ",
                                 " --region ",
                                 {
                                     "Ref": "AWS::Region"
@@ -5676,7 +5676,7 @@
                                 {
                                     "Ref": "AWS::StackId"
                                 },
-                                " --resource InfaNode13 ",
+                                " --resource InfaNode14 ",
                                 " --region ",
                                 {
                                     "Ref": "AWS::Region"
