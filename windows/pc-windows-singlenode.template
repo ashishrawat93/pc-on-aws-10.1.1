@@ -245,7 +245,6 @@
         "KeyPairName": {
             "Description": "Name of an existing EC2 KeyPair to enable external access to the Informatica Domain",
             "Type": "AWS::EC2::KeyPair::KeyName",
-            "MaxLength": "32",
             "MinLength": "1"
         },
         "PublicSubnet1ID": {

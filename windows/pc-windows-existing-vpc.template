@@ -234,7 +234,6 @@
             "KeyPairName": {
                 "Description": "Name of an existing EC2 KeyPair to enable external access to the Informatica Domain",
                 "Type": "AWS::EC2::KeyPair::KeyName",
-                "MaxLength": "32",
                 "MinLength": "1"
             },
             "NumberOfPowerCenterInstances": {
@@ -414,7 +413,7 @@
                     "Engine": "oracle-ee",
                     "DB": "Oracle",
                     "Version": "12.1",
-                    "DatabaseSize": "db.m3.large",
+                    "DatabaseSize": "db.t2.large",
                     "LicenseModel": "bring-your-own-license",
                     "AllocatedStorage": "100",
                     "Port": 1521
@@ -432,7 +431,7 @@
                     "Engine": "oracle-se",
                     "DB": "Oracle",
                     "Version": "12.1",
-                    "DatabaseSize": "db.m3.large",
+                    "DatabaseSize": "db.t2.large",
                     "LicenseModel": "bring-your-own-license",
                     "AllocatedStorage": "100",
                     "Port": 1521
@@ -450,7 +449,7 @@
                     "Engine": "oracle-se1",
                     "DB": "Oracle",
                     "Version": "12.1",
-                    "DatabaseSize": "db.m3.large",
+                    "DatabaseSize": "db.t2.large",
                     "LicenseModel": "bring-your-own-license",
                     "AllocatedStorage": "100",
                     "Port": 1521
@@ -459,7 +458,7 @@
                     "Engine": "oracle-se1",
                     "DB": "Oracle",
                     "Version": "11.2",
-                    "DatabaseSize": "db.m3.large",
+                    "DatabaseSize": "db.t2.large",
                     "LicenseModel": "bring-your-own-license",
                     "AllocatedStorage": "100",
                     "Port": 1521
@@ -468,7 +467,7 @@
                     "Engine": "oracle-se1",
                     "DB": "Oracle",
                     "Version": "12.1",
-                    "DatabaseSize": "db.m3.large",
+                    "DatabaseSize": "db.t2.large",
                     "LicenseModel": "license-included",
                     "AllocatedStorage": "100",
                     "Port": 1521

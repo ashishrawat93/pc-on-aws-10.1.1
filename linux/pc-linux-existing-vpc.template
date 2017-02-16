@@ -238,7 +238,6 @@
             "Description": "Name of an existing EC2 KeyPair to enable external access to the Informatica Domain",
             "Type": "AWS::EC2::KeyPair::KeyName",
             "MinLength": "1",
-            "MaxLength": "32"
         },
         "NumberOfPowerCenterInstances": {
             "Description": "Number of PowerCenter Nodes. Each node runs on one EC2 Instance",
@@ -388,7 +387,7 @@
                 "INFORMATICAPCRHELHVM": "TBD"
             },
             "ap-southeast-1": {
-                "INFORMATICAPCRHELHVM": "TBD"
+                "INFORMATICAPCRHELHVM": "ami-25f24646"
             },
             "ap-southeast-2": {
                 "INFORMATICAPCRHELHVM": "TBD"
@@ -406,7 +405,7 @@
                 "INFORMATICAPCRHELHVM": "ami-8c5fab9a"
             },
             "us-east-2": {
-                "INFORMATICAPCRHELHVM": "TBD"
+                "INFORMATICAPCRHELHVM": "ami-4b30152e"
             },
             "us-west-1": {
                 "INFORMATICAPCRHELHVM": "TBD"
@@ -428,7 +427,7 @@
                 "Engine": "oracle-ee",
                 "DB": "Oracle",
                 "Version": "12.1",
-                "DatabaseSize": "db.m3.large",
+                "DatabaseSize": "db.t2.large",
                 "LicenseModel": "bring-your-own-license",
                 "AllocatedStorage": "100",
                 "Port": 1521
@@ -446,7 +445,7 @@
                 "Engine": "oracle-se",
                 "DB": "Oracle",
                 "Version": "12.1",
-                "DatabaseSize": "db.m3.large",
+                "DatabaseSize": "db.t2.large",
                 "LicenseModel": "bring-your-own-license",
                 "AllocatedStorage": "100",
                 "Port": 1521
@@ -464,7 +463,7 @@
                 "Engine": "oracle-se1",
                 "DB": "Oracle",
                 "Version": "12.1",
-                "DatabaseSize": "db.m3.large",
+                "DatabaseSize": "db.t2.large",
                 "LicenseModel": "bring-your-own-license",
                 "AllocatedStorage": "100",
                 "Port": 1521
@@ -473,7 +472,7 @@
                 "Engine": "oracle-se1",
                 "DB": "Oracle",
                 "Version": "11.2",
-                "DatabaseSize": "db.m3.large",
+                "DatabaseSize": "db.t2.large",
                 "LicenseModel": "bring-your-own-license",
                 "AllocatedStorage": "100",
                 "Port": 1521
@@ -482,7 +481,7 @@
                 "Engine": "oracle-se1",
                 "DB": "Oracle",
                 "Version": "12.1",
-                "DatabaseSize": "db.m3.large",
+                "DatabaseSize": "db.t2.large",
                 "LicenseModel": "license-included",
                 "AllocatedStorage": "100",
                 "Port": 1521
@@ -541,6 +540,14 @@
                             "Ref": "AWS::Region"
                         },
                         "us-east-1"
+                    ]
+                },
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "us-east-2"
                     ]
                 },
                 {
@@ -908,9 +915,7 @@
                 "DBInstanceClass": {
                     "Fn::FindInMap": [
                         "Config",
-                        {
-                            "Ref": "DatabaseType"
-                        },
+                        "Settings",
                         "DatabaseSize"
                     ]
                 },
