@@ -407,6 +407,9 @@
             "eu-west-1": {
                 "INFORMATICAPCRHELHVM": "TBD"
             },
+            "eu-west-2": {
+                "INFORMATICAPCRHELHVM": "TBD"
+            },
             "sa-east-1": {
                 "INFORMATICAPCRHELHVM": "TBD"
             },
@@ -421,7 +424,10 @@
             },
             "us-west-2": {
                 "INFORMATICAPCRHELHVM": "TBD"
-            }
+            },
+            "ca-central-1": {
+                "INFORMATICAPCRHELHVM": "TBD"
+            } 
         },
         "Config": {
             "Settings": {

@@ -386,6 +386,9 @@
                 "eu-west-1": {
                     "INFORMATICAPCWINHVM": "TBD"
                 },
+                "eu-west-2": {
+                    "INFORMATICAPCWINHVM": "TBD"
+                },
                 "sa-east-1": {
                     "INFORMATICAPCWINHVM": "TBD"
                 },
@@ -399,6 +402,9 @@
                     "INFORMATICAPCWINHVM": "TBD"
                 },
                 "us-west-2": {
+                    "INFORMATICAPCWINHVM": "TBD"
+                },
+                "ca-central-1": {
                     "INFORMATICAPCWINHVM": "TBD"
                 }
             },

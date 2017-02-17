@@ -237,7 +237,7 @@
         "KeyPairName": {
             "Description": "Name of an existing EC2 KeyPair to enable external access to the Informatica Domain",
             "Type": "AWS::EC2::KeyPair::KeyName",
-            "MinLength": "1",
+            "MinLength": "1"
         },
         "NumberOfPowerCenterInstances": {
             "Description": "Number of PowerCenter Nodes. Each node runs on one EC2 Instance",
@@ -398,6 +398,9 @@
             "eu-west-1": {
                 "INFORMATICAPCRHELHVM": "TBD"
             },
+            "eu-west-2": {
+                "INFORMATICAPCRHELHVM": "TBD"
+            },
             "sa-east-1": {
                 "INFORMATICAPCRHELHVM": "TBD"
             },
@@ -412,7 +415,10 @@
             },
             "us-west-2": {
                 "INFORMATICAPCRHELHVM": "TBD"
-            }
+            },
+            "ca-central-1": {
+                "INFORMATICAPCRHELHVM": "TBD"
+            }            
         },
         "Config": {
             "Settings": {
