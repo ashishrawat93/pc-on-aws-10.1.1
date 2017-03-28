@@ -1653,6 +1653,9 @@
                                 "\n",
                                 "chmod -R 777 /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
+                                "echo \"export ORACLE_HOME=/home/oracle/product/11.2.0.4\" >> /root/.bashrc \n",
+                                "echo \"export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/oracle/product/11.2.0.4/lib\" >> /root/.bashrc \n",
+                                "echo \"export TNS_ADMIN=$ORACLE_HOME/network/admin\" >> /root/.bashrc \n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
                                 {
