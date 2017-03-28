@@ -365,47 +365,47 @@
                 "AMI": {
                     "INFORMATICAPCWINHVM": "Informatica-PowerCenter-10.1.1-WindowsServer2012R2"
                 },
-                "ap-northeast-1": {
-                    "INFORMATICAPCWINHVM": "TBD"
-                },
-                "ap-northeast-2": {
-                    "INFORMATICAPCWINHVM": "TBD"
-                },
-                "ap-south-1": {
-                    "INFORMATICAPCWINHVM": "TBD"
-                },
-                "ap-southeast-1": {
-                    "INFORMATICAPCWINHVM": "TBD"
-                },
-                "ap-southeast-2": {
-                    "INFORMATICAPCWINHVM": "TBD"
-                },
-                "eu-central-1": {
-                    "INFORMATICAPCWINHVM": "TBD"
-                },
-                "eu-west-1": {
-                    "INFORMATICAPCWINHVM": "TBD"
-                },
-                "eu-west-2": {
-                    "INFORMATICAPCWINHVM": "TBD"
-                },
-                "sa-east-1": {
-                    "INFORMATICAPCWINHVM": "TBD"
-                },
                 "us-east-1": {
-                    "INFORMATICAPCWINHVM": "ami-12719a04"
+                    "INFORMATICAPCWINHVM": "ami-2203c334"
                 },
                 "us-east-2": {
-                    "INFORMATICAPCWINHVM": "TBD"
+                    "INFORMATICAPCWINHVM": "ami-d0e2c7b5"
                 },
                 "us-west-1": {
-                    "INFORMATICAPCWINHVM": "TBD"
+                    "INFORMATICAPCWINHVM": "ami-319cc051"
                 },
                 "us-west-2": {
-                    "INFORMATICAPCWINHVM": "TBD"
+                    "INFORMATICAPCWINHVM": "ami-c63db8a6"
                 },
                 "ca-central-1": {
-                    "INFORMATICAPCWINHVM": "TBD"
+                    "INFORMATICAPCWINHVM": "ami-d4a01db0"
+                },
+                "eu-central-1": {
+                    "INFORMATICAPCWINHVM": "ami-8b3ff7e4"
+                },
+                "eu-west-1": {
+                    "INFORMATICAPCWINHVM": "ami-fba5819d"
+                },
+                "eu-west-2": {
+                    "INFORMATICAPCWINHVM": "ami-7c617418"
+                },
+                "ap-southeast-1": {
+                    "INFORMATICAPCWINHVM": "ami-85df68e6"
+                },
+                "ap-southeast-2": {
+                    "INFORMATICAPCWINHVM": "ami-53787930"
+                },
+                "ap-northeast-1": {
+                    "INFORMATICAPCWINHVM": "ami-69cf8c0e"
+                },
+                "ap-northeast-2": {
+                    "INFORMATICAPCWINHVM": "ami-1a9b4b74"
+                },
+                "ap-south-1": {
+                    "INFORMATICAPCWINHVM": "ami-62a2d30d"
+                },
+                "sa-east-1": {
+                    "INFORMATICAPCWINHVM": "ami-1d3f5871"
                 }
             },
             "Config": {
