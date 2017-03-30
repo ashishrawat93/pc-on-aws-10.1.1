@@ -168,16 +168,13 @@
         },
         "DatabaseType": {
             "AllowedValues": [
-                "Oracle-Standard-Edition-One-12.1.0-License-Included",
                 "Oracle-Standard-Edition-One-11.2.0-License-Included",
-                "Oracle-Standard-Edition-One-12.1.0-BYOL",
                 "Oracle-Standard-Edition-One-11.2.0-BYOL",
                 "Oracle-Enterprise-Edition-12.1.0-BYOL",
                 "Oracle-Enterprise-Edition-11.2.0-BYOL",
-                "Oracle-Standard-Edition-12.1.0-BYOL",
                 "Oracle-Standard-Edition-11.2.0-BYOL"
             ],
-            "Default": "Oracle-Standard-Edition-One-12.1.0-License-Included",
+            "Default": "Oracle-Standard-Edition-One-11.2.0-License-Included",
             "Description": "The type of database to use in Amazon RDS. Currently, you can only use Oracle",
             "Type": "String"
         },
@@ -455,28 +452,10 @@
                 "AllocatedStorage": "100",
                 "Port": 1521
             },
-            "Oracle-Standard-Edition-12.1.0-BYOL": {
-                "Engine": "oracle-se",
-                "DB": "Oracle",
-                "Version": "12.1",
-                "DatabaseSize": "db.t2.large",
-                "LicenseModel": "bring-your-own-license",
-                "AllocatedStorage": "100",
-                "Port": 1521
-            },
             "Oracle-Standard-Edition-11.2.0-BYOL": {
                 "Engine": "oracle-ee",
                 "DB": "Oracle",
                 "Version": "11.2",
-                "DatabaseSize": "db.t2.large",
-                "LicenseModel": "bring-your-own-license",
-                "AllocatedStorage": "100",
-                "Port": 1521
-            },
-            "Oracle-Standard-Edition-One-12.1.0-BYOL": {
-                "Engine": "oracle-se1",
-                "DB": "Oracle",
-                "Version": "12.1",
                 "DatabaseSize": "db.t2.large",
                 "LicenseModel": "bring-your-own-license",
                 "AllocatedStorage": "100",
@@ -491,15 +470,6 @@
                 "AllocatedStorage": "100",
                 "Port": 1521
             },
-            "Oracle-Standard-Edition-One-12.1.0-License-Included": {
-                "Engine": "oracle-se1",
-                "DB": "Oracle",
-                "Version": "12.1",
-                "DatabaseSize": "db.t2.large",
-                "LicenseModel": "license-included",
-                "AllocatedStorage": "100",
-                "Port": 1521
-            },
             "Oracle-Standard-Edition-One-11.2.0-License-Included": {
                 "Engine": "oracle-se1",
                 "DB": "Oracle",
@@ -507,20 +477,6 @@
                 "DatabaseSize": "db.t2.large",
                 "LicenseModel": "license-included",
                 "AllocatedStorage": "100",
-                "Port": 1521
-            },
-            "Oracle-License-Included": {
-                "Engine": "oracle-se1",
-                "DB": "Oracle",
-                "LicenseModel": "license-included",
-                "AllocatedStorage": "50",
-                "Port": 1521
-            },
-            "Oracle-Bring-Your-Own-License": {
-                "Engine": "oracle-se1",
-                "DB": "Oralce",
-                "LicenseModel": "bring-your-own-license",
-                "AllocatedStorage": "50",
                 "Port": 1521
             }
         }
