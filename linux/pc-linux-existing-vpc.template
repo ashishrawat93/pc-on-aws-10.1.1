@@ -159,16 +159,13 @@
         },
         "DatabaseType": {
             "AllowedValues": [
-                "Oracle-Standard-Edition-One-12.1.0-License-Included",
                 "Oracle-Standard-Edition-One-11.2.0-License-Included",
-                "Oracle-Standard-Edition-One-12.1.0-BYOL",
                 "Oracle-Standard-Edition-One-11.2.0-BYOL",
                 "Oracle-Enterprise-Edition-12.1.0-BYOL",
                 "Oracle-Enterprise-Edition-11.2.0-BYOL",
-                "Oracle-Standard-Edition-12.1.0-BYOL",
                 "Oracle-Standard-Edition-11.2.0-BYOL"
             ],
-            "Default": "Oracle-Standard-Edition-One-12.1.0-License-Included",
+            "Default": "Oracle-Standard-Edition-One-11.2.0-License-Included",
             "Description": "The type of database to use in Amazon RDS. Currently, you can only use Oracle",
             "Type": "String"
         },
@@ -447,28 +444,10 @@
                 "AllocatedStorage": "100",
                 "Port": 1521
             },
-            "Oracle-Standard-Edition-12.1.0-BYOL": {
-                "Engine": "oracle-se",
-                "DB": "Oracle",
-                "Version": "12.1",
-                "DatabaseSize": "db.t2.large",
-                "LicenseModel": "bring-your-own-license",
-                "AllocatedStorage": "100",
-                "Port": 1521
-            },
             "Oracle-Standard-Edition-11.2.0-BYOL": {
                 "Engine": "oracle-ee",
                 "DB": "Oracle",
                 "Version": "11.2",
-                "DatabaseSize": "db.t2.large",
-                "LicenseModel": "bring-your-own-license",
-                "AllocatedStorage": "100",
-                "Port": 1521
-            },
-            "Oracle-Standard-Edition-One-12.1.0-BYOL": {
-                "Engine": "oracle-se1",
-                "DB": "Oracle",
-                "Version": "12.1",
                 "DatabaseSize": "db.t2.large",
                 "LicenseModel": "bring-your-own-license",
                 "AllocatedStorage": "100",
@@ -483,15 +462,6 @@
                 "AllocatedStorage": "100",
                 "Port": 1521
             },
-            "Oracle-Standard-Edition-One-12.1.0-License-Included": {
-                "Engine": "oracle-se1",
-                "DB": "Oracle",
-                "Version": "12.1",
-                "DatabaseSize": "db.t2.large",
-                "LicenseModel": "license-included",
-                "AllocatedStorage": "100",
-                "Port": 1521
-            },
             "Oracle-Standard-Edition-One-11.2.0-License-Included": {
                 "Engine": "oracle-se1",
                 "DB": "Oracle",
@@ -499,20 +469,6 @@
                 "DatabaseSize": "db.t2.large",
                 "LicenseModel": "license-included",
                 "AllocatedStorage": "100",
-                "Port": 1521
-            },
-            "Oracle-License-Included": {
-                "Engine": "oracle-se1",
-                "DB": "Oracle",
-                "LicenseModel": "license-included",
-                "AllocatedStorage": "50",
-                "Port": 1521
-            },
-            "Oracle-Bring-Your-Own-License": {
-                "Engine": "oracle-se1",
-                "DB": "Oracle",
-                "LicenseModel": "bring-your-own-license",
-                "AllocatedStorage": "50",
                 "Port": 1521
             }
         }
@@ -1783,6 +1739,10 @@
                                 "\n",
                                 "chmod -R 777 /home/ec2-user/Informatica/10.1.1/infa_shared",
                                 "\n",
+                                "echo \"export ORACLE_HOME=/home/oracle/product/11.2.0.4\" >> /home/ec2-user/.bashrc \n",
+                                "echo \"export LD_LIBRARY_PATH=/home/ec2-user/Informatica/10.1.1/server/bin:/home/ec2-user/Informatica/10.1.1",
+                                "/java/jre/lib/amd64/server::/home/oracle/product/11.2.0.4/lib:/home/oracle/product/11.2.0.4/lib:/bin:\" >> /home/ec2-user/.bashrc \n",
+                                "echo \"export TNS_ADMIN=/home/oracle/product/11.2.0.4/network/admin\" >> /home/ec2-user/.bashrc \n",
                                 "echo \"running cfn init\" \n",
                                 "/opt/aws/bin/cfn-init --stack ",
                                 {
